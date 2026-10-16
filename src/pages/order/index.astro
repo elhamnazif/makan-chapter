@@ -1,0 +1,126 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import catalogue from '../../data/catalogue.json';
+import { url, money } from '../../data/site';
+
+const photo: Record<string, string> = {
+  'cat-1': 'bakar-bakar', 'cat-2': 'lauk', 'cat-3': 'nasi-ambeng', 'cat-4': 'nasi-lemak-plate',
+  'cat-5': 'nasi-plate', 'cat-6': 'kuih-tray', 'cat-7': 'kuih',
+};
+// Light tidy-up of source text: spacing around punctuation and a capital first letter.
+const tidy = (s = '') => {
+  const t = s.replace(/\s+,/g, ',').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')').replace(/\s{2,}/g, ' ').trim();
+  return t.charAt(0).toUpperCase() + t.slice(1);
+};
+const sections = catalogue.categories.map((c) => ({
+  ...c,
+  name: tidy(c.name),
+  items: catalogue.items.filter((i) => i.categoryId === c.id).map((i) => ({ ...i, name: tidy(i.name), description: tidy(i.description) })),
+}));
+---
+<Layout title="Order Online" description="Order Malay meals, nasi ambeng and kuih online for delivery.">
+  <PageHero title="Order Online" intro="Bakar-bakar, penyet, nasi and kuih, delivered for a flat S$15." image="bakar-bakar" compact />
+
+  <div class="bg-surface-2">
+    <div class="container-page py-8">
+      <form class="flex gap-3" role="search" data-search-form>
+        <label for="menu-search" class="sr-only">Search the menu</label>
+        <input id="menu-search" type="search" class="field flex-1" placeholder="Search dishes..." autocomplete="off" data-search />
+        <button type="submit" class="btn"><Icon name="ph:magnifying-glass-bold" class="size-4" aria-hidden="true" />Search</button>
+      </form>
+
+      <div class="mt-8 grid gap-8 lg:grid-cols-[15rem_1fr]">
+        <aside class="card min-w-0 self-start p-4 lg:sticky lg:top-20" aria-label="Menu categories">
+          <div class="flex items-center justify-between border-b border-line pb-3">
+            <h2 class="font-bold">Categories</h2>
+            <button type="button" class="min-h-11 px-2 text-sm font-medium hover:underline" data-reset>Clear</button>
+          </div>
+          <fieldset class="flex min-w-0 gap-2 overflow-x-auto pt-3 lg:block lg:overflow-visible">
+            <legend class="sr-only">Categories</legend>
+            {sections.map((s) => (
+              <label class="flex min-h-10 shrink-0 cursor-pointer items-center gap-3 rounded-full border border-line px-3 text-sm lg:rounded-none lg:border-0 lg:px-0">
+                <input type="checkbox" value={s.id} class="size-4 accent-[var(--mc-accent)]" data-cat-filter />
+                <span class="whitespace-nowrap">{s.name}</span>
+                <span class="ml-auto hidden text-xs text-muted lg:inline">{s.items.length}</span>
+              </label>
+            ))}
+          </fieldset>
+        </aside>
+
+        <div class="min-w-0 space-y-10">
+          {sections.map((s) => (
+            <section id={s.id} aria-labelledby={`${s.id}-title`} class="scroll-mt-24" data-section={s.id}>
+              <div class="flex items-center gap-4">
+                <img src={url(`images/${photo[s.id]}.webp`)} alt="" width="64" height="64" loading="lazy" class="size-16 rounded-card object-cover" />
+                <h2 id={`${s.id}-title`} class="text-xl font-bold">{s.name}</h2>
+              </div>
+              <ul class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {s.items.map((i) => (
+                  <li class="card flex flex-col p-4" data-item data-search={`${i.name} ${i.description}`.toLowerCase()}>
+                    <h3 class="font-semibold leading-snug">{i.name}</h3>
+                    {i.description && <p class="mt-1.5 line-clamp-3 text-sm leading-relaxed text-muted">{i.description}</p>}
+                    <div class="mt-auto flex items-center justify-between gap-3 pt-4">
+                      <span class="text-lg font-bold text-price">{money(i.priceCents)}</span>
+                      <button type="button" class="btn !min-h-10 !px-4 text-sm" data-add={JSON.stringify({ id: i.id, name: i.name, priceCents: i.priceCents })} aria-label={`Add ${i.name} to cart`}>
+                        <Icon name="ph:plus-bold" class="size-4" aria-hidden="true" />Add
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+          <div class="card flex flex-col items-center px-6 py-14 text-center" hidden data-empty>
+            <Icon name="ph:magnifying-glass" class="size-10 text-muted" aria-hidden="true" />
+            <p class="mt-3 font-semibold">No dishes match your search.</p>
+            <button type="button" class="btn btn-outline mt-5" data-reset>Clear search</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { addItem, toast } from '../../scripts/cart';
+
+  document.querySelectorAll<HTMLButtonElement>('[data-add]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const d = JSON.parse(b.dataset.add!);
+      addItem({ kind: 'meal', id: d.id, name: d.name, unitCents: d.priceCents, unitLabel: 'each', qty: 1, details: [], key: d.id });
+      toast(`${d.name} added to cart`);
+    }),
+  );
+
+  const search = document.querySelector<HTMLInputElement>('[data-search]')!;
+  const boxes = [...document.querySelectorAll<HTMLInputElement>('[data-cat-filter]')];
+  const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
+  const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+
+  function apply() {
+    const q = search.value.trim().toLowerCase();
+    const cats = boxes.filter((b) => b.checked).map((b) => b.value);
+    let total = 0;
+    for (const s of sections) {
+      const catOk = !cats.length || cats.includes(s.dataset.section!);
+      let n = 0;
+      s.querySelectorAll<HTMLElement>('[data-item]').forEach((it) => {
+        const ok = catOk && (!q || it.dataset.search!.includes(q));
+        it.hidden = !ok;
+        if (ok) n++;
+      });
+      s.hidden = n === 0;
+      total += n;
+    }
+    empty.hidden = total > 0;
+  }
+  const hash = location.hash.slice(1);
+  boxes.forEach((b) => { if (b.value === hash) b.checked = true; });
+  document.querySelector('[data-search-form]')!.addEventListener('submit', (e) => { e.preventDefault(); apply(); });
+  search.addEventListener('input', apply);
+  boxes.forEach((b) => b.addEventListener('change', apply));
+  document.querySelectorAll('[data-reset]').forEach((b) => b.addEventListener('click', () => { search.value = ''; boxes.forEach((x) => (x.checked = false)); apply(); }));
+  apply();
+</script>

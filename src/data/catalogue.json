@@ -1,0 +1,324 @@
+{
+  "source": "https://www.makanchapter.com/online-ordering",
+  "currency": "SGD",
+  "deliveryFeeCents": 1500,
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "Bakar Bakar / Grilled"
+    },
+    {
+      "id": "cat-2",
+      "name": "Penyet"
+    },
+    {
+      "id": "cat-3",
+      "name": "Nasi ambeng"
+    },
+    {
+      "id": "cat-4",
+      "name": "Nasi lemak"
+    },
+    {
+      "id": "cat-5",
+      "name": "Nasi sambal goreng"
+    },
+    {
+      "id": "cat-6",
+      "name": "Kuih Muih"
+    },
+    {
+      "id": "cat-7",
+      "name": "Sides"
+    }
+  ],
+  "items": [
+    {
+      "id": "item-1",
+      "categoryId": "cat-1",
+      "name": "Ayam bakar (grilled chicken)",
+      "description": "Ayam bakar serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "priceCents": 990
+    },
+    {
+      "id": "item-2",
+      "categoryId": "cat-1",
+      "name": "Siakap bakar (grilled seabass)",
+      "description": "Siakap bakar (Grilled seabass) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "priceCents": 1790
+    },
+    {
+      "id": "item-3",
+      "categoryId": "cat-1",
+      "name": "Tilapia bakar ( grilled Tilapia ) (Fish)",
+      "description": "Tilapia grilled(Fish) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "priceCents": 1290
+    },
+    {
+      "id": "item-4",
+      "categoryId": "cat-1",
+      "name": "sotong bakar ( Grilled Squid)",
+      "description": "Sotong bakar (Grilled Squid) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "priceCents": 1690
+    },
+    {
+      "id": "item-5",
+      "categoryId": "cat-1",
+      "name": "Daging bakar (Grilled beef sliced)",
+      "description": "Daging bakar ( Grilled beef sliced) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "priceCents": 1590
+    },
+    {
+      "id": "item-6",
+      "categoryId": "cat-1",
+      "name": "Siakap platter",
+      "description": "Consist of 5pcs x prawn , 1 x quarterleg chicken, 1 x squid , 1 x seabass . serve with rice wrapped in banana leaf x2 , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "priceCents": 5500
+    },
+    {
+      "id": "item-7",
+      "categoryId": "cat-1",
+      "name": "Tilapia platter",
+      "description": "Consist of 5pcs x prawn , 1 x quarterleg chicken, 1 x squid , 1 x tilapia . serve with rice wrapped in banana leaf x2 , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "priceCents": 5000
+    },
+    {
+      "id": "item-8",
+      "categoryId": "cat-2",
+      "name": "Nasi Ayam Penyet",
+      "description": "White rice served with smashed fried marinated chicken, sambal, fried tauhu & tempeh, cucumber and tomato.",
+      "priceCents": 790
+    },
+    {
+      "id": "item-9",
+      "categoryId": "cat-2",
+      "name": "Nasi Ikan Penyet",
+      "description": "Steamed White Rice served with Fried Marinated Fish, Sambal, Fried Tauhu & Tempeh, Sliced Cucumber and Tomato.",
+      "priceCents": 1090
+    },
+    {
+      "id": "item-10",
+      "categoryId": "cat-2",
+      "name": "Nasi Sotong Penyet",
+      "description": "Steamed White Rice served with Fried Marinated Sotong, Sambal, Fried Tauhu & Tempeh, Sliced Cucumber and Tomato.",
+      "priceCents": 1590
+    },
+    {
+      "id": "item-11",
+      "categoryId": "cat-2",
+      "name": "Nasi Udang Penyet",
+      "description": "Steamed White Rice served with Fried Marinated Prawn, Sambal, Fried Tauhu & Tempeh, Sliced Cucumber and Tomato.",
+      "priceCents": 1290
+    },
+    {
+      "id": "item-12",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Ayam",
+      "description": "Nasi putih, Ayam Lemak Cili Api, Sambal Goreng Tahu Tempeh, Bergedil,Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 890
+    },
+    {
+      "id": "item-13",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Daging",
+      "description": "Nasi putih, Daging Lembu Rendang, Paru Goreng Berempah, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 990
+    },
+    {
+      "id": "item-14",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Ikan Belado",
+      "description": "Nasi putih, Ikan Goreng Belado, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 1090
+    },
+    {
+      "id": "item-15",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Deluxe for 2pax",
+      "description": "Nasi Putih (2 pax), Ayam Lemak Cili Padi, Daging Lembu Rendang, Ikan Kering, Sotong Sambal, Paru Goreng Berempah, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 3500
+    },
+    {
+      "id": "item-16",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Deluxe for 3pax",
+      "description": "Nasi Putih (3 pax), Ayam Lemak Cili Padi, Daging Lembu Rendang, Ikan Kering, Sotong Sambal, Paru Goreng Berempah, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 4800
+    },
+    {
+      "id": "item-17",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Deluxe for 4pax",
+      "description": "Nasi Putih (4 pax), Ayam Lemak Cili Padi, Daging Lembu Rendang, Ikan Kering, Sotong Sambal, Paru Goreng Berempah, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 6100
+    },
+    {
+      "id": "item-18",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Platter for 2pax",
+      "description": "Nasi Putih (2 pax), Ayam Lemak Cili Padi, Daging Lembu Rendang, Paru Goreng Berempah, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 2900
+    },
+    {
+      "id": "item-19",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng Platter for 3pax",
+      "description": "Nasi Putih (3 pax), Ayam Lemak Cili Padi, Daging Lembu Rendang, Paru Goreng Berempah, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 3900
+    },
+    {
+      "id": "item-20",
+      "categoryId": "cat-3",
+      "name": "Nasi Ambeng for 4pax",
+      "description": "Nasi Putih (4 pax), Ayam Lemak Cili Padi, Daging Lembu Rendang, Paru Goreng Berempah, Sambal Goreng Tahu Tempeh, Bergedil, Acar, Sambal Terong Belado, Sambal Belachan",
+      "priceCents": 4900
+    },
+    {
+      "id": "item-21",
+      "categoryId": "cat-4",
+      "name": "Nasi Lemak Ayam",
+      "description": "",
+      "priceCents": 550
+    },
+    {
+      "id": "item-22",
+      "categoryId": "cat-4",
+      "name": "Nasi Lemak Rendang",
+      "description": "",
+      "priceCents": 800
+    },
+    {
+      "id": "item-23",
+      "categoryId": "cat-4",
+      "name": "Nasi Lemak Sambal Sotong",
+      "description": "",
+      "priceCents": 800
+    },
+    {
+      "id": "item-24",
+      "categoryId": "cat-5",
+      "name": "Nasi Sambal Goreng Ayam",
+      "description": "Steamed White Rice served with Fried Chicken, Sambal Goreng, Serunding, Bergedil & Sambal",
+      "priceCents": 690
+    },
+    {
+      "id": "item-25",
+      "categoryId": "cat-5",
+      "name": "Nasi Sambal Goreng Daging",
+      "description": "Steamed White Rice served with Daging Rendang, Sambal Goreng, Serunding, Bergedil & Sambal",
+      "priceCents": 790
+    },
+    {
+      "id": "item-26",
+      "categoryId": "cat-5",
+      "name": "Nasi Sambal Goreng Paru",
+      "description": "Steamed White Rice served with Fried Marinated Paru, Sambal Goreng, Serunding, Bergedil & Sambal",
+      "priceCents": 890
+    },
+    {
+      "id": "item-27",
+      "categoryId": "cat-5",
+      "name": "Nasi Sambal Goreng Sambal Sotong",
+      "description": "Steamed White Rice served with Sambal Sotong, Sambal Goreng, Serunding, Bergedil & Sambal",
+      "priceCents": 890
+    },
+    {
+      "id": "item-28",
+      "categoryId": "cat-6",
+      "name": "Putri salat",
+      "description": "3 pcs of putri salat",
+      "priceCents": 150
+    },
+    {
+      "id": "item-29",
+      "categoryId": "cat-6",
+      "name": "Kaswi original",
+      "description": "3 pcs of kaswi original",
+      "priceCents": 150
+    },
+    {
+      "id": "item-30",
+      "categoryId": "cat-6",
+      "name": "kaswi pandan",
+      "description": "3 pcs of kaswi pandan",
+      "priceCents": 210
+    },
+    {
+      "id": "item-31",
+      "categoryId": "cat-6",
+      "name": "Lopes",
+      "description": "3 pcs of mini lopes",
+      "priceCents": 300
+    },
+    {
+      "id": "item-32",
+      "categoryId": "cat-6",
+      "name": "Apam gula hangus",
+      "description": "3 pcs apam gula hangus",
+      "priceCents": 150
+    },
+    {
+      "id": "item-33",
+      "categoryId": "cat-6",
+      "name": "Jongkong",
+      "description": "3 pcs jongkong",
+      "priceCents": 450
+    },
+    {
+      "id": "item-34",
+      "categoryId": "cat-6",
+      "name": "Abok Abok",
+      "description": "3 pcs abok abok",
+      "priceCents": 300
+    },
+    {
+      "id": "item-35",
+      "categoryId": "cat-6",
+      "name": "Kaswi pandan gula melaka",
+      "description": "3 pcs kaswi pandan gula melaka",
+      "priceCents": 300
+    },
+    {
+      "id": "item-36",
+      "categoryId": "cat-6",
+      "name": "epok epok kentang ( potato)",
+      "description": "3pcs epok epok",
+      "priceCents": 300
+    },
+    {
+      "id": "item-37",
+      "categoryId": "cat-7",
+      "name": "tahu fritters",
+      "description": "",
+      "priceCents": 400
+    },
+    {
+      "id": "item-38",
+      "categoryId": "cat-7",
+      "name": "tempe fritters",
+      "description": "",
+      "priceCents": 400
+    },
+    {
+      "id": "item-39",
+      "categoryId": "cat-7",
+      "name": "soup ekor / oxtail soup",
+      "description": "serving for 1 pax",
+      "priceCents": 800
+    },
+    {
+      "id": "item-40",
+      "categoryId": "cat-7",
+      "name": "soup sayur asem",
+      "description": "serving for 1 pax",
+      "priceCents": 450
+    },
+    {
+      "id": "item-41",
+      "categoryId": "cat-7",
+      "name": "bakwan / vegetable fritters",
+      "description": "3 pcs serving",
+      "priceCents": 250
+    }
+  ]
+}

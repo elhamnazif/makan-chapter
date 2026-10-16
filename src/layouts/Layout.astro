@@ -1,0 +1,30 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { url } from '../data/site';
+interface Props { title?: string; description?: string }
+const { title, description = 'Malay catering in Singapore: mini buffets, buffet catering, nasi ambeng and kuih, delivered islandwide.' } = Astro.props;
+const fullTitle = title ? `${title} | Makan Chapter` : 'Makan Chapter | Malay Catering in Singapore';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={url('brand/logo.png')} type="image/png" />
+  </head>
+  <body class="antialiased">
+    <a href="#main" class="sr-only z-60 rounded-control bg-accent px-4 py-2 text-accent-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
+    <Header />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <div id="toast" role="status" aria-live="polite" data-show="false"
+      class="pointer-events-none fixed inset-x-0 bottom-6 z-60 mx-auto w-fit max-w-[90vw] rounded-full bg-accent px-5 py-3 text-sm font-medium text-accent-ink opacity-0 shadow-card transition-[opacity,transform] duration-200 data-[show=true]:opacity-100 translate-y-2 data-[show=true]:translate-y-0"></div>
+  </body>
+</html>

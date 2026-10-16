@@ -1,0 +1,28 @@
+---
+import type { Package } from '../data/packages';
+import { priceLabel, minLabel } from '../data/packages';
+import { url } from '../data/site';
+interface Props { pkg: Package }
+const { pkg } = Astro.props;
+const perPax = pkg.perPaxCents ?? (pkg.setPriceCents && pkg.paxPerSet ? pkg.setPriceCents / pkg.paxPerSet : null);
+const search = [pkg.name, pkg.blurb, ...pkg.groups.flatMap((g) => g.items)].join(' ').toLowerCase();
+---
+<li
+  class="card flex flex-col overflow-hidden"
+  data-package
+  data-category={pkg.category}
+  data-perpax={perPax ?? ''}
+  data-minpax={pkg.minPax}
+  data-search={search}
+>
+  <img src={url(`images/${pkg.image}.webp`)} alt="" loading="lazy" width="640" height="480" class="aspect-[4/3] w-full object-cover" />
+  <div class="flex flex-1 flex-col items-center p-4 text-center">
+    <h3 class="font-bold leading-snug">{pkg.name}</h3>
+    <p class="mt-1.5 text-sm leading-relaxed text-muted">{pkg.blurb}</p>
+    <div class="mt-auto pt-4">
+      <p class="text-lg font-bold text-price">{priceLabel(pkg)}</p>
+      <p class="text-xs text-muted">{minLabel(pkg)}</p>
+    </div>
+    <a href={url(`package/${pkg.slug}/`)} class="btn btn-block mt-4">Select Package</a>
+  </div>
+</li>

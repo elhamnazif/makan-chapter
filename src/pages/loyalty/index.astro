@@ -1,0 +1,30 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { waLink, url } from '../../data/site';
+const steps = [
+  { icon: 'ph:user-plus', title: 'Sign Up', text: 'Become a member to start collecting points on your orders.' },
+  { icon: 'ph:coins', title: 'Earn Points', text: 'Get 1 point for every S$1 spent on restaurant orders.' },
+  { icon: 'ph:ticket', title: 'Redeem Rewards', text: 'Turn 200 points into S$2 off your next order.' },
+];
+---
+<Layout title="Loyalty Rewards" description="Earn 1 point for every S$1 spent at Makan Chapter.">
+  <PageHero title="Loyalty Rewards" intro="Earn points and turn them into rewards." image="nasi-sotong-plate" compact />
+
+  <section class="container-page py-16">
+    <ol class="relative grid gap-10 md:grid-cols-3 md:gap-6">
+      {steps.map((s) => (
+        <li class="flex flex-col items-center text-center">
+          <span class="grid size-16 place-items-center rounded-full bg-accent text-accent-ink"><Icon name={s.icon} class="size-8" aria-hidden="true" /></span>
+          <h2 class="mt-4 text-xl font-bold">{s.title}</h2>
+          <p class="mt-2 max-w-[28ch] text-muted">{s.text}</p>
+        </li>
+      ))}
+    </ol>
+    <div class="mt-12 flex flex-wrap justify-center gap-3">
+      <a href={waLink('Hi Makan Chapter, I would like to become a loyalty member.')} target="_blank" rel="noopener" class="btn"><Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />Become a Member</a>
+      <a href={url('order/')} class="btn btn-outline">Order Online</a>
+    </div>
+  </section>
+</Layout>
