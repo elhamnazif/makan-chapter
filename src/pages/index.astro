@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
+import MoeBadge from '../components/MoeBadge.astro';
 import { url, reviews, menuPdfs } from '../data/site';
 
 const slides = [
@@ -87,7 +88,11 @@ const services = [
         <p class="mt-5 max-w-[60ch] leading-relaxed text-muted">
           Makan Chapter is a Muslim-owned kitchen on Serangoon Road. We cater intimate gatherings, birthdays, corporate meetings, weddings and festive celebrations with the dishes our customers come back for.
         </p>
-        <p class="mt-4 max-w-[60ch] leading-relaxed text-muted">
+        <div class="mt-6 flex items-center gap-4">
+          <MoeBadge class="size-20" />
+          <p class="text-sm leading-relaxed text-muted"><span class="block font-semibold text-ink">Muslim-Owned Enterprise</span>Singapore Malay Chamber of Commerce and Industry</p>
+        </div>
+        <p class="mt-6 max-w-[60ch] leading-relaxed text-muted">
           Browse the full menus below, or tell us about your event and we will put together a quotation.
         </p>
         <ul class="mt-6 grid gap-2 sm:grid-cols-2">

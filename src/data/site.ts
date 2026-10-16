@@ -40,6 +40,7 @@ export function money(cents: number): string {
 
 export const nav = [
   { label: 'Home', href: '' },
+  { label: 'Our Story', href: 'our-story/' },
   {
     label: 'Catering',
     href: 'catering/mini-buffet/',
