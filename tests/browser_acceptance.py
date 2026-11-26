@@ -1,7 +1,7 @@
 """Real-browser acceptance in Chromium. Never sends an enquiry or order: window.open is intercepted.
 
-Serve a build first, e.g.  BASE=/layout/ npm run build && npx astro preview --port 18763
-then:                      URL=http://127.0.0.1:18763/layout/ python tests/browser_acceptance.py
+Serve a build first, e.g.  npm run build && npx astro preview --port 18763
+then:                      python tests/browser_acceptance.py   (URL=... to test another host)
 """
 import json
 import os
@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / os.environ.get('DIST', 'dist')
-URL = os.environ.get('URL', 'http://127.0.0.1:18763/layout/').rstrip('/') + '/'
+URL = os.environ.get('URL', 'http://127.0.0.1:18763/').rstrip('/') + '/'
 OUT = ROOT / 'test-results'
 OUT.mkdir(exist_ok=True)
 CHROMIUM = os.environ.get('CHROMIUM', '/usr/bin/chromium')

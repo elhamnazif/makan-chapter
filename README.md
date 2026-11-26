@@ -1,6 +1,6 @@
 # Makan Chapter website
 
-Catering site for Makan Chapter, built with Astro and Tailwind CSS. Preview: https://makanchapter.elham.dev/layout/
+Catering site for Makan Chapter, built with Astro and Tailwind CSS. Preview: https://makanchapter.elham.dev/
 
 The layout and customer flow are modelled on makanmate.com and use Makan Chapter's real menus, prices, photos and terms.
 
@@ -10,7 +10,6 @@ The layout and customer flow are modelled on makanmate.com and use Makan Chapter
 npm install
 npm run dev                    # http://127.0.0.1:4321
 npm run build                  # static site in dist/
-BASE=/layout/ npm run build    # the preview is hosted under /layout/
 ```
 
 ## Where things live
@@ -30,14 +29,14 @@ Home → catering category → package → add-ons → cart → delivery details
 
 ```bash
 python -m venv .venv && .venv/bin/pip install -r tests/requirements.txt
-BASE=/layout/ npm run build
+npm run build
 .venv/bin/python tests/test_content.py                          # static checks on dist/
-BASE=/layout/ npx astro preview --port 18763 &                   # serves dist/ under /layout/
-URL=http://127.0.0.1:18763/layout/ .venv/bin/python tests/browser_acceptance.py
+npx astro preview --port 18763 &                                 # serves dist/
+.venv/bin/python tests/browser_acceptance.py                    # URL=https://makanchapter.elham.dev/ to test live
 ```
 
 The browser test drives Chromium (`CHROMIUM` env var, default `/usr/bin/chromium`) through every page at phone and desktop widths in both themes, plus the theme switch, buffet listing, quotation, Order Online and cart, and mini buffet flows. It intercepts `window.open`, so no WhatsApp message is ever sent. Screenshots go to `test-results/`.
 
 ## Deploying
 
-The preview is served by Caddy on Meridian from `/var/www/makanchapter/layout/`. Build with `BASE=/layout/` and replace that directory's contents with `dist/`. Leave the sibling files in `/var/www/makanchapter/` alone.
+Caddy on Meridian serves `/var/www/makanchapter/`. Run `npm run build` and replace that directory's contents with `dist/`.
