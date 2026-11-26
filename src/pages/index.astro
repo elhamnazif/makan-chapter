@@ -11,12 +11,10 @@ const slides = [
 ];
 
 const services = [
-  { title: 'Mini Buffet', href: 'catering/mini-buffet/', image: 'mini-buffet-tray', text: 'Complete 20-pax sets in disposable trays. Five menus, delivered islandwide.' },
+  { title: 'Mains and Bakar-Bakar', href: 'order/', image: 'bakar-bakar', text: 'Grilled and penyet plates, nasi ambeng and nasi lemak, ordered individually.' },
   { title: 'Buffet Catering', href: 'catering/buffet/', image: 'buffet-setup', text: 'Full buffet with warmers, setup and collection for events from 30 guests.' },
-  { title: 'Meals and Bakar-Bakar', href: 'order/', image: 'bakar-bakar', text: 'Grilled and penyet plates, nasi ambeng and nasi lemak, ordered individually.' },
+  { title: 'Mini Buffet', href: 'catering/mini-buffet/', image: 'mini-buffet-tray', text: 'Complete 20-pax sets in disposable trays. Five menus, delivered islandwide.' },
   { title: 'Kuih Muih', href: 'order/#cat-6', image: 'kuih-tray', text: 'Traditional kuih by the piece, with price lists for larger orders.' },
-  { title: 'Gift Card', href: 'gift-card/', image: 'ambeng-basket', text: 'eGift cards from S$25 to S$200, valid for 12 months after purchase.' },
-  { title: 'Loyalty Rewards', href: 'loyalty/', image: 'nasi-sotong-plate', text: 'Earn 1 point for every S$1 spent. Redeem 200 points for S$2 off.' },
 ];
 ---
 <Layout>
@@ -63,7 +61,7 @@ const services = [
   <!-- Service categories -->
   <section class="container-page pb-20" aria-labelledby="services-title">
     <h2 id="services-title" class="sr-only">What we offer</h2>
-    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <ul class="grid grid-cols-1 gap-6 min-[480px]:grid-cols-2">
       {services.map((s) => (
         <li>
           <a href={url(s.href)} class="card group flex h-full flex-col overflow-hidden transition-transform duration-300 hover:-translate-y-1">

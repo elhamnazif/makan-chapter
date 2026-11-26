@@ -51,8 +51,6 @@ export const nav = [
     ],
   },
   { label: 'Order Online', href: 'order/' },
-  { label: 'Gift Card', href: 'gift-card/' },
-  { label: 'Loyalty', href: 'loyalty/' },
   { label: 'Contact', href: 'contact/' },
 ];
 

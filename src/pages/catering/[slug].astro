@@ -13,7 +13,8 @@ export function getStaticPaths() {
 const slug = Astro.params.slug as CategorySlug;
 const cat = categories[slug];
 
-const filterGroups = [
+// Budget and Guests filters are offered on Mini Buffet only; Buffet Catering filters by menu.
+const allFilterGroups = [
   {
     key: 'menus',
     title: 'Menus',
@@ -38,6 +39,7 @@ const filterGroups = [
     ],
   },
 ];
+const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key === 'menus') : allFilterGroups;
 ---
 <Layout title={cat.title} description={cat.intro}>
   <PageHero title={cat.title} intro={cat.intro} image={cat.image} />
