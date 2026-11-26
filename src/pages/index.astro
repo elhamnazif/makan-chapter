@@ -12,8 +12,8 @@ const slides = [
 
 const services = [
   { title: 'Mains and Bakar-Bakar', href: 'order/', image: 'bakar-bakar', text: 'Grilled and penyet plates, nasi ambeng and nasi lemak, ordered individually.' },
-  { title: 'Buffet Catering', href: 'catering/buffet/', image: 'buffet-setup', text: 'Full buffet with warmers, setup and collection for events from 30 guests.' },
-  { title: 'Mini Buffet', href: 'catering/mini-buffet/', image: 'mini-buffet-tray', text: 'Complete 20-pax sets in disposable trays. Five menus, delivered islandwide.' },
+  { title: 'Buffet Catering', href: 'catering/', image: 'buffet-setup', text: 'Classic Catering: a full buffet in warmers, with cutlery and drinks, from 50 pax.' },
+  { title: 'Mini Buffet', href: 'catering/', image: 'mini-buffet-tray', text: 'Mini Catering: ready-to-enjoy trays for 20 to 50 pax. Five menus to choose from.' },
   { title: 'Kuih Muih', href: 'order/#cat-6', image: 'kuih-tray', text: 'Traditional kuih by the piece, with price lists for larger orders.' },
 ];
 ---
@@ -34,7 +34,7 @@ const services = [
     <div class="container-page py-16">
       <h1 class="max-w-[16ch] text-5xl font-bold leading-[1.05] tracking-tight text-white md:text-6xl">We Know, Makan Matters</h1>
       <p class="mt-5 max-w-[40ch] text-lg text-white/90">Home-style catering for family gatherings, office meals, weddings and festive celebrations.</p>
-      <a href={url('catering/mini-buffet/')} class="btn mt-8 !bg-white !text-zinc-900 hover:!bg-zinc-200">Explore Our Catering Menu</a>
+      <a href={url('catering/')} class="btn mt-8 !bg-white !text-zinc-900 hover:!bg-zinc-200">Explore Our Catering Menu</a>
     </div>
     <div class="absolute inset-x-0 bottom-6 flex justify-center gap-2" role="group" aria-label="Choose photo">
       {slides.map((_, i) => (

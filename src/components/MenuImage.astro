@@ -1,0 +1,14 @@
+---
+import { Icon } from 'astro-icon/components';
+import { url } from '../data/site';
+interface Props { image: string | null; class?: string; eager?: boolean }
+const { image, class: cls = '', eager = false } = Astro.props;
+---
+{image ? (
+  <img src={url(`images/${image}.webp`)} alt="" loading={eager ? 'eager' : 'lazy'} width="640" height="480" class:list={['object-cover', cls]} />
+) : (
+  <span class:list={['flex flex-col items-center justify-center gap-2 bg-surface-2 text-muted', cls]}>
+    <Icon name="ph:bowl-food" class="size-10" aria-hidden="true" />
+    <span class="text-xs">Photo to come</span>
+  </span>
+)}

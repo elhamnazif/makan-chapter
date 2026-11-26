@@ -1,0 +1,555 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '../../../layouts/Layout.astro';
+import DemoBanner from '../../../components/DemoBanner.astro';
+import MenuImage from '../../../components/MenuImage.astro';
+import { eventMenus, eventPackages, fees } from '../../../data/eventCatering';
+import { url, money } from '../../../data/site';
+
+export function getStaticPaths() {
+  return eventMenus.map((m) => ({ params: { menu: m.slug } }));
+}
+
+const menu = eventMenus.find((m) => m.slug === Astro.params.menu)!;
+const steps = ['Package', 'Menu', 'Event', 'Your details', 'Review and pay'];
+const pkgs = Object.values(eventPackages);
+---
+<Layout title={`Order ${menu.name}`} description={`Order ${menu.name} catering for your event.`}>
+  <DemoBanner />
+  <div class="container-page pb-40 pt-6 lg:pb-16">
+    <a href={url(`catering/menu/${menu.slug}/`)} class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline">
+      <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />Back to {menu.name} menu
+    </a>
+    <h1 class="mt-2 text-2xl font-bold tracking-tight md:text-3xl" data-title>Order {menu.name}</h1>
+
+    <nav aria-label="Order steps" class="mt-6 scroll-mt-24" data-progress>
+      <ol class="grid grid-cols-5 gap-1.5 sm:gap-3">
+        {steps.map((s, i) => (
+          <li>
+            <button type="button" class="group flex w-full flex-col items-start gap-1.5 text-left disabled:cursor-default" data-goto={i + 1} disabled={i > 0}>
+              <span class="h-1.5 w-full rounded-full bg-line group-data-[state=done]:bg-accent group-data-[state=current]:bg-accent"></span>
+              <span class="text-xs font-medium text-muted group-data-[state=current]:font-bold group-data-[state=current]:text-ink">
+                <span class="sm:hidden">{i + 1}</span><span class="hidden sm:inline">{i + 1}. {s}</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem]" data-layout>
+      <form novalidate data-order>
+        <!-- Step 1: package -->
+        <section data-step="1" aria-labelledby="s1-title">
+          <h2 id="s1-title" class="text-2xl font-bold" tabindex="-1">Choose a package</h2>
+          <p class="mt-1 text-muted">Both packages use the same {menu.name} menu.</p>
+          <fieldset class="mt-5" aria-describedby="package-error">
+            <legend class="sr-only">Package</legend>
+            <div class="grid gap-4 md:grid-cols-2">
+              {pkgs.map((p) => (
+                <label class="card flex cursor-pointer flex-col overflow-hidden outline-accent has-[:checked]:border-accent has-[:checked]:outline-3 has-[:focus-visible]:outline-3" data-package-card={p.key}>
+                  <MenuImage image={p.image} class="aspect-[16/9] w-full" />
+                  <span class="flex flex-1 flex-col p-5">
+                    <span class="flex items-start justify-between gap-3">
+                      <span class="text-xl font-bold">{p.name}</span>
+                      <input type="radio" name="package" value={p.key} class="mt-1.5 size-5 shrink-0 accent-[var(--mc-accent)]" />
+                    </span>
+                    <span class="mt-2 leading-relaxed text-muted">{p.description}</span>
+                    <span class="mt-auto pt-4">
+                      <span class="block text-lg font-bold text-price">{money(menu.priceCents[p.key])}/pax</span>
+                      <span class="block text-sm text-muted">{p.deliveryLabel} {money(p.deliveryCents)}</span>
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <p id="package-error" class="field-error" hidden></p>
+        </section>
+
+        <!-- Step 2: dishes and pax -->
+        <section data-step="2" aria-labelledby="s2-title" hidden>
+          <h2 id="s2-title" class="text-2xl font-bold" tabindex="-1">Pick your menu</h2>
+          <p class="mt-1 text-muted">Tick 1 dish in each category.</p>
+          <div class="mt-5 grid gap-4">
+            {menu.categories.map((c, ci) => (
+              <fieldset class="rounded-card border border-line bg-surface p-5" data-category={c.label} data-only={c.only ?? ''} aria-describedby={`c${ci}-status`}>
+                <legend class="float-left w-full">
+                  <span class="block text-lg font-bold text-price">{c.label}</span>
+                  <span id={`c${ci}-status`} class="block text-muted" data-status>Choose 1 of {c.options.length}</span>
+                </legend>
+                <div class="clear-both grid gap-2 pt-3 sm:grid-cols-2">
+                  {c.options.map((o) => (
+                    <label class="flex min-h-12 cursor-pointer items-center gap-3 rounded-control border border-line px-3 hover:bg-surface-2 has-[:checked]:border-accent has-[:checked]:bg-surface-2">
+                      <input type="radio" name={`c${ci}`} value={o} class="size-5 shrink-0 accent-[var(--mc-accent)]" />
+                      <span>{o}</span>
+                    </label>
+                  ))}
+                </div>
+                <p class="field-error" hidden data-cat-error></p>
+              </fieldset>
+            ))}
+          </div>
+
+          <div class="mt-6 rounded-card border border-line bg-surface p-5">
+            <label for="pax" class="text-lg font-bold">Number of pax</label>
+            <div class="mt-3 flex max-w-xs items-center gap-2">
+              <button type="button" class="grid size-12 shrink-0 place-items-center rounded-control border border-line bg-surface hover:bg-surface-2" aria-label="Fewer pax" data-pax-step="-1"><Icon name="ph:minus-bold" class="size-5" aria-hidden="true" /></button>
+              <input id="pax" name="pax" type="number" inputmode="numeric" class="field text-center text-lg font-semibold" step="1" aria-describedby="pax-help pax-error" />
+              <button type="button" class="grid size-12 shrink-0 place-items-center rounded-control border border-line bg-surface hover:bg-surface-2" aria-label="More pax" data-pax-step="1"><Icon name="ph:plus-bold" class="size-5" aria-hidden="true" /></button>
+            </div>
+            <p id="pax-help" class="field-help" data-pax-help></p>
+            <p id="pax-error" class="field-error" hidden></p>
+          </div>
+        </section>
+
+        <!-- Step 3: event details -->
+        <section data-step="3" aria-labelledby="s3-title" hidden>
+          <h2 id="s3-title" class="text-2xl font-bold" tabindex="-1">Event details</h2>
+          <div class="mt-5 grid gap-5 rounded-card border border-line bg-surface p-5">
+            <div>
+              <label for="date" class="field-label">Event date</label>
+              <input id="date" name="date" type="date" class="field max-w-xs" aria-describedby="date-help date-error" />
+              <p id="date-help" class="field-help" data-date-help></p>
+              <p id="date-error" class="field-error" hidden></p>
+            </div>
+            <div data-only="mini">
+              <label for="delivery-time" class="field-label">Delivery time</label>
+              <input id="delivery-time" name="deliveryTime" type="time" class="field max-w-xs" aria-describedby="delivery-time-help delivery-time-error" />
+              <p id="delivery-time-help" class="field-help">We deliver at this time.</p>
+              <p id="delivery-time-error" class="field-error" hidden></p>
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2" data-only="classic">
+              <div>
+                <label for="ready-time" class="field-label">Time food should be ready</label>
+                <input id="ready-time" name="readyTime" type="time" class="field" aria-describedby="ready-time-help ready-time-error" />
+                <p id="ready-time-help" class="field-help">Our team arrives 1 hour earlier to set up.</p>
+                <p id="ready-time-error" class="field-error" hidden></p>
+              </div>
+              <div>
+                <label for="teardown-time" class="field-label">Teardown time</label>
+                <input id="teardown-time" name="teardownTime" type="time" class="field" aria-describedby="teardown-time-help teardown-time-error" />
+                <p id="teardown-time-help" class="field-help">Teardown after 9pm adds {money(fees.lateTeardownCents)}.</p>
+                <p id="teardown-time-error" class="field-error" hidden></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 4: customer details -->
+        <section data-step="4" aria-labelledby="s4-title" hidden>
+          <h2 id="s4-title" class="text-2xl font-bold" tabindex="-1">Your details</h2>
+          <div class="mt-5 grid gap-5 rounded-card border border-line bg-surface p-5 sm:grid-cols-2">
+            <div>
+              <label for="name" class="field-label">Full name</label>
+              <input id="name" name="name" class="field" autocomplete="name" aria-describedby="name-error" />
+              <p id="name-error" class="field-error" hidden></p>
+            </div>
+            <div>
+              <label for="phone" class="field-label">Mobile number</label>
+              <input id="phone" name="phone" type="tel" class="field" autocomplete="tel" inputmode="tel" placeholder="e.g. 9123 4567" aria-describedby="phone-error" />
+              <p id="phone-error" class="field-error" hidden></p>
+            </div>
+            <div class="sm:col-span-2">
+              <label for="email" class="field-label">Email</label>
+              <input id="email" name="email" type="email" class="field" autocomplete="email" placeholder="name@email.com" aria-describedby="email-help email-error" />
+              <p id="email-help" class="field-help">Your receipt is sent here.</p>
+              <p id="email-error" class="field-error" hidden></p>
+            </div>
+            <div>
+              <label for="address" class="field-label">Delivery address</label>
+              <input id="address" name="address" class="field" autocomplete="street-address" placeholder="Street, block and unit" aria-describedby="address-error" />
+              <p id="address-error" class="field-error" hidden></p>
+            </div>
+            <div>
+              <label for="postal" class="field-label">Postal code</label>
+              <input id="postal" name="postal" class="field" autocomplete="postal-code" inputmode="numeric" maxlength="6" placeholder="e.g. 328180" aria-describedby="postal-help postal-error" />
+              <p id="postal-help" class="field-help" data-postal-help>Delivery to the CBD or Sentosa adds {money(fees.cbdSentosaCents)}.</p>
+              <p id="postal-error" class="field-error" hidden></p>
+            </div>
+            <div class="sm:col-span-2">
+              <label for="remarks" class="field-label">Remarks or dietary notes <span class="font-normal text-muted">(optional)</span></label>
+              <textarea id="remarks" name="remarks" rows="3" class="field" placeholder="E.g. no spicy, no peanuts, access instructions"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 5: review and pay -->
+        <section data-step="5" aria-labelledby="s5-title" hidden>
+          <h2 id="s5-title" class="text-2xl font-bold" tabindex="-1">Review and pay</h2>
+          <p class="mt-1 text-muted">Check your order. You can go back to change anything.</p>
+          <div class="mt-5 grid gap-4 md:grid-cols-2" data-review></div>
+          <div class="mt-4 rounded-card border-2 border-ink bg-surface p-5">
+            <p class="font-bold">Order summary</p>
+            <dl class="mt-3 space-y-2 text-sm" data-review-lines></dl>
+          </div>
+          <div class="mt-5">
+            <label class="flex cursor-pointer items-start gap-3">
+              <input type="checkbox" id="terms" name="terms" class="mt-0.5 size-5 shrink-0 accent-[var(--mc-accent)]" aria-describedby="terms-error" />
+              <span>I agree to the <a href="#terms-text" class="font-semibold underline underline-offset-2" data-terms-link>Terms and Conditions</a>.</span>
+            </label>
+            <p id="terms-error" class="field-error" hidden></p>
+            <details id="terms-text" class="mt-3 rounded-card border border-line bg-surface p-4">
+              <summary class="flex min-h-11 cursor-pointer items-center font-semibold">Terms and Conditions</summary>
+              <ul class="mt-2 list-disc space-y-1.5 pl-5 text-sm text-muted">
+                <li>Full payment is taken when you place your order.</li>
+                <li>Orders must be placed at least {fees.leadDays} days before the event.</li>
+                <li>Cancellation and refund terms will be added here once confirmed.</li>
+              </ul>
+            </details>
+            <p class="mt-4 text-sm text-muted">The full order total is charged immediately at checkout.</p>
+          </div>
+        </section>
+
+        <!-- One set of controls: a sticky bar on phones, inline on desktop -->
+        <div class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur lg:static lg:mt-8 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+          <div class="mx-auto flex max-w-xl items-center gap-3 lg:max-w-none">
+            <div class="mr-auto lg:hidden">
+              <p class="text-xs text-muted">Total</p>
+              <p class="text-lg font-bold" data-total>S$0</p>
+            </div>
+            <button type="button" class="btn btn-outline" data-back hidden><Icon name="ph:arrow-left-bold" class="size-4" aria-hidden="true" />Back</button>
+            <button type="submit" class="btn lg:ml-auto" data-next><span data-next-label>Next</span><Icon name="ph:arrow-right-bold" class="size-4" aria-hidden="true" data-next-icon /></button>
+          </div>
+        </div>
+      </form>
+
+      <aside class="hidden self-start lg:sticky lg:top-20 lg:block" aria-label="Your order" data-summary>
+        <div class="rounded-card border-2 border-ink bg-surface p-5" aria-live="polite">
+          <p class="flex items-center gap-2 font-bold"><Icon name="ph:receipt" class="size-5" aria-hidden="true" />Your order</p>
+          <dl class="mt-3 space-y-2 text-sm" data-summary-lines></dl>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Confirmation (demo) -->
+    <section class="mx-auto mt-4 max-w-2xl" aria-labelledby="done-title" hidden data-confirmation>
+      <div class="card p-6 text-center md:p-10">
+        <Icon name="ph:check-circle-fill" class="mx-auto size-16 text-accent" aria-hidden="true" />
+        <h2 id="done-title" class="mt-4 text-3xl font-bold" tabindex="-1">Order confirmed</h2>
+        <p class="mt-2 text-muted">Order <strong class="text-ink" data-ref></strong>. Thank you, <span data-done-name></span>!</p>
+        <p class="mt-1 text-muted">A receipt has been sent to <strong class="text-ink" data-done-email></strong>.</p>
+        <dl class="mt-6 space-y-2 rounded-card border border-line p-4 text-left text-sm" data-done-lines></dl>
+        <p class="note mt-6 text-left">Demo only: no payment was taken and no email was sent. On the live site, the payment page (for example PayNow or card) opens when you press Pay now.</p>
+        <a href={url('catering/')} class="btn mt-6">Back to Catering</a>
+      </div>
+    </section>
+  </div>
+
+  <script type="application/json" id="order-data" set:html={JSON.stringify({ menu, packages: eventPackages, fees })} />
+</Layout>
+
+<script>
+  import type { EventMenu, EventPackage, PackageKey } from '../../../data/eventCatering';
+  import { isCbdOrSentosa } from '../../../data/eventCatering';
+  import { isoDate, prettyDate } from '../../../scripts/cart';
+
+  const money = (cents: number) =>
+    'S$' + (cents / 100).toLocaleString('en-SG', { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 });
+
+  const data = JSON.parse(document.getElementById('order-data')!.textContent!) as {
+    menu: EventMenu;
+    packages: Record<PackageKey, EventPackage>;
+    fees: { cbdSentosaCents: number; lateTeardownCents: number; lateTeardownAfter: string; leadDays: number };
+  };
+  const { menu, packages, fees } = data;
+  const $ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel)!;
+  const $$ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => [...root.querySelectorAll<T>(sel)];
+
+  const form = $<HTMLFormElement>('[data-order]');
+  const sections = $$<HTMLElement>('[data-step]', form);
+  const progress = $$<HTMLButtonElement>('[data-goto]');
+  const back = $<HTMLButtonElement>('[data-back]');
+  const next = $<HTMLButtonElement>('[data-next]');
+  const pax = $<HTMLInputElement>('#pax');
+  const date = $<HTMLInputElement>('#date');
+  const deliveryTime = $<HTMLInputElement>('#delivery-time');
+  const readyTime = $<HTMLInputElement>('#ready-time');
+  const teardownTime = $<HTMLInputElement>('#teardown-time');
+  const field = (id: string) => $<HTMLInputElement>('#' + id);
+  const LAST = sections.length;
+  let step = 1;
+  let reached = 1;
+
+  // Earliest bookable date: today plus the lead time, in calendar days.
+  const earliest = new Date();
+  earliest.setDate(earliest.getDate() + fees.leadDays);
+  date.min = isoDate(earliest);
+  $('[data-date-help]').textContent = `Book at least ${fees.leadDays} days ahead. Earliest date: ${prettyDate(date.min)}.`;
+
+  const pkgKey = () => (form.querySelector<HTMLInputElement>('input[name="package"]:checked')?.value ?? null) as PackageKey | null;
+  const pkg = () => { const k = pkgKey(); return k ? packages[k] : null; };
+  const visibleCategories = () => $$<HTMLFieldSetElement>('[data-category]', form).filter((f) => !f.hidden);
+
+  function fmtTime(t: string): string {
+    if (!t) return '';
+    const [h, m] = t.split(':').map(Number);
+    return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
+  }
+
+  function showError(id: string, msg: string, input?: HTMLElement | null) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.hidden = false; }
+    input?.setAttribute('aria-invalid', 'true');
+  }
+  function clearError(id: string, input?: HTMLElement | null) {
+    const el = document.getElementById(id);
+    if (el) el.hidden = true;
+    input?.removeAttribute('aria-invalid');
+  }
+
+  // Package switch: show the matching dishes and event fields, keep pax inside the package's range.
+  function applyPackage() {
+    const p = pkg();
+    $$('[data-only]', form).forEach((el) => { const only = el.dataset.only; el.hidden = Boolean(only && only !== p?.key); });
+    if (!p) return;
+    pax.min = String(p.minPax);
+    if (p.maxPax) pax.max = String(p.maxPax); else pax.removeAttribute('max');
+    const n = Number(pax.value);
+    if (!pax.value || n < p.minPax) pax.value = String(p.minPax);
+    else if (p.maxPax && n > p.maxPax) pax.value = String(p.maxPax);
+    $('[data-pax-help]').textContent = p.maxPax ? `${p.name}: ${p.minPax} to ${p.maxPax} pax.` : `${p.name}: minimum ${p.minPax} pax.`;
+    clearError('pax-error', pax);
+  }
+
+  function lines(): [string, string, boolean?][] {
+    const p = pkg();
+    const out: [string, string, boolean?][] = [['Menu', menu.name]];
+    if (!p) return out;
+    const n = Number(pax.value) || 0;
+    const per = menu.priceCents[p.key];
+    out.push(['Package', p.name]);
+    out.push([`${n} pax × ${money(per)}`, money(per * n)]);
+    out.push([p.deliveryLabel, money(p.deliveryCents)]);
+    if (isCbdOrSentosa(field('postal').value.trim())) out.push(['CBD or Sentosa', '+' + money(fees.cbdSentosaCents)]);
+    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) out.push(['Teardown after 9pm', '+' + money(fees.lateTeardownCents)]);
+    return out;
+  }
+
+  function totalCents(): number {
+    const p = pkg();
+    if (!p) return 0;
+    let t = menu.priceCents[p.key] * (Number(pax.value) || 0) + p.deliveryCents;
+    if (isCbdOrSentosa(field('postal').value.trim())) t += fees.cbdSentosaCents;
+    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) t += fees.lateTeardownCents;
+    return t;
+  }
+
+  function fillLines(dl: HTMLElement, label = 'Total') {
+    dl.replaceChildren();
+    for (const [k, v] of lines()) {
+      const row = document.createElement('div');
+      row.className = 'flex justify-between gap-4';
+      const dt = document.createElement('dt'); dt.className = 'text-muted'; dt.textContent = k;
+      const dd = document.createElement('dd'); dd.className = 'text-right font-medium'; dd.textContent = v;
+      row.append(dt, dd); dl.append(row);
+    }
+    const row = document.createElement('div');
+    row.className = 'flex items-baseline justify-between gap-4 border-t border-line pt-3';
+    const dt = document.createElement('dt'); dt.className = 'font-bold'; dt.textContent = label;
+    const dd = document.createElement('dd'); dd.className = 'text-2xl font-bold'; dd.textContent = money(totalCents());
+    row.append(dt, dd); dl.append(row);
+  }
+
+  function render() {
+    for (const f of visibleCategories()) {
+      const picked = f.querySelector<HTMLInputElement>('input:checked');
+      f.querySelector('[data-status]')!.textContent = picked ? `Chosen: ${picked.value}` : `Choose 1 of ${f.querySelectorAll('input').length}`;
+      if (picked) f.querySelector<HTMLElement>('[data-cat-error]')!.hidden = true;
+    }
+    const postal = field('postal').value.trim();
+    $('[data-postal-help]').textContent = isCbdOrSentosa(postal)
+      ? `CBD or Sentosa delivery: ${money(fees.cbdSentosaCents)} added to your total.`
+      : `Delivery to the CBD or Sentosa adds ${money(fees.cbdSentosaCents)}.`;
+    fillLines($('[data-summary-lines]'), 'Total due now');
+    $('[data-total]').textContent = money(totalCents());
+  }
+
+  // Returns the first invalid control in a step, after showing its messages.
+  function validate(n: number): HTMLElement | null {
+    let first: HTMLElement | null = null;
+    const flag = (el: HTMLElement) => { first ??= el; };
+    const p = pkg();
+    if (n === 1) {
+      if (!p) { showError('package-error', 'Choose Mini Catering or Classic Catering.'); flag($('input[name="package"]', form)); }
+      else clearError('package-error');
+    }
+    if (n === 2 && p) {
+      for (const f of visibleCategories()) {
+        const err = f.querySelector<HTMLElement>('[data-cat-error]')!;
+        if (!f.querySelector('input:checked')) { err.textContent = `Choose 1 ${f.dataset.category!.toLowerCase()} dish.`; err.hidden = false; flag(f.querySelector('input')!); }
+        else err.hidden = true;
+      }
+      const v = Number(pax.value);
+      if (!Number.isInteger(v) || v < p.minPax || (p.maxPax != null && v > p.maxPax)) {
+        const msg = p.key === 'mini'
+          ? (v > p.maxPax! ? 'Mini Catering is for up to 50 pax. For more guests, choose Classic Catering.' : 'Mini Catering starts from 20 pax.')
+          : 'Classic Catering starts from 50 pax. For fewer guests, choose Mini Catering.';
+        showError('pax-error', msg, pax); flag(pax);
+      } else clearError('pax-error', pax);
+    }
+    if (n === 3 && p) {
+      if (!date.value) { showError('date-error', 'Choose your event date.', date); flag(date); }
+      else if (date.value < date.min) { showError('date-error', `Please book at least ${fees.leadDays} days ahead. The earliest date is ${prettyDate(date.min)}.`, date); flag(date); }
+      else clearError('date-error', date);
+      if (p.key === 'mini') {
+        if (!deliveryTime.value) { showError('delivery-time-error', 'Choose a delivery time.', deliveryTime); flag(deliveryTime); }
+        else clearError('delivery-time-error', deliveryTime);
+      } else {
+        if (!readyTime.value) { showError('ready-time-error', 'Choose when the food should be ready.', readyTime); flag(readyTime); }
+        else clearError('ready-time-error', readyTime);
+        if (!teardownTime.value) { showError('teardown-time-error', 'Choose a teardown time.', teardownTime); flag(teardownTime); }
+        else if (readyTime.value && teardownTime.value <= readyTime.value) { showError('teardown-time-error', 'Teardown must be after the food is ready.', teardownTime); flag(teardownTime); }
+        else clearError('teardown-time-error', teardownTime);
+      }
+    }
+    if (n === 4) {
+      const checks: [string, (v: string) => string | null][] = [
+        ['name', (v) => (v ? null : 'Enter your name.')],
+        ['phone', (v) => (/^(\+?65)?[3689]\d{7}$/.test(v.replace(/[\s-]/g, '')) ? null : 'Enter a Singapore mobile number, e.g. 9123 4567.')],
+        ['email', (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? null : 'Enter an email address, e.g. name@email.com.')],
+        ['address', (v) => (v ? null : 'Enter the delivery address.')],
+        ['postal', (v) => (/^\d{6}$/.test(v) ? null : 'Enter a 6-digit postal code.')],
+      ];
+      for (const [id, check] of checks) {
+        const el = field(id);
+        const msg = check(el.value.trim());
+        if (msg) { showError(`${id}-error`, msg, el); flag(el); } else clearError(`${id}-error`, el);
+      }
+    }
+    if (n === 5) {
+      const terms = field('terms');
+      if (!terms.checked) { showError('terms-error', 'Please agree to the Terms and Conditions to continue.', terms); flag(terms); }
+      else clearError('terms-error', terms);
+    }
+    return first;
+  }
+
+  function card(title: string, rows: [string, string][], editStep: number) {
+    const box = document.createElement('div');
+    box.className = 'rounded-card border border-line bg-surface p-4';
+    const head = document.createElement('div');
+    head.className = 'flex items-center justify-between gap-3';
+    const h = document.createElement('h3'); h.className = 'font-bold'; h.textContent = title;
+    const edit = document.createElement('button');
+    edit.type = 'button'; edit.className = 'min-h-11 px-2 text-sm font-semibold underline underline-offset-2';
+    edit.textContent = 'Change'; edit.setAttribute('aria-label', `Change ${title.toLowerCase()}`);
+    edit.addEventListener('click', () => go(editStep));
+    head.append(h, edit);
+    const dl = document.createElement('dl'); dl.className = 'mt-1 space-y-1.5 text-sm';
+    for (const [k, v] of rows) {
+      if (!v) continue;
+      const row = document.createElement('div');
+      const dt = document.createElement('dt'); dt.className = 'text-muted'; dt.textContent = k;
+      const dd = document.createElement('dd'); dd.className = 'font-medium'; dd.textContent = v;
+      row.append(dt, dd); dl.append(row);
+    }
+    box.append(head, dl);
+    return box;
+  }
+
+  function when(): string {
+    const p = pkg();
+    if (!date.value || !p) return '';
+    return p.key === 'mini'
+      ? `${prettyDate(date.value)}, delivery at ${fmtTime(deliveryTime.value)}`
+      : `${prettyDate(date.value)}, food ready by ${fmtTime(readyTime.value)}, teardown at ${fmtTime(teardownTime.value)}`;
+  }
+
+  function renderReview() {
+    const p = pkg()!;
+    const dishes = visibleCategories().map((f) => [f.dataset.category!, f.querySelector<HTMLInputElement>('input:checked')?.value ?? ''] as [string, string]);
+    $('[data-review]').replaceChildren(
+      card('Package and pax', [['Menu', menu.name], ['Package', p.name], ['Pax', pax.value]], 1),
+      card('Dishes', dishes, 2),
+      card('Event', [['Date and time', when()]], 3),
+      card('Contact and delivery', [
+        ['Name', field('name').value.trim()],
+        ['Mobile', field('phone').value.trim()],
+        ['Email', field('email').value.trim()],
+        ['Address', `${field('address').value.trim()}, Singapore ${field('postal').value.trim()}`],
+        ['Remarks', field('remarks').value.trim()],
+      ], 4),
+    );
+    fillLines($('[data-review-lines]'), 'Total due now');
+  }
+
+  function go(n: number, initial = false) {
+    step = n;
+    reached = Math.max(reached, n);
+    sections.forEach((s) => (s.hidden = Number(s.dataset.step) !== n));
+    progress.forEach((b) => {
+      const i = Number(b.dataset.goto);
+      b.dataset.state = i === n ? 'current' : i <= reached ? 'done' : 'todo';
+      b.disabled = i > reached;
+      if (i === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+    back.hidden = n === 1;
+    $('[data-next-label]').textContent = n === LAST ? 'Pay now: full payment' : 'Next';
+    $('[data-next-icon]').classList.toggle('hidden', n === LAST);
+    if (n === LAST) renderReview();
+    render();
+    if (initial) return;
+    $('[data-progress]').scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
+    sections[n - 1].querySelector<HTMLElement>('h2')!.focus({ preventScroll: true });
+  }
+
+  function pay() {
+    // Re-check every step before taking payment.
+    for (let i = 1; i <= LAST; i++) {
+      const bad = validate(i);
+      if (bad) { if (i !== step) go(i); bad.focus(); return; }
+    }
+    next.disabled = true;
+    $('[data-next-label]').textContent = 'Processing payment...';
+    window.setTimeout(() => {
+      $('[data-ref]').textContent = 'MC-' + String(Date.now()).slice(-6);
+      $('[data-done-name]').textContent = field('name').value.trim().split(' ')[0];
+      $('[data-done-email]').textContent = field('email').value.trim();
+      const done = $('[data-done-lines]');
+      fillLines(done, 'Amount paid');
+      const extra = document.createElement('div');
+      extra.className = 'flex justify-between gap-4';
+      extra.innerHTML = '<dt class="text-muted">When</dt><dd class="text-right font-medium"></dd>';
+      extra.querySelector('dd')!.textContent = when();
+      done.prepend(extra);
+      $('[data-layout]').hidden = true;
+      $('[data-progress]').hidden = true;
+      $('[data-title]').textContent = `${menu.name}: order placed`;
+      $('[data-confirmation]').hidden = false;
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      $('#done-title').focus({ preventScroll: true });
+    }, 1200);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (step === LAST) { pay(); return; }
+    const bad = validate(step);
+    if (bad) { bad.focus(); return; }
+    go(step + 1);
+  });
+  back.addEventListener('click', () => go(step - 1));
+  progress.forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.goto))));
+  $$<HTMLButtonElement>('[data-pax-step]').forEach((b) => b.addEventListener('click', () => {
+    const p = pkg(); if (!p) return;
+    let v = (Number(pax.value) || p.minPax) + Number(b.dataset.paxStep);
+    v = Math.max(p.minPax, p.maxPax ? Math.min(p.maxPax, v) : v);
+    pax.value = String(v);
+    clearError('pax-error', pax);
+    render();
+  }));
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name === 'package') { applyPackage(); clearError('package-error'); }
+    render();
+  });
+  form.addEventListener('input', (e) => {
+    const t = e.target as HTMLElement;
+    if (t.getAttribute('aria-invalid')) validate(step);
+    render();
+  });
+  $('[data-terms-link]').addEventListener('click', () => { ($('#terms-text') as HTMLDetailsElement).open = true; });
+
+  applyPackage();
+  go(1, true);
+</script>

@@ -1,0 +1,161 @@
+// Event catering flow from the client's "Customer journey: Event Catering" brief (v4, Nov 2026).
+// DEMO DATA: menu names, package rules and fees come from the brief. The dish options and
+// per-pax prices below are samples until Makan Chapter sends the final menu and prices.
+
+export type PackageKey = 'mini' | 'classic';
+
+export interface EventPackage {
+  key: PackageKey;
+  name: string;
+  description: string;
+  image: string;
+  minPax: number;
+  /** null: no upper limit (still to be confirmed for Classic). */
+  maxPax: number | null;
+  deliveryCents: number;
+  deliveryLabel: string;
+  includes: string[];
+}
+
+export const eventPackages: Record<PackageKey, EventPackage> = {
+  mini: {
+    key: 'mini',
+    name: 'Mini Catering',
+    description: 'Ready-to-enjoy food served in disposable trays, perfect for smaller gatherings. From 20 pax (max 50), cutlery provided. Drinks not included.',
+    image: 'mini-buffet-tray',
+    minPax: 20,
+    maxPax: 50,
+    deliveryCents: 3000,
+    deliveryLabel: 'Delivery',
+    includes: ['Disposable trays', 'Cutlery provided', '20 to 50 pax', 'Drinks not included'],
+  },
+  classic: {
+    key: 'classic',
+    name: 'Classic Catering',
+    description: 'The full buffet experience, served in warmers to keep your food hot throughout your event. From 50 pax, with cutlery and drinks included.',
+    image: 'buffet-setup',
+    minPax: 50,
+    maxPax: null,
+    deliveryCents: 8000,
+    deliveryLabel: 'Delivery and collection',
+    includes: ['Buffet setup with warmers', 'Cutlery and drinks included', 'From 50 pax', 'Our team sets up 1 hour before'],
+  },
+};
+
+export const fees = {
+  cbdSentosaCents: 500,
+  lateTeardownCents: 2000,
+  /** Teardown strictly after this time (24h HH:MM) adds the late teardown fee. */
+  lateTeardownAfter: '21:00',
+  /** Calendar days. Whether this means business days is still to be confirmed. */
+  leadDays: 3,
+};
+
+export interface MenuCategory {
+  label: string;
+  options: string[];
+  /** Shown only for this package, e.g. drinks come with Classic only. */
+  only?: PackageKey;
+}
+
+export interface EventMenu {
+  slug: string;
+  name: string;
+  /** null: no photo yet, a placeholder tile is shown. */
+  image: string | null;
+  blurb: string;
+  priceCents: Record<PackageKey, number>;
+  categories: MenuCategory[];
+}
+
+const classicDrinks: MenuCategory = { label: 'Drinks', options: ['Teh Tarik Panas', 'Teh O Pandan', 'Honeydew Selasih', 'Bandung'], only: 'classic' };
+
+export const eventMenus: EventMenu[] = [
+  {
+    slug: 'nasi-ambeng',
+    name: 'Nasi Ambeng',
+    image: 'nasi-ambeng',
+    blurb: 'A generous spread around fragrant rice, built for sharing.',
+    priceCents: { mini: 1590, classic: 2390 },
+    categories: [
+      { label: 'Rice', options: ['Nasi Putih', 'Nasi Kuning', 'Nasi Minyak'] },
+      { label: 'Chicken', options: ['Ayam Lemak Cili Api', 'Ayam Masak Merah', 'Ayam Goreng Berempah', 'Ayam Masak Kicap'] },
+      { label: 'Beef', options: ['Daging Rendang', 'Paru Goreng Berempah', 'Daging Masak Hitam', 'Daging Black Pepper'] },
+      { label: 'Vegetables', options: ['Urap', 'Sambal Goreng Tahu Tempe', 'Terong Belado'] },
+      { label: 'Dessert', options: ['Kuih Lopes', 'Kaswi Pandan Gula Melaka', 'Putri Salat'] },
+      classicDrinks,
+    ],
+  },
+  {
+    slug: 'nasi-lemak',
+    name: 'Nasi Lemak',
+    image: 'nasi-lemak-plate',
+    blurb: 'Coconut rice with sambal and all the favourite sides.',
+    priceCents: { mini: 1490, classic: 2290 },
+    categories: [
+      { label: 'Chicken', options: ['Ayam Goreng', 'Ayam Goreng Berempah', 'Ayam Masak Merah', 'Ayam Rendang'] },
+      { label: 'Seafood', options: ['Sambal Sotong', 'Sambal Udang', 'Ikan Kuning Goreng'] },
+      { label: 'Side', options: ['Telur Goreng', 'Telur Sambal', 'Bergedil'] },
+      { label: 'Vegetables', options: ['Kangkung Belacan', 'Sayur Lodeh', 'Sambal Goreng Tahu Tempe'] },
+      { label: 'Dessert', options: ['Kuih Lopes', 'Ondeh-Ondeh', 'Pudding cup'] },
+      classicDrinks,
+    ],
+  },
+  {
+    slug: 'nasi-minyak',
+    name: 'Nasi Minyak',
+    image: 'ambeng-hamper',
+    blurb: 'Festive ghee rice with rich curries, made for celebrations.',
+    priceCents: { mini: 1490, classic: 2290 },
+    categories: [
+      { label: 'Chicken', options: ['Ayam Masak Merah', 'Ayam Korma', 'Ayam Rendang', 'Ayam Masak Kicap'] },
+      { label: 'Meat', options: ['Daging Masala', 'Kambing Kurma', 'Daging Rendang'] },
+      { label: 'Vegetables', options: ['Dhalcar', 'Sayur Lodeh', 'Pajeri Nenas'] },
+      { label: 'Side', options: ['Acar', 'Papadom', 'Telur Rebus Masak Merah'] },
+      { label: 'Dessert', options: ['Bubur Cha Cha', 'Kuih Seri Muka', 'Pudding cup'] },
+      classicDrinks,
+    ],
+  },
+  {
+    slug: 'western-delights',
+    name: 'Western Delights',
+    image: null,
+    blurb: 'Crowd-pleasing western mains and sides.',
+    priceCents: { mini: 1590, classic: 2490 },
+    categories: [
+      { label: 'Carbs', options: ['Aglio Olio', 'Baked Macaroni', 'Herb Rice', 'Mashed Potato'] },
+      { label: 'Main', options: ['Chicken Chop with Black Pepper Sauce', 'Grilled Chicken with Mushroom Sauce', 'Fish Fillet with Tartar Sauce', 'Beef Lasagna'] },
+      { label: 'Side', options: ['Coleslaw', 'Garden Salad', 'Roasted Vegetables'] },
+      { label: 'Dessert', options: ['Caramel Cheese Brownies', 'Fruit Tarts', 'Cream Puffs'] },
+      { label: 'Drinks', options: ['Iced Lemon Tea', 'Fruit Punch', 'Sparkling Lemonade'], only: 'classic' },
+    ],
+  },
+  {
+    slug: 'singapore-favourites',
+    name: 'Singapore Favourites',
+    image: null,
+    blurb: 'Local favourites everyone knows and loves.',
+    priceCents: { mini: 1490, classic: 2290 },
+    categories: [
+      { label: 'Rice or Noodles', options: ['Mee Goreng', 'Bee Hoon Goreng', 'Nasi Goreng Kampung', 'Mee Hoon Soto'] },
+      { label: 'Main', options: ['Chicken Satay', 'Ayam Masak Merah', 'Chilli Prawns', 'Sweet and Sour Fish'] },
+      { label: 'Vegetables', options: ['Sayur Chap Chai', 'Kangkung Belacan', 'Sayur Lodeh'] },
+      { label: 'Side', options: ['Bergedil', 'Epok-Epok', 'Popiah'] },
+      { label: 'Dessert', options: ['Bubur Cha Cha', 'Kuih Selection', 'Pudding cup'] },
+      classicDrinks,
+    ],
+  },
+];
+
+export function categoriesFor(menu: EventMenu, pkg: PackageKey): MenuCategory[] {
+  return menu.categories.filter((c) => !c.only || c.only === pkg);
+}
+
+export function fromPriceCents(menu: EventMenu): number {
+  return Math.min(menu.priceCents.mini, menu.priceCents.classic);
+}
+
+/** Assumed CBD (postal sectors 01 to 08) or Sentosa (098, 099). Still to be confirmed with the client. */
+export function isCbdOrSentosa(postal: string): boolean {
+  return /^0[1-8]\d{4}$/.test(postal) || /^09[89]\d{3}$/.test(postal);
+}
