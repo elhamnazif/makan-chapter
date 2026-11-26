@@ -2,6 +2,9 @@
 @import '@fontsource-variable/geist';
 @import './theme.css';
 
+/* dark: follows the site's chosen theme (html[data-theme]), not the OS setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 @theme inline {
   --color-bg: var(--mc-bg);
   --color-surface: var(--mc-surface);
@@ -25,12 +28,18 @@
   --shadow-card: var(--mc-shadow);
 }
 
+@theme {
+  --text-xs: .8125rem;
+  --text-sm: .9375rem;
+}
+
 /* z-index scale: header 30, dropdown 40, mobile drawer 50, toast 60 */
 
 @layer base {
   html { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); -webkit-text-size-adjust: 100%; }
   body { min-height: 100dvh; display: flex; flex-direction: column; }
-  :focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+  :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+  button, a, input, select, textarea { touch-action: manipulation; }
   [hidden] { display: none !important; }
 }
 
@@ -54,14 +63,14 @@
 
   .card { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-card); box-shadow: var(--shadow-card); }
 
-  .field-label { display: block; font-size: .875rem; font-weight: 600; margin-bottom: .375rem; }
+  .field-label { display: block; font-size: 1rem; line-height: 1.5; font-weight: 600; margin-bottom: .375rem; }
   .field {
     width: 100%; min-height: 44px; padding: .5rem .75rem; border-radius: var(--radius-control);
     background: var(--color-surface); color: var(--color-ink); border: 1px solid var(--color-note-line);
     font-size: 1rem;
   }
   .field::placeholder { color: var(--color-muted); }
-  .field:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 0; border-color: var(--color-ink); }
+  .field:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; border-color: var(--color-ink); }
   .field[aria-invalid='true'] { border-color: var(--color-error); }
   .field-error { color: var(--color-error); font-size: .8125rem; margin-top: .375rem; }
   .field-help { color: var(--color-muted); font-size: .8125rem; margin-top: .375rem; }

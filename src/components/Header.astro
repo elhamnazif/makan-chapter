@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import ThemeToggle from './ThemeToggle.astro';
 import { nav, url, business } from '../data/site';
 
 const path = Astro.url.pathname;
@@ -56,6 +57,7 @@ const isActive = (item: { href: string; match?: string[] }) => {
     </nav>
 
     <div class="flex items-center gap-1">
+      <ThemeToggle />
       <a href={url('cart/')} class="relative grid size-11 place-items-center rounded-full hover:bg-surface-2" aria-label="Cart" data-cart-link>
         <Icon name="ph:shopping-cart-simple" class="size-6" aria-hidden="true" />
         <span class="absolute right-0.5 top-0.5 grid min-w-5 place-items-center rounded-full bg-accent px-1 text-[11px] font-bold leading-5 text-accent-ink" data-cart-count hidden>0</span>

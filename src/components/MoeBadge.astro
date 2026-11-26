@@ -1,10 +1,12 @@
 ---
 // SMCCI Muslim-Owned Enterprise mark. The dark variant has a light registered mark.
+// Both are rendered and the site theme shows one; the hidden lazy image is not fetched.
 import { url } from '../data/site';
 interface Props { class?: string }
 const { class: cls = 'size-24' } = Astro.props;
+const alt = 'Muslim-Owned Enterprise, Singapore Malay Chamber of Commerce and Industry';
 ---
-<picture class="block shrink-0">
-  <source srcset={url('brand/moe-badge-v2-dark.webp')} media="(prefers-color-scheme: dark)" />
-  <img src={url('brand/moe-badge-v2.webp')} alt="Muslim-Owned Enterprise, Singapore Malay Chamber of Commerce and Industry" width="640" height="640" loading="lazy" class={`${cls} aspect-square max-w-none object-contain`} />
-</picture>
+<span class="block shrink-0" data-moe-badge>
+  <img src={url('brand/moe-badge-v2.webp')} alt={alt} width="640" height="640" loading="lazy" class={`${cls} aspect-square max-w-none object-contain dark:hidden`} />
+  <img src={url('brand/moe-badge-v2-dark.webp')} alt={alt} width="640" height="640" loading="lazy" class={`${cls} hidden aspect-square max-w-none object-contain dark:block`} />
+</span>

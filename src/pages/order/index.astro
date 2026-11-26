@@ -64,7 +64,7 @@ const sections = catalogue.categories.map((c) => ({
         <ul class="flex gap-1 whitespace-nowrap" data-tabs>
           {sections.map((s, i) => (
             <li>
-              <a href={`#${s.id}`} class:list={['inline-flex min-h-11 items-center border-b-2 px-3 text-[15px] transition-colors', i === 0 ? 'border-ink font-semibold' : 'border-transparent text-muted hover:text-ink']} data-tab={s.id} aria-current={i === 0 ? 'true' : undefined}>{s.name}</a>
+              <a href={`#${s.id}`} class:list={['inline-flex min-h-11 items-center border-b-2 px-3 text-[15px] transition-colors', i === 0 ? 'border-accent font-semibold text-price' : 'border-transparent text-muted hover:text-ink']} data-tab={s.id} aria-current={i === 0 ? 'true' : undefined}>{s.name}</a>
             </li>
           ))}
         </ul>
@@ -77,7 +77,7 @@ const sections = catalogue.categories.map((c) => ({
     {sections.map((s) => (
       <section id={s.id} aria-labelledby={`${s.id}-title`} class="scroll-mt-44 pb-10" data-section={s.id}>
         <h2 id={`${s.id}-title`} class="mb-4 text-xl font-bold">{s.name}</h2>
-        <ul class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ul class="grid gap-4 md:grid-cols-2">
           {s.items.map((i) => (
             <li class="relative" data-item data-search={`${i.name} ${i.description} ${s.name}`.toLowerCase()}>
               <button
@@ -86,17 +86,17 @@ const sections = catalogue.categories.map((c) => ({
                 data-open={JSON.stringify({ id: i.id, name: i.name, description: i.description, priceCents: i.priceCents, image: i.image, category: s.name })}
               >
                 <span class="flex min-w-0 flex-col p-4">
-                  <span class="font-semibold leading-snug">{i.name}</span>
-                  {i.description && <span class="mt-1 line-clamp-2 text-sm leading-relaxed text-muted">{i.description}</span>}
+                  <span class="text-[1.0625rem]/[1.45] font-semibold">{i.name}</span>
+                  {i.description && <span class="mt-1 line-clamp-2 text-base/[1.6] text-muted">{i.description}</span>}
                   <span class="mt-auto pt-4 text-lg font-bold text-price">{money(i.priceCents)}</span>
                 </span>
-                <span class="relative block size-36 bg-surface-2 sm:size-40 md:size-44">
+                <span class="relative block h-full min-h-44 w-28 bg-surface-2 md:w-36">
                   <img src={url(`images/${i.image}.webp`)} alt="" loading="lazy" width="176" height="176" class="size-full object-cover" />
                 </span>
               </button>
               <button
                 type="button"
-                class="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-white text-zinc-900 shadow-card ring-1 ring-black/10 transition-transform hover:scale-105 active:scale-95"
+                class="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-accent text-accent-ink shadow-card ring-1 ring-black/10 transition-transform hover:scale-105 active:scale-95"
                 aria-label={`Add ${i.name} to cart`}
                 data-quick-add={JSON.stringify({ id: i.id, name: i.name, priceCents: i.priceCents })}
               >
@@ -123,10 +123,10 @@ const sections = catalogue.categories.map((c) => ({
   </div>
 
   <!-- Dish dialog: centred on desktop, full screen on mobile -->
-  <dialog class="m-0 h-dvh max-h-none w-full max-w-none bg-surface p-0 text-ink backdrop:bg-[var(--mc-scrim)] md:m-auto md:h-auto md:max-h-[85dvh] md:w-[min(64rem,92vw)] md:rounded-card" aria-labelledby="dish-name" data-dish>
+  <dialog class="m-0 h-dvh leading-[1.6] max-h-none w-full max-w-none bg-surface p-0 text-ink backdrop:bg-[var(--mc-scrim)] md:m-auto md:h-auto md:max-h-[85dvh] md:w-[min(64rem,92vw)] md:rounded-card" aria-labelledby="dish-name" data-dish>
     <form method="dialog" class="flex h-full flex-col md:grid md:max-h-[85dvh] md:grid-cols-2" data-dish-form>
       <div class="relative shrink-0">
-        <img alt="" class="aspect-[4/3] w-full object-cover md:aspect-auto md:h-full" data-dish-img />
+        <img alt="" class="aspect-[4/3] w-full object-cover max-md:max-h-[32dvh] md:aspect-auto md:h-full" data-dish-img />
         <button type="submit" value="cancel" class="absolute left-3 top-3 grid size-11 place-items-center rounded-full bg-white text-zinc-900 shadow-card md:hidden" aria-label="Close">
           <Icon name="ph:caret-left-bold" class="size-5" aria-hidden="true" />
         </button>
@@ -253,8 +253,9 @@ const sections = catalogue.categories.map((c) => ({
   const setActive = (id: string) => {
     for (const t of tabs) {
       const on = t.dataset.tab === id;
-      t.classList.toggle('border-ink', on);
+      t.classList.toggle('border-accent', on);
       t.classList.toggle('font-semibold', on);
+      t.classList.toggle('text-price', on);
       t.classList.toggle('border-transparent', !on);
       t.classList.toggle('text-muted', !on);
       if (on) { t.setAttribute('aria-current', 'true'); t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }

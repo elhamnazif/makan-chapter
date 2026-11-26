@@ -8,14 +8,19 @@ const { title, description = 'Malay catering in Singapore: mini buffets, buffet 
 const fullTitle = title ? `${title} | Makan Chapter` : 'Makan Chapter | Malay Catering in Singapore';
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
+    <script is:inline>
+      // Apply the stored choice before styles paint. Light is the default, independent of the OS.
+      try { if (localStorage.getItem('mc-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" href={url('brand/logo.png')} type="image/png" />
+    <meta name="color-scheme" content="light dark" />
   </head>
   <body class="antialiased">
     <a href="#main" class="sr-only z-60 rounded-control bg-accent px-4 py-2 text-accent-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>

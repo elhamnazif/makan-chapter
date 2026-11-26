@@ -1,52 +1,54 @@
 /*
   THEME TOKENS. This is the only file a visual theme should need to change.
-  Current theme: neutral placeholder (layout phase). Light and dark follow the system setting.
+  Light is the default; dark applies only when the visitor picks it with the header
+  toggle (stored in localStorage as mc-theme), never from the OS setting.
+  Colour is reserved for actions, selection and a few structural details; photography stays primary.
   Shape rule: cards and panels 12px, inputs and buttons 8px, nav pills full-round.
 */
-:root {
-  color-scheme: light dark;
-  --mc-bg: #fafafa;
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+  --mc-bg: #fbfaf8;
   --mc-surface: #ffffff;
-  --mc-surface-2: #f2f2f3;
-  --mc-ink: #18181b;
-  --mc-muted: #52525b;
-  --mc-line: #e2e2e5;
-  --mc-accent: #27272a;
-  --mc-accent-hover: #3f3f46;
-  --mc-accent-ink: #fafafa;
-  --mc-price: #18181b;
-  --mc-note-bg: #f4f4f5;
-  --mc-note-line: #d4d4d8;
+  --mc-surface-2: #f3f0eb;
+  --mc-ink: #29231f;
+  --mc-muted: #62584f;
+  --mc-line: #ddd6cc;
+  --mc-accent: #98442e;
+  --mc-accent-hover: #7d3524;
+  --mc-accent-ink: #ffffff;
+  --mc-price: #7d3524;
+  --mc-note-bg: #f6f0e9;
+  --mc-note-line: #d6c3af;
   --mc-error: #b42318;
-  --mc-footer-bg: #1c1c1f;
-  --mc-footer-ink: #e4e4e7;
-  --mc-footer-muted: #a1a1aa;
-  --mc-scrim: rgb(9 9 11 / 0.55);
-  --mc-shadow: 0 1px 2px rgb(24 24 27 / 0.06), 0 4px 16px rgb(24 24 27 / 0.06);
+  --mc-footer-bg: #27231f;
+  --mc-footer-ink: #f6f1ea;
+  --mc-footer-muted: #c7bdb2;
+  --mc-scrim: #1e1713a6;
+  --mc-shadow: 0 1px 3px #33221108, 0 4px 16px #33221106;
   --mc-font: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   --mc-radius-card: 12px;
   --mc-radius-control: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --mc-bg: #111113;
-    --mc-surface: #19191c;
-    --mc-surface-2: #151517;
-    --mc-ink: #f4f4f5;
-    --mc-muted: #a1a1aa;
-    --mc-line: #2c2c31;
-    --mc-accent: #ececee;
-    --mc-accent-hover: #d4d4d8;
-    --mc-accent-ink: #18181b;
-    --mc-price: #f4f4f5;
-    --mc-note-bg: #1f1f23;
-    --mc-note-line: #3a3a40;
-    --mc-error: #f97066;
-    --mc-footer-bg: #0b0b0d;
-    --mc-footer-ink: #e4e4e7;
-    --mc-footer-muted: #a1a1aa;
-    --mc-scrim: rgb(9 9 11 / 0.62);
-    --mc-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.3);
-  }
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --mc-bg: #191817;
+  --mc-surface: #242220;
+  --mc-surface-2: #1e1c1a;
+  --mc-ink: #f7f3ed;
+  --mc-muted: #c4bbb0;
+  --mc-line: #49413a;
+  --mc-accent: #edb09a;
+  --mc-accent-hover: #f6c5b2;
+  --mc-accent-ink: #30190f;
+  --mc-price: #edb09a;
+  --mc-note-bg: #302923;
+  --mc-note-line: #655041;
+  --mc-error: #ffb0a8;
+  --mc-footer-bg: #131211;
+  --mc-footer-ink: #f6f1ea;
+  --mc-footer-muted: #c7bdb2;
+  --mc-scrim: #080706b8;
+  --mc-shadow: 0 1px 3px #0003, 0 4px 16px #0002;
 }

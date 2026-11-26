@@ -1,0 +1,39 @@
+---
+// Light/dark switch. The choice persists in localStorage (mc-theme) and syncs across tabs;
+// Layout.astro applies it before first paint. Without storage it still works for the page.
+---
+<button
+  type="button"
+  class="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-line bg-surface p-2 text-[.875rem] font-semibold text-ink hover:bg-surface-2 md:px-3"
+  aria-label="Switch to dark mode"
+  aria-pressed="false"
+  title="Switch to dark mode"
+  data-theme-toggle
+>
+  <svg class="size-[19px] dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20.6 14A8.8 8.8 0 0 1 10 3.4 8.8 8.8 0 1 0 20.6 14Z" /></svg>
+  <svg class="hidden size-[19px] dark:inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" /></svg>
+  <span class="max-md:hidden dark:hidden">Dark</span>
+  <span class="hidden dark:max-md:hidden dark:md:inline">Light</span>
+</button>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]')!;
+  const apply = (theme: 'light' | 'dark') => {
+    root.dataset.theme = theme;
+    const dark = theme === 'dark';
+    const label = `Switch to ${dark ? 'light' : 'dark'} mode`;
+    toggle.setAttribute('aria-pressed', String(dark));
+    toggle.setAttribute('aria-label', label);
+    toggle.title = label;
+  };
+  apply(root.dataset.theme === 'dark' ? 'dark' : 'light');
+  toggle.addEventListener('click', () => {
+    const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    apply(theme);
+    try { localStorage.setItem('mc-theme', theme); } catch { /* Session-only when storage is unavailable. */ }
+  });
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'mc-theme' || e.key === null) apply(e.newValue === 'dark' ? 'dark' : 'light');
+  });
+</script>

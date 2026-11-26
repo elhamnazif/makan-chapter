@@ -87,28 +87,28 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
         <div class="grid gap-4 md:grid-cols-2">
           {pkg.groups.map((g, gi) => (
             <fieldset
-              class:list={['rounded-card border border-line bg-surface p-4', g.items.length > 6 && !g.choose && 'md:col-span-2']}
+              class:list={['rounded-card border border-line bg-surface p-5', g.items.length > 6 && !g.choose && 'md:col-span-2', /^Main( course)?$/.test(g.label) && 'border-t-3 border-t-accent']}
               data-group={gi}
               data-choose={g.choose ?? ''}
               data-label={g.label}
               aria-describedby={g.choose ? `g${gi}-status` : undefined}
             >
-              <legend class="float-left w-full">
+              <legend class="float-left w-full text-[1.125rem] text-price">
                 <span class="block font-bold">{g.label}{g.choose ? ` (choose ${g.choose})` : ''}</span>
-                <span id={`g${gi}-status`} class:list={['mt-0.5 block text-sm', g.choose ? 'text-muted' : 'text-muted']} data-status>
+                <span id={`g${gi}-status`} class="mt-0.5 block text-base/[1.6] text-muted" data-status>
                   {g.choose ? `0 of ${g.choose} selected (required)` : 'Included in this package'}
                 </span>
               </legend>
               <ul class:list={['clear-both mt-3 grid gap-1 border-t border-line pt-3', g.items.length > 6 && !g.choose && 'sm:grid-cols-2']}>
                 {g.items.map((item) => (
-                  <li>
+                  <li class="not-first:mt-[.65rem]">
                     {g.choose ? (
                       <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-control px-2 hover:bg-surface-2">
                         <input type={g.choose === 1 ? 'radio' : 'checkbox'} name={`g${gi}`} value={item} class="size-4 shrink-0 accent-[var(--mc-accent)]" />
-                        <span class="text-sm">{item}</span>
+                        <span class="text-base/[1.6]">{item}</span>
                       </label>
                     ) : (
-                      <span class="flex min-h-9 items-center gap-3 px-2 text-sm">
+                      <span class="flex min-h-9 items-center gap-3 px-2 text-base/[1.6]">
                         <Icon name="ph:check-circle" class="size-4 shrink-0 text-muted" aria-hidden="true" />{item}
                       </span>
                     )}
