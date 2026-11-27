@@ -128,12 +128,13 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
 </Layout>
 
 <script>
+  import { find, dataValue } from '../../scripts/dom';
   const cards = [...document.querySelectorAll<HTMLElement>('[data-package]')];
-  const search = document.querySelector<HTMLInputElement>('[data-search]')!;
+  const search = find<HTMLInputElement>('[data-search]');
   const boxes = [...document.querySelectorAll<HTMLInputElement>('[data-filter]')];
-  const empty = document.querySelector<HTMLElement>('[data-empty]')!;
-  const grid = document.querySelector<HTMLElement>('[data-grid]')!;
-  const count = document.querySelector<HTMLElement>('[data-result-count]')!;
+  const empty = find<HTMLElement>('[data-empty]');
+  const grid = find<HTMLElement>('[data-grid]');
+  const count = find<HTMLElement>('[data-result-count]');
 
   const checked = (key: string) => boxes.flatMap((b) => (b.dataset.filter === key && b.checked ? [b.value] : []));
 
@@ -148,8 +149,8 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
       const perPax = c.dataset.perpax ? Number(c.dataset.perpax) : null;
       const minPax = Number(c.dataset.minpax);
       const ok =
-        (!q || c.dataset.search!.includes(q)) &&
-        (!menus.length || menus.includes(c.dataset.category!)) &&
+        (!q || dataValue(c, 'search').includes(q)) &&
+        (!menus.length || menus.includes(dataValue(c, 'category'))) &&
         (!budgets.length || (perPax !== null && budgets.some(([lo, hi]) => perPax >= lo && perPax < hi))) &&
         (!paxCaps.length || paxCaps.some((cap) => minPax <= cap));
       c.hidden = !ok;
@@ -160,7 +161,7 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
     count.textContent = `${shown} package${shown === 1 ? '' : 's'}`;
   }
 
-  document.querySelector('[data-search-form]')!.addEventListener('submit', (e) => { e.preventDefault(); apply(); });
+  find('[data-search-form]').addEventListener('submit', (e) => { e.preventDefault(); apply(); });
   search.addEventListener('input', apply);
   boxes.forEach((b) => b.addEventListener('change', apply));
   document.querySelectorAll('[data-filter-reset]').forEach((b) =>
@@ -169,8 +170,8 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
   apply();
 
   // Mobile filter drawer
-  const panel = document.querySelector<HTMLElement>('[data-filter-panel]')!;
-  const opener = document.querySelector<HTMLButtonElement>('[data-filter-open]')!;
+  const panel = find<HTMLElement>('[data-filter-panel]');
+  const opener = find<HTMLButtonElement>('[data-filter-open]');
   const isMobile = () => window.matchMedia('(max-width: 1023px)').matches;
   const setOpen = (open: boolean) => {
     panel.classList.toggle('hidden', !open);

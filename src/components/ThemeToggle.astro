@@ -17,8 +17,9 @@
 </button>
 
 <script>
+  import { find } from '../scripts/dom';
   const root = document.documentElement;
-  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]')!;
+  const toggle = find<HTMLButtonElement>('[data-theme-toggle]');
   const apply = (theme: 'light' | 'dark') => {
     root.dataset.theme = theme;
     const dark = theme === 'dark';

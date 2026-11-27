@@ -76,36 +76,38 @@ const orderable = packages.filter((p) => p.mode === 'order');
 </Layout>
 
 <script>
+  import { find, byId } from '../../scripts/dom';
   import type { Package } from '../../data/packages';
   import { readDraft, writeDraft, clearDraft, addItem, money, prettyDate, base } from '../../scripts/cart';
 
-  const all = JSON.parse(document.getElementById('packages-data')!.textContent!) as Array<Package>;
+  const all = JSON.parse(byId('packages-data').textContent ?? '') as Array<Package>;
   const draft = readDraft();
   const pkg = draft && all.find((p) => p.slug === draft.slug);
 
   if (!draft || !pkg || !draft.date) {
-    document.querySelector<HTMLElement>('[data-no-draft]')!.hidden = false;
+    find<HTMLElement>('[data-no-draft]').hidden = false;
   } else {
-    document.querySelector<HTMLElement>('[data-has-draft]')!.hidden = false;
+    find<HTMLElement>('[data-has-draft]').hidden = false;
     const qty = draft.qty ?? 1;
+    const date = draft.date;
     document.querySelectorAll('[data-pkg-name]').forEach((el) => (el.textContent = pkg.name));
     document.querySelectorAll<HTMLAnchorElement>('[data-back-link]').forEach((a) => (a.href = base(`package/${pkg.slug}/`)));
     const picks = Object.entries(draft.choices ?? {}).map(([k, v]) => `${k}: ${v.join(', ')}`);
-    const details = [`${prettyDate(draft.date)}, ${draft.time}`, `${qty} set${qty > 1 ? 's' : ''} (${qty * (pkg.paxPerSet ?? 20)} pax)`, ...picks];
-    const list = document.querySelector('[data-summary-details]')!;
+    const details = [`${prettyDate(date)}, ${draft.time}`, `${qty} set${qty > 1 ? 's' : ''} (${qty * (pkg.paxPerSet ?? 20)} pax)`, ...picks];
+    const list = find('[data-summary-details]');
     details.forEach((d) => { const li = document.createElement('li'); li.textContent = d; list.append(li); });
-    document.querySelector('[data-summary-total]')!.textContent = money((pkg.setPriceCents ?? 0) * qty);
-    const terms = document.querySelector('[data-terms]')!;
+    find('[data-summary-total]').textContent = money((pkg.setPriceCents ?? 0) * qty);
+    const terms = find('[data-terms]');
     pkg.terms.forEach((t) => { const li = document.createElement('li'); li.textContent = t; terms.append(li); });
 
-    const setup = document.querySelector<HTMLInputElement>('[data-setup]')!;
-    const agree = document.querySelector<HTMLInputElement>('[data-agree]')!;
-    const agreeErr = document.getElementById('agree-error')!;
+    const setup = find<HTMLInputElement>('[data-setup]');
+    const agree = find<HTMLInputElement>('[data-agree]');
+    const agreeErr = byId('agree-error');
     setup.checked = !!draft.setup;
     setup.addEventListener('change', () => writeDraft({ ...draft, setup: setup.checked }));
     agree.addEventListener('change', () => { if (agree.checked) { agreeErr.hidden = true; agree.removeAttribute('aria-invalid'); } });
 
-    document.querySelector('[data-addons]')!.addEventListener('submit', (e) => {
+    find('[data-addons]').addEventListener('submit', (e) => {
       e.preventDefault();
       if (!agree.checked) { agreeErr.hidden = false; agree.setAttribute('aria-invalid', 'true'); agree.focus(); return; }
       addItem({
@@ -115,7 +117,7 @@ const orderable = packages.filter((p) => p.mode === 'order');
         unitCents: pkg.setPriceCents ?? 0,
         unitLabel: `per set of ${pkg.paxPerSet} pax`,
         qty,
-        details: [`Delivery: ${prettyDate(draft.date!)}, ${draft.time}`, ...picks, ...(setup.checked ? ['Warmers and buffet setup requested'] : [])],
+        details: [`Delivery: ${prettyDate(date)}, ${draft.time}`, ...picks, ...(setup.checked ? ['Warmers and buffet setup requested'] : [])],
       });
       clearDraft();
       window.location.href = base('cart/');

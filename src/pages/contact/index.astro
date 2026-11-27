@@ -78,13 +78,14 @@ const events = ['Corporate event', 'Wedding', 'Birthday party', 'Festive gatheri
 </Layout>
 
 <script>
+  import { find, byId } from '../../scripts/dom';
   import { waUrl, isoDate, prettyDate } from '../../scripts/cart';
-  const form = document.querySelector<HTMLFormElement>('[data-contact]')!;
-  const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => form.querySelector<T>(`#${id}`)!;
+  const form = find<HTMLFormElement>('[data-contact]');
+  const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => find<T>(`#${id}`, form);
   const v = (id: string) => ($(id) as HTMLInputElement).value.trim();
   $('c-date').setAttribute('min', isoDate(new Date()));
   const req = (id: string, msg: string) => {
-    const input = $(id); const err = document.getElementById(`${id}-error`)!;
+    const input = $(id); const err = byId(`${id}-error`);
     const bad = !(input as HTMLInputElement).value.trim();
     err.textContent = bad ? msg : ''; err.hidden = !bad;
     if (bad) { input.setAttribute('aria-invalid', 'true'); } else { input.removeAttribute('aria-invalid'); }

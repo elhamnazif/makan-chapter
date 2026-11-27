@@ -1,4 +1,5 @@
 ---
+import type { InferGetStaticPropsType } from 'astro';
 import { Icon } from 'astro-icon/components';
 import Layout from '../../../layouts/Layout.astro';
 import DemoBanner from '../../../components/DemoBanner.astro';
@@ -7,10 +8,11 @@ import { eventMenus, eventPackages, fees } from '../../../data/eventCatering';
 import { url, money, waLink } from '../../../data/site';
 
 export function getStaticPaths() {
-  return eventMenus.map((m) => ({ params: { menu: m.slug } }));
+  return eventMenus.map((menu) => ({ params: { menu: menu.slug }, props: { menu } }));
 }
 
-const menu = eventMenus.find((m) => m.slug === Astro.params.menu)!;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { menu } = Astro.props;
 const steps = ['Package', 'Menu', 'Event', 'Your details', 'Review and pay'];
 const pkgs = Object.values(eventPackages);
 ---
@@ -246,6 +248,7 @@ const pkgs = Object.values(eventPackages);
 </Layout>
 
 <script>
+  import { find, byId, dataValue } from '../../../scripts/dom';
   import type { EventMenu, EventPackage, PackageKey } from '../../../data/eventCatering';
   import { isCbdOrSentosa } from '../../../data/eventCatering';
   import { isoDate, prettyDate } from '../../../scripts/cart';
@@ -253,13 +256,13 @@ const pkgs = Object.values(eventPackages);
   const money = (cents: number) =>
     'S$' + (cents / 100).toLocaleString('en-SG', { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 });
 
-  const data = JSON.parse(document.getElementById('order-data')!.textContent!) as {
+  const data = JSON.parse(byId('order-data').textContent ?? '') as {
     menu: EventMenu;
     packages: Record<PackageKey, EventPackage>;
     fees: { cbdSentosaCents: number; lateTeardownCents: number; lateTeardownAfter: string; leadDays: number };
   };
   const { menu, packages, fees } = data;
-  const $ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel)!;
+  const $ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => find<T>(sel, root);
   const $$ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => [...root.querySelectorAll<T>(sel)];
 
   const form = $<HTMLFormElement>('[data-order]');
@@ -362,8 +365,8 @@ const pkgs = Object.values(eventPackages);
   function render() {
     for (const f of visibleCategories()) {
       const picked = f.querySelector<HTMLInputElement>('input:checked');
-      f.querySelector('[data-status]')!.textContent = picked ? `Chosen: ${picked.value}` : `Choose 1 of ${f.querySelectorAll('input').length}`;
-      if (picked) { f.querySelector<HTMLElement>('[data-cat-error]')!.hidden = true; }
+      find('[data-status]', f).textContent = picked ? `Chosen: ${picked.value}` : `Choose 1 of ${f.querySelectorAll('input').length}`;
+      if (picked) { find<HTMLElement>('[data-cat-error]', f).hidden = true; }
     }
     const postal = field('postal').value.trim();
     $('[data-postal-help]').textContent = isCbdOrSentosa(postal)
@@ -384,15 +387,16 @@ const pkgs = Object.values(eventPackages);
     }
     if (n === 2 && p) {
       for (const f of visibleCategories()) {
-        const err = f.querySelector<HTMLElement>('[data-cat-error]')!;
-        if (!f.querySelector('input:checked')) { err.textContent = `Choose 1 ${f.dataset.category!.toLowerCase()} dish.`; err.hidden = false; flag(f.querySelector('input')!); }
+        const err = find<HTMLElement>('[data-cat-error]', f);
+        if (!f.querySelector('input:checked')) { err.textContent = `Choose 1 ${dataValue(f, 'category').toLowerCase()} dish.`; err.hidden = false; flag(find('input', f)); }
         else { err.hidden = true; }
       }
       const v = Number(pax.value);
-      if (!Number.isInteger(v) || v < p.minPax || (p.maxPax !== null && v > p.maxPax)) {
+      const tooMany = p.maxPax !== null && v > p.maxPax;
+      if (!Number.isInteger(v) || v < p.minPax || tooMany) {
         const msg = p.key === 'mini'
-          ? (v > p.maxPax! ? 'Mini Catering is for up to 50 pax. For more guests, choose Classic Catering.' : 'Mini Catering starts from 20 pax.')
-          : v > p.maxPax! ? 'Online orders are for up to 100 pax. For more, WhatsApp us for bulk terms.' : 'Classic Catering starts from 50 pax. For fewer guests, choose Mini Catering.';
+          ? (tooMany ? 'Mini Catering is for up to 50 pax. For more guests, choose Classic Catering.' : 'Mini Catering starts from 20 pax.')
+          : tooMany ? 'Online orders are for up to 100 pax. For more, WhatsApp us for bulk terms.' : 'Classic Catering starts from 50 pax. For fewer guests, choose Mini Catering.';
         showError('pax-error', msg, pax); flag(pax);
       } else { clearError('pax-error', pax); }
     }
@@ -465,8 +469,9 @@ const pkgs = Object.values(eventPackages);
   }
 
   function renderReview() {
-    const p = pkg()!;
-    const dishes = visibleCategories().map((f) => [f.dataset.category!, f.querySelector<HTMLInputElement>('input:checked')?.value ?? ''] as [string, string]);
+    const p = pkg();
+    if (!p) { return; }
+    const dishes = visibleCategories().map((f) => [dataValue(f, 'category'), f.querySelector<HTMLInputElement>('input:checked')?.value ?? ''] as [string, string]);
     $('[data-review]').replaceChildren(
       card('Package and pax', [['Menu', menu.name], ['Package', p.name], ['Pax', pax.value]], 1),
       card('Dishes', dishes, 2),
@@ -499,7 +504,7 @@ const pkgs = Object.values(eventPackages);
     render();
     if (initial) { return; }
     $('[data-progress]').scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
-    sections[n - 1].querySelector<HTMLElement>('h2')!.focus({ preventScroll: true });
+    find<HTMLElement>('h2', sections[n - 1]).focus({ preventScroll: true });
   }
 
   function pay() {
@@ -519,7 +524,7 @@ const pkgs = Object.values(eventPackages);
       const extra = document.createElement('div');
       extra.className = 'flex justify-between gap-4';
       extra.innerHTML = '<dt class="text-muted">When</dt><dd class="text-right font-medium"></dd>';
-      extra.querySelector('dd')!.textContent = when();
+      find('dd', extra).textContent = when();
       done.prepend(extra);
       $('[data-layout]').hidden = true;
       $('[data-progress]').hidden = true;

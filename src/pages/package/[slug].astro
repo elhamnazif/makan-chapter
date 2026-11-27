@@ -1,14 +1,16 @@
 ---
+import type { InferGetStaticPropsType } from 'astro';
 import { Icon } from 'astro-icon/components';
 import Layout from '../../layouts/Layout.astro';
 import { packages, categories, priceLabel } from '../../data/packages';
 import { url } from '../../data/site';
 
 export function getStaticPaths() {
-  return packages.map((p) => ({ params: { slug: p.slug } }));
+  return packages.map((pkg) => ({ params: { slug: pkg.slug }, props: { pkg } }));
 }
 
-const pkg = packages.find((p) => p.slug === Astro.params.slug)!;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { pkg } = Astro.props;
 const cat = categories[pkg.category];
 const isOrder = pkg.mode === 'order';
 const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
@@ -151,15 +153,16 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
 </Layout>
 
 <script>
+  import { find, byId, dataValue } from '../../scripts/dom';
   import type { Package } from '../../data/packages';
   import { money, readDraft, writeDraft, isoDate, prettyDate, waUrl, base } from '../../scripts/cart';
 
-  const pkg = JSON.parse(document.getElementById('pkg-data')!.textContent!) as Package & { unitLabel: string };
+  const pkg = JSON.parse(byId('pkg-data').textContent ?? '') as Package & { unitLabel: string };
   const isOrder = pkg.mode === 'order';
-  const form = document.querySelector<HTMLFormElement>('[data-config]')!;
-  const date = form.querySelector<HTMLInputElement>('#date')!;
-  const time = form.querySelector<HTMLInputElement>('#time')!;
-  const qty = form.querySelector<HTMLInputElement>('#qty')!;
+  const form = find<HTMLFormElement>('[data-config]');
+  const date = find<HTMLInputElement>('#date', form);
+  const time = find<HTMLInputElement>('#time', form);
+  const qty = find<HTMLInputElement>('#qty', form);
   const groups = [...form.querySelectorAll<HTMLFieldSetElement>('[data-group]')];
   const min = Number(qty.min);
   const step = Number(qty.step);
@@ -172,7 +175,7 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
     const out: Record<string, Array<string>> = {};
     for (const g of groups) {
       if (!g.dataset.choose) { continue; }
-      out[g.dataset.label!] = [...g.querySelectorAll<HTMLInputElement>('input:checked')].map((i) => i.value);
+      out[dataValue(g, 'label')] = [...g.querySelectorAll<HTMLInputElement>('input:checked')].map((i) => i.value);
     }
     return out;
   };
@@ -188,18 +191,18 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
     const n = Math.max(min, Number(qty.value) || min);
     const total = priceCents(n);
     const line = isOrder
-      ? `${money(pkg.setPriceCents!)} x ${n} set${n > 1 ? 's' : ''} (${n * (pkg.paxPerSet ?? 20)} pax)`
+      ? `${money(pkg.setPriceCents ?? 0)} x ${n} set${n > 1 ? 's' : ''} (${n * (pkg.paxPerSet ?? 20)} pax)`
       : total === null ? `${n} guests, price on request` : `${n} guests x ${money(total / n)} per pax`;
-    form.querySelector('[data-summary-line]')!.textContent = line;
+    find('[data-summary-line]', form).textContent = line;
     form.querySelectorAll('[data-summary-total]').forEach((el) => (el.textContent = total === null ? 'On request' : money(total)));
-    if (isOrder) { form.querySelector('[data-qty-help]')!.textContent = n > 1 ? `${n} sets serve ${n * (pkg.paxPerSet ?? 20)} pax.` : `Each set serves ${pkg.paxPerSet} pax.`; }
+    if (isOrder) { find('[data-qty-help]', form).textContent = n > 1 ? `${n} sets serve ${n * (pkg.paxPerSet ?? 20)} pax.` : `Each set serves ${pkg.paxPerSet} pax.`; }
 
     for (const g of groups) {
       const need = Number(g.dataset.choose);
       if (!need) { continue; }
       const boxes = [...g.querySelectorAll<HTMLInputElement>('input')];
       const picked = boxes.filter((b) => b.checked).length;
-      g.querySelector('[data-status]')!.textContent = `${picked} of ${need} selected${picked < need ? ' (required)' : ''}`;
+      find('[data-status]', g).textContent = `${picked} of ${need} selected${picked < need ? ' (required)' : ''}`;
       if (need > 1) { boxes.forEach((b) => (b.disabled = !b.checked && picked >= need)); }
       if (picked === need) { hideError(g.querySelector('[data-group-error]')); }
     }
@@ -232,7 +235,7 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
       if (!need) { continue; }
       const picked = g.querySelectorAll('input:checked').length;
       const err = g.querySelector('[data-group-error]');
-      if (picked !== need) { showError(err, `Choose ${need} from ${g.dataset.label}.`); flag(g.querySelector('input')!); }
+      if (picked !== need) { showError(err, `Choose ${need} from ${g.dataset.label}.`); flag(find('input', g)); }
       else { hideError(err); }
     }
     return first;
@@ -245,7 +248,7 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
     if (draft.time) { time.value = draft.time; }
     if (draft.qty) { qty.value = String(draft.qty); }
     for (const g of groups) {
-      const saved = draft.choices?.[g.dataset.label!] ?? [];
+      const saved = draft.choices?.[dataValue(g, 'label')] ?? [];
       g.querySelectorAll<HTMLInputElement>('input').forEach((i) => (i.checked = saved.includes(i.value)));
     }
   }

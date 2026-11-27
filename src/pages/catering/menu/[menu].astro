@@ -1,4 +1,5 @@
 ---
+import type { InferGetStaticPropsType } from 'astro';
 import { Icon } from 'astro-icon/components';
 import Layout from '../../../layouts/Layout.astro';
 import DemoBanner from '../../../components/DemoBanner.astro';
@@ -7,10 +8,11 @@ import { eventMenus, eventPackages } from '../../../data/eventCatering';
 import { url, money } from '../../../data/site';
 
 export function getStaticPaths() {
-  return eventMenus.map((m) => ({ params: { menu: m.slug } }));
+  return eventMenus.map((menu) => ({ params: { menu: menu.slug }, props: { menu } }));
 }
 
-const menu = eventMenus.find((m) => m.slug === Astro.params.menu)!;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { menu } = Astro.props;
 const orderHref = url(`catering/order/${menu.slug}/`);
 ---
 <Layout title={`${menu.name} Menu`} description={menu.blurb}>

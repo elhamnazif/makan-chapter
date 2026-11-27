@@ -76,14 +76,15 @@ const fields = [
 </Layout>
 
 <script>
+  import { find, byId } from '../../scripts/dom';
   import { readCart, writeCart, groups, totals, money, DELIVERY_LABEL, KIND_LABEL, waUrl, toast } from '../../scripts/cart';
 
   const items = readCart();
-  const show = (sel: string, on: boolean) => (document.querySelector<HTMLElement>(sel)!.hidden = !on);
+  const show = (sel: string, on: boolean) => (find<HTMLElement>(sel).hidden = !on);
   show('[data-empty]', items.length === 0);
   show('[data-filled]', items.length > 0);
 
-  const lines = document.querySelector('[data-lines]')!;
+  const lines = find('[data-lines]');
   for (const i of items) {
     const li = document.createElement('li');
     li.className = 'flex justify-between gap-4';
@@ -92,7 +93,7 @@ const fields = [
     li.append(a, b); lines.append(li);
   }
   const t = totals(items);
-  const dl = document.querySelector('[data-totals]')!;
+  const dl = find('[data-totals]');
   const row = (k: string, v: string) => {
     const d = document.createElement('div'); d.className = 'flex justify-between';
     const dt = document.createElement('dt'); dt.className = 'text-muted'; dt.textContent = k;
@@ -101,9 +102,9 @@ const fields = [
   };
   row('Subtotal', money(t.subtotal));
   groups(items).filter((g) => g.delivery).forEach((g) => row(DELIVERY_LABEL[g.kind], money(g.delivery)));
-  document.querySelector('[data-total]')!.textContent = money(t.total);
+  find('[data-total]').textContent = money(t.total);
 
-  const form = document.querySelector<HTMLFormElement>('[data-delivery]')!;
+  const form = find<HTMLFormElement>('[data-delivery]');
   type Rule = (v: string) => string;
   const rules = Object.entries({
     name: (v) => (v ? '' : 'Enter your full name.'),
@@ -112,16 +113,16 @@ const fields = [
     address: (v) => (v ? '' : 'Enter your delivery address.'),
   } satisfies Record<string, Rule>);
   const check = ([id, rule]: [string, Rule]) => {
-    const input = form.querySelector<HTMLInputElement>(`#${id}`)!;
+    const input = find<HTMLInputElement>(`#${id}`, form);
     const msg = rule(input.value.trim());
-    const err = document.getElementById(`${id}-error`)!;
+    const err = byId(`${id}-error`);
     err.textContent = msg; err.hidden = !msg;
     if (msg) { input.setAttribute('aria-invalid', 'true'); } else { input.removeAttribute('aria-invalid'); }
     return msg ? input : null;
   };
   // Re-check a flagged field while typing so its error clears before the customer reaches the button.
   rules.forEach(([id, rule]) => {
-    const input = form.querySelector<HTMLInputElement>(`#${id}`)!;
+    const input = find<HTMLInputElement>(`#${id}`, form);
     input.addEventListener('input', () => { if (input.getAttribute('aria-invalid')) { check([id, rule]); } });
   });
 
@@ -129,7 +130,7 @@ const fields = [
     e.preventDefault();
     const bad = rules.map(check).filter(Boolean)[0];
     if (bad) { bad.focus(); return; }
-    const v = (id: string) => form.querySelector<HTMLInputElement>(`#${id}`)!.value.trim();
+    const v = (id: string) => find<HTMLInputElement>(`#${id}`, form).value.trim();
     const out: Array<string> = ['Hi Makan Chapter, I would like to place an order.', ''];
     for (const g of groups(items)) {
       out.push(`*${KIND_LABEL[g.kind]}*`);
@@ -143,14 +144,14 @@ const fields = [
     }
     out.push(`Total: ${money(t.total)}`, '', `Name: ${v('name')}`, `Email: ${v('email')}`, `Phone: ${v('phone')}`, `Address: ${v('address')}`);
     if (v('notes')) { out.push(`Instructions: ${v('notes')}`); }
-    if (form.querySelector<HTMLInputElement>('[name=marketing]')!.checked) { out.push('Happy to receive news and promotions.'); }
+    if (find<HTMLInputElement>('[name=marketing]', form).checked) { out.push('Happy to receive news and promotions.'); }
     const link = waUrl(out.join('\n'));
     window.open(link, '_blank', 'noopener');
-    document.querySelector<HTMLAnchorElement>('[data-reopen]')!.href = link;
+    find<HTMLAnchorElement>('[data-reopen]').href = link;
     show('[data-filled]', false);
     show('[data-sent]', true);
-    document.querySelector<HTMLElement>('[data-sent]')!.focus();
+    find<HTMLElement>('[data-sent]').focus();
   });
 
-  document.querySelector('[data-clear]')!.addEventListener('click', () => { writeCart([]); toast('Cart cleared'); });
+  find('[data-clear]').addEventListener('click', () => { writeCart([]); toast('Cart cleared'); });
 </script>

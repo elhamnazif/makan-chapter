@@ -31,10 +31,11 @@ import { url } from '../../data/site';
 </Layout>
 
 <script>
+  import { find } from '../../scripts/dom';
   import { readCart, writeCart, groups, totals, money, KIND_LABEL, DELIVERY_LABEL } from '../../scripts/cart';
   import type { CartItem } from '../../scripts/cart';
 
-  const wrap = document.querySelector<HTMLElement>('[data-groups]')!;
+  const wrap = find<HTMLElement>('[data-groups]');
 
   function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text?: string) {
     const n = document.createElement(tag);
@@ -51,8 +52,8 @@ import { url } from '../../data/site';
 
   function render() {
     const items = readCart();
-    document.querySelector<HTMLElement>('[data-empty]')!.hidden = items.length > 0;
-    document.querySelector<HTMLElement>('[data-filled]')!.hidden = items.length === 0;
+    find<HTMLElement>('[data-empty]').hidden = items.length > 0;
+    find<HTMLElement>('[data-filled]').hidden = items.length === 0;
     wrap.replaceChildren();
     const gs = groups(items);
     for (const g of gs) {
@@ -108,7 +109,7 @@ import { url } from '../../data/site';
       wrap.append(section);
     }
     const t = totals(items);
-    const dl = document.querySelector('[data-totals]')!;
+    const dl = find('[data-totals]');
     dl.replaceChildren();
     const row = (k: string, v: string) => {
       const d = el('div', 'flex justify-between');
@@ -117,7 +118,7 @@ import { url } from '../../data/site';
     };
     row('Subtotal', money(t.subtotal));
     gs.filter((g) => g.delivery).forEach((g) => row(DELIVERY_LABEL[g.kind], money(g.delivery)));
-    document.querySelector('[data-total]')!.textContent = money(t.total);
+    find('[data-total]').textContent = money(t.total);
   }
   render();
 </script>

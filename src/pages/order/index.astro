@@ -166,14 +166,15 @@ const sections = catalogue.categories.map((c) => ({
 </Layout>
 
 <script>
+  import { find, dataValue } from '../../scripts/dom';
   import { addItem, readCart, totals, money, toast, base } from '../../scripts/cart';
 
   type Dish = { id: string; name: string; description: string; priceCents: number; image: string; category: string };
 
   // Cart summary in the bar and on mobile
-  const cartSummary = document.querySelector<HTMLElement>('[data-cart-summary]')!;
-  const cartBar = document.querySelector<HTMLElement>('[data-cart-bar]')!;
-  const cartBarSummary = document.querySelector<HTMLElement>('[data-cart-bar-summary]')!;
+  const cartSummary = find<HTMLElement>('[data-cart-summary]');
+  const cartBar = find<HTMLElement>('[data-cart-bar]');
+  const cartBarSummary = find<HTMLElement>('[data-cart-bar-summary]');
   function syncCart() {
     const items = readCart();
     const n = items.reduce((s, i) => s + i.qty, 0);
@@ -191,29 +192,29 @@ const sections = catalogue.categories.map((c) => ({
   };
 
   document.querySelectorAll<HTMLButtonElement>('[data-quick-add]').forEach((b) =>
-    b.addEventListener('click', () => add(JSON.parse(b.dataset.quickAdd!), 1)),
+    b.addEventListener('click', () => add(JSON.parse(dataValue(b, 'quickAdd')), 1)),
   );
 
   // Dish dialog
-  const dialog = document.querySelector<HTMLDialogElement>('[data-dish]')!;
-  const qtyOut = dialog.querySelector<HTMLOutputElement>('[data-dish-qty]')!;
-  const note = dialog.querySelector<HTMLTextAreaElement>('#dish-note')!;
+  const dialog = find<HTMLDialogElement>('[data-dish]');
+  const qtyOut = find<HTMLOutputElement>('[data-dish-qty]', dialog);
+  const note = find<HTMLTextAreaElement>('#dish-note', dialog);
   let current: Dish | null = null;
   let qty = 1;
   const renderQty = () => {
     qtyOut.textContent = String(qty);
-    dialog.querySelector('[data-dish-total]')!.textContent = current ? money(current.priceCents * qty) : '';
+    find('[data-dish-total]', dialog).textContent = current ? money(current.priceCents * qty) : '';
   };
   document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((b) =>
     b.addEventListener('click', () => {
-      current = JSON.parse(b.dataset.open!) as Dish;
+      current = JSON.parse(dataValue(b, 'open')) as Dish;
       qty = 1;
       note.value = '';
-      dialog.querySelector<HTMLImageElement>('[data-dish-img]')!.src = base(`images/${current.image}.webp`);
-      dialog.querySelector('[data-dish-category]')!.textContent = current.category;
-      dialog.querySelector('[data-dish-name]')!.textContent = current.name;
-      dialog.querySelector('[data-dish-price]')!.textContent = money(current.priceCents);
-      dialog.querySelector('[data-dish-desc]')!.textContent = current.description;
+      find<HTMLImageElement>('[data-dish-img]', dialog).src = base(`images/${current.image}.webp`);
+      find('[data-dish-category]', dialog).textContent = current.category;
+      find('[data-dish-name]', dialog).textContent = current.name;
+      find('[data-dish-price]', dialog).textContent = money(current.priceCents);
+      find('[data-dish-desc]', dialog).textContent = current.description;
       renderQty();
       dialog.showModal();
       document.documentElement.style.overflow = 'hidden';
@@ -230,29 +231,30 @@ const sections = catalogue.categories.map((c) => ({
   dialog.addEventListener('click', (e) => { if (e.target === dialog) { dialog.close('cancel'); } });
 
   // Search
-  const search = document.querySelector<HTMLInputElement>('[data-search]')!;
+  const search = find<HTMLInputElement>('[data-search]');
   const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
   const tabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-tab]')];
-  const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+  const empty = find<HTMLElement>('[data-empty]');
   function apply() {
     const q = search.value.trim().toLowerCase();
     let total = 0;
     for (const s of sections) {
       let n = 0;
       s.querySelectorAll<HTMLElement>('[data-item]').forEach((it) => {
-        const ok = !q || it.dataset.search!.includes(q);
+        const ok = !q || dataValue(it, 'search').includes(q);
         it.hidden = !ok;
         if (ok) { n++; }
       });
       s.hidden = n === 0;
-      tabs.find((t) => t.dataset.tab === s.id)!.parentElement!.hidden = n === 0;
+      const tab = tabs.find((t) => t.dataset.tab === s.id)?.parentElement;
+      if (tab) { tab.hidden = n === 0; }
       total += n;
     }
     empty.hidden = total > 0;
   }
-  document.querySelector('[data-search-form]')!.addEventListener('submit', (e) => { e.preventDefault(); apply(); });
+  find('[data-search-form]').addEventListener('submit', (e) => { e.preventDefault(); apply(); });
   search.addEventListener('input', apply);
-  document.querySelector('[data-reset]')!.addEventListener('click', () => { search.value = ''; apply(); search.focus(); });
+  find('[data-reset]').addEventListener('click', () => { search.value = ''; apply(); search.focus(); });
 
   // Scroll-spy: highlight the tab of the section nearest the top of the viewport.
   const setActive = (id: string) => {
@@ -277,5 +279,5 @@ const sections = catalogue.categories.map((c) => ({
     if (first) { setActive(first.id); }
   }, { rootMargin: '-180px 0px -55% 0px' });
   sections.forEach((s) => io.observe(s));
-  tabs.forEach((t) => t.addEventListener('click', () => setActive(t.dataset.tab!)));
+  tabs.forEach((t) => t.addEventListener('click', () => setActive(dataValue(t, 'tab'))));
 </script>
