@@ -104,29 +104,30 @@ const fields = [
   document.querySelector('[data-total]')!.textContent = money(t.total);
 
   const form = document.querySelector<HTMLFormElement>('[data-delivery]')!;
-  const rules: Record<string, (v: string) => string> = {
+  type Rule = (v: string) => string;
+  const rules = Object.entries({
     name: (v) => (v ? '' : 'Enter your full name.'),
     email: (v) => (!v ? 'Enter your email address.' : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Enter a valid email address.'),
     phone: (v) => (!v ? 'Enter your phone number.' : /^\+?[\d\s-]{8,15}$/.test(v) ? '' : 'Enter a valid phone number.'),
     address: (v) => (v ? '' : 'Enter your delivery address.'),
-  };
-  const check = (id: string) => {
+  } satisfies Record<string, Rule>);
+  const check = ([id, rule]: [string, Rule]) => {
     const input = form.querySelector<HTMLInputElement>(`#${id}`)!;
-    const msg = rules[id](input.value.trim());
+    const msg = rule(input.value.trim());
     const err = document.getElementById(`${id}-error`)!;
     err.textContent = msg; err.hidden = !msg;
     if (msg) { input.setAttribute('aria-invalid', 'true'); } else { input.removeAttribute('aria-invalid'); }
     return msg ? input : null;
   };
   // Re-check a flagged field while typing so its error clears before the customer reaches the button.
-  Object.keys(rules).forEach((id) => {
+  rules.forEach(([id, rule]) => {
     const input = form.querySelector<HTMLInputElement>(`#${id}`)!;
-    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid')) { check(id); } });
+    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid')) { check([id, rule]); } });
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const bad = Object.keys(rules).map(check).filter(Boolean)[0];
+    const bad = rules.map(check).filter(Boolean)[0];
     if (bad) { bad.focus(); return; }
     const v = (id: string) => form.querySelector<HTMLInputElement>(`#${id}`)!.value.trim();
     const out: Array<string> = ['Hi Makan Chapter, I would like to place an order.', ''];

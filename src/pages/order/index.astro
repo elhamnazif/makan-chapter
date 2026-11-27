@@ -8,9 +8,14 @@ import catalogue from '../../data/catalogue.json';
 import { url, money, business } from '../../data/site';
 
 // No per-dish photos exist yet. Each section uses the closest real category photo.
-const photo: Record<string, string> = {
-  'cat-1': 'bakar-bakar', 'cat-2': 'nasi-plate', 'cat-3': 'nasi-ambeng', 'cat-4': 'nasi-lemak-plate',
-  'cat-5': 'nasi-sotong-plate', 'cat-6': 'kuih-tray', 'cat-7': 'lauk',
+const photos = new Map([
+  ['cat-1', 'bakar-bakar'], ['cat-2', 'nasi-plate'], ['cat-3', 'nasi-ambeng'], ['cat-4', 'nasi-lemak-plate'],
+  ['cat-5', 'nasi-sotong-plate'], ['cat-6', 'kuih-tray'], ['cat-7', 'lauk'],
+]);
+const photo = (categoryId: string) => {
+  const image = photos.get(categoryId);
+  if (!image) { throw new Error(`No photo for catalogue category ${categoryId}`); }
+  return image;
 };
 // Light tidy-up of source text: spacing around punctuation and a capital first letter.
 const tidy = (s = '') => {
@@ -22,7 +27,7 @@ const sections = catalogue.categories.map((c) => ({
   name: tidy(c.name),
   items: catalogue.items
     .filter((i) => i.categoryId === c.id)
-    .map((i) => ({ ...i, name: tidy(i.name), description: tidy(i.description), image: photo[c.id] })),
+    .map((i) => ({ ...i, name: tidy(i.name), description: tidy(i.description), image: photo(c.id) })),
 }));
 ---
 <Layout title="Order Online" description="Order meals, nasi ambeng and kuih online for delivery.">
