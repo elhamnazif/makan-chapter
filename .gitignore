@@ -4,3 +4,8 @@ dist/
 test-results/
 __pycache__/
 .venv/
+
+# AI agent skills (local tooling, not part of the site)
+.agents/
+.claude/
+skills-lock.json
