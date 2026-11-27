@@ -150,7 +150,7 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
       const ok =
         (!q || c.dataset.search!.includes(q)) &&
         (!menus.length || menus.includes(c.dataset.category!)) &&
-        (!budgets.length || (perPax != null && budgets.some(([lo, hi]) => perPax >= lo && perPax < hi))) &&
+        (!budgets.length || (perPax !== null && budgets.some(([lo, hi]) => perPax >= lo && perPax < hi))) &&
         (!paxCaps.length || paxCaps.some((cap) => minPax <= cap));
       c.hidden = !ok;
       if (ok) { shown++; }

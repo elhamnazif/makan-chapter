@@ -179,7 +179,7 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
 
   function priceCents(n: number): number | null {
     if (isOrder) { return (pkg.setPriceCents ?? 0) * n; }
-    if (pkg.perPaxCents == null) { return null; }
+    if (pkg.perPaxCents === null) { return null; }
     const per = pkg.promo && n >= pkg.promo.fromPax ? pkg.promo.perPaxCents : pkg.perPaxCents;
     return per * n;
   }
@@ -189,9 +189,9 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
     const total = priceCents(n);
     const line = isOrder
       ? `${money(pkg.setPriceCents!)} x ${n} set${n > 1 ? 's' : ''} (${n * (pkg.paxPerSet ?? 20)} pax)`
-      : total == null ? `${n} guests, price on request` : `${n} guests x ${money(total / n)} per pax`;
+      : total === null ? `${n} guests, price on request` : `${n} guests x ${money(total / n)} per pax`;
     form.querySelector('[data-summary-line]')!.textContent = line;
-    form.querySelectorAll('[data-summary-total]').forEach((el) => (el.textContent = total == null ? 'On request' : money(total)));
+    form.querySelectorAll('[data-summary-total]').forEach((el) => (el.textContent = total === null ? 'On request' : money(total)));
     if (isOrder) { form.querySelector('[data-qty-help]')!.textContent = n > 1 ? `${n} sets serve ${n * (pkg.paxPerSet ?? 20)} pax.` : `Each set serves ${pkg.paxPerSet} pax.`; }
 
     for (const g of groups) {
@@ -279,7 +279,7 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
       `Date: ${prettyDate(state.date)}, ${state.time}`,
       `Guests: ${state.qty}`,
       ...picks,
-      total != null ? `Estimate shown on site: ${money(total)}` : '',
+      total !== null ? `Estimate shown on site: ${money(total)}` : '',
     ].filter(Boolean).join('\n');
     window.open(waUrl(msg), '_blank', 'noopener');
   });

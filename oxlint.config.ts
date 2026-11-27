@@ -7,7 +7,6 @@ export default defineConfig({
   ignorePatterns: cloudflare.ignorePatterns,
   rules: {
     // Temporarily off during the migration to @cloudflare/oxlint-config.
-    'eqeqeq': 'off',
     'no-empty': 'off',
     'quality/no-array-filter-map': 'off',
     'quality/no-known-value-widening': 'off',

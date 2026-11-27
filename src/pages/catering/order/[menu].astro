@@ -387,7 +387,7 @@ const pkgs = Object.values(eventPackages);
         else { err.hidden = true; }
       }
       const v = Number(pax.value);
-      if (!Number.isInteger(v) || v < p.minPax || (p.maxPax != null && v > p.maxPax)) {
+      if (!Number.isInteger(v) || v < p.minPax || (p.maxPax !== null && v > p.maxPax)) {
         const msg = p.key === 'mini'
           ? (v > p.maxPax! ? 'Mini Catering is for up to 50 pax. For more guests, choose Classic Catering.' : 'Mini Catering starts from 20 pax.')
           : v > p.maxPax! ? 'Online orders are for up to 100 pax. For more, WhatsApp us for bulk terms.' : 'Classic Catering starts from 50 pax. For fewer guests, choose Mini Catering.';
