@@ -1,6 +1,6 @@
 // Client-side cart. Stored in localStorage; nothing is sent anywhere until the
 // customer chooses to open WhatsApp with the prepared order message.
-export type CartKind = 'buffet' | 'meal' | 'gift';
+export type CartKind = 'buffet' | 'meal';
 
 export interface CartItem {
   key: string;
@@ -17,16 +17,14 @@ export interface CartItem {
 const KEY = 'mc-cart-v1';
 const DRAFT = 'mc-draft-v1';
 
-export const DELIVERY_CENTS: Record<CartKind, number> = { buffet: 3000, meal: 1500, gift: 0 };
+export const DELIVERY_CENTS: Record<CartKind, number> = { buffet: 3000, meal: 1500 };
 export const KIND_LABEL: Record<CartKind, string> = {
   buffet: 'Mini buffet',
   meal: 'Meals and kuih',
-  gift: 'Gift cards',
 };
 export const DELIVERY_LABEL: Record<CartKind, string> = {
   buffet: 'Mini buffet delivery',
   meal: 'Meal delivery',
-  gift: '',
 };
 
 const isStrings = (v: unknown): v is Array<string> =>
@@ -107,7 +105,7 @@ export function cartCount(): number {
 }
 
 export function groups(items: Array<CartItem>) {
-  const kinds: Array<CartKind> = ['buffet', 'meal', 'gift'];
+  const kinds: Array<CartKind> = ['buffet', 'meal'];
   return kinds.flatMap((kind) => {
     const list = items.filter((i) => i.kind === kind);
     if (!list.length) {
