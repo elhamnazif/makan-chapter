@@ -324,9 +324,11 @@ const pkgs = Object.values(eventPackages);
     if (!p) { return out; }
     const n = Number(pax.value) || 0;
     const per = menu.priceCents[p.key];
-    out.push(['Package', p.name]);
-    out.push([`${n} pax × ${money(per)}`, money(per * n)]);
-    out.push([p.deliveryLabel, money(p.deliveryCents)]);
+    out.push(
+      ['Package', p.name],
+      [`${n} pax × ${money(per)}`, money(per * n)],
+      [p.deliveryLabel, money(p.deliveryCents)],
+    );
     if (isCbdOrSentosa(field('postal').value.trim())) { out.push(['CBD or Sentosa', '+' + money(fees.cbdSentosaCents)]); }
     if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) { out.push(['Teardown after 9pm', '+' + money(fees.lateTeardownCents)]); }
     return out;
