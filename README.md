@@ -28,14 +28,13 @@ Home → catering category → package → add-ons → cart → delivery details
 ## Tests
 
 ```bash
-python -m venv .venv && .venv/bin/pip install -r tests/requirements.txt
-npm run build
-.venv/bin/python tests/test_content.py                          # static checks on dist/
-npx astro preview --port 18763 &                                 # serves dist/
-.venv/bin/python tests/browser_acceptance.py                    # URL=https://makanchapter.elham.dev/ to test live
+npm test                                  # builds, serves and runs every test
+URL=https://makanchapter.elham.dev/ npm test   # the same tests against the live site
 ```
 
-The browser test drives Chromium (`CHROMIUM` env var, default `/usr/bin/chromium`) through every page at phone and desktop widths in both themes, plus the theme switch, buffet listing, quotation, Order Online and cart, and mini buffet flows. It intercepts `window.open`, so no WhatsApp message is ever sent. Screenshots go to `test-results/`.
+Playwright runs the browser tests in `tests/` with the system Chromium (`/usr/bin/chromium`, or set `CHROMIUM`). Without one, run `npx playwright install chromium` first. The ordering flows run at desktop and phone widths. Every page linked from the home page is also checked at 320, 390, 768 and 1440px for broken links, sideways scrolling and broken images. `window.open` is replaced in every test, so no WhatsApp message is ever sent. A failed test keeps a trace in `test-results/`. Open it with `npx playwright show-trace`.
+
+Also run `npm run lint`, `npm run format:check` and `npm run check`.
 
 ## Deploying
 

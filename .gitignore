@@ -2,8 +2,7 @@ node_modules/
 dist/
 .astro/
 test-results/
-__pycache__/
-.venv/
+playwright-report/
 
 # AI agent skills (local tooling, not part of the site)
 .agents/
