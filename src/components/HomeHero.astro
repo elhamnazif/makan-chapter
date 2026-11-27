@@ -1,0 +1,120 @@
+---
+// The homepage hero: rotating photos, one message, and controls to pause or pick a photo.
+import { Icon } from 'astro-icon/components';
+import { url } from '../data/site';
+import Photo from './Photo.astro';
+const slides = [
+  { image: 'nasi-ambeng', alt: 'Nasi ambeng with rendang, sambal and sides in a woven basket' },
+  { image: 'mini-buffet-tray', alt: 'A Makan Chapter tray of rice and lauk' },
+  { image: 'nasi-lemak-plate', alt: 'Nasi lemak with sambal, ikan bilis and egg' },
+];
+---
+
+<section
+  class="relative isolate flex min-h-[min(calc(100dvh-4rem),760px)] items-center overflow-hidden bg-neutral-950"
+  aria-label="Introduction"
+  data-hero
+>
+  {slides.map((s, i) => (
+    <Photo
+      name={s.image}
+      alt={i === 0 ? s.alt : ''}
+      sizes="100vw"
+      widths={[640, 960, 1280, 1600]}
+      class="hero-slide absolute inset-0 -z-20 size-full object-cover opacity-0 transition-opacity duration-1000 data-[active=true]:opacity-100"
+      data-active={i === 0 ? 'true' : 'false'}
+      loading={i === 0 ? 'eager' : 'lazy'}
+      fetchpriority={i === 0 ? 'high' : 'low'}
+    />
+  ))}
+  <div class="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/55 to-black/15"></div>
+  <div class="container-page py-16">
+    <h1 class="display max-w-[16ch] text-5xl leading-[1.05] tracking-tight text-white md:text-6xl">
+      We Know, Makan Matters
+    </h1>
+    <p class="mt-5 max-w-[40ch] text-lg text-white/90">
+      Home-style catering for family gatherings, office meals, weddings and festive celebrations.
+    </p>
+    <a href={url('catering/')} class="btn mt-8 !bg-white !text-zinc-900 hover:!bg-zinc-200">
+      Explore Our Catering Menu
+    </a>
+  </div>
+  <div
+    class="absolute inset-x-0 bottom-6 flex items-center justify-center gap-2"
+    role="group"
+    aria-label="Choose photo"
+  >
+    <button
+      type="button"
+      class="grid size-8 place-items-center rounded-full text-white hover:bg-white/15 motion-reduce:hidden"
+      aria-label="Pause slideshow"
+      data-hero-pause
+    >
+      <Icon name="ph:pause-fill" class="size-4" aria-hidden="true" data-pause-icon />
+      <Icon name="ph:play-fill" class="hidden size-4" aria-hidden="true" data-play-icon />
+    </button>
+    {slides.map((_, i) => (
+      <button
+        type="button"
+        class="grid size-6 place-items-center"
+        aria-label={`Show photo ${i + 1}`}
+        aria-pressed={i === 0 ? 'true' : 'false'}
+        data-dot={i}
+      >
+        <span
+          class:list={[
+            'block h-1.5 w-6 rounded-full bg-white/50 transition-colors',
+            i === 0 && '!bg-white',
+          ]}
+        />
+      </button>
+    ))}
+  </div>
+</section>
+
+<script>
+  import { find, findAll } from '../scripts/dom';
+
+  // Rotating hero photos, as on the homepage: a pause button (WCAG 2.2.2), and no
+  // auto-rotation for visitors who ask for reduced motion.
+  const hero = find('[data-hero]');
+  const slides = findAll('.hero-slide', hero);
+  const dots = findAll<HTMLButtonElement>('[data-dot]', hero);
+  const pause = find<HTMLButtonElement>('[data-hero-pause]', hero);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let index = 0;
+  let timer = 0;
+  let paused = false;
+
+  const show = (i: number) => {
+    index = i;
+    slides.forEach((s, n) => (s.dataset.active = String(n === i)));
+    dots.forEach((d, n) => {
+      d.setAttribute('aria-pressed', String(n === i));
+      d.firstElementChild?.classList.toggle('!bg-white', n === i);
+    });
+  };
+  const restart = () => {
+    window.clearInterval(timer);
+    pause.hidden = reduce.matches;
+    if (!reduce.matches && !paused) {
+      timer = window.setInterval(() => show((index + 1) % slides.length), 6000);
+    }
+  };
+  show(0);
+  restart();
+  reduce.addEventListener('change', restart);
+  dots.forEach((d, n) =>
+    d.addEventListener('click', () => {
+      show(n);
+      restart();
+    }),
+  );
+  pause.addEventListener('click', () => {
+    paused = !paused;
+    pause.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
+    find('[data-pause-icon]', pause).classList.toggle('hidden', paused);
+    find('[data-play-icon]', pause).classList.toggle('hidden', !paused);
+    restart();
+  });
+</script>

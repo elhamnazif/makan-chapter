@@ -5,6 +5,47 @@
   other combinations can read them.
   Colour is reserved for actions, selection and a few structural details; photography stays primary.
   Shape rule: cards and panels 12px, inputs and buttons 8px, nav pills full-round.
+
+  LAYOUT LINES. Check every component at 320, 360,
+  390, 640, 768, 1024, 1280 and 1440px, with the longest real names and the shortest: page
+  edges that line up at 1440px and 390px say nothing about a row at 768px.
+  - Page frame: .container-page, 1200px wide at most, inset 32px (16px under 768px). Its left
+    edge is the text line and its right edge the trailing line of every section, the header
+    and the menu bar. Headings, paragraphs, rules and photos all start on the text line.
+  - Columns: .cols, 12 columns with a 32px gutter from 1024px, one column below. Splits are
+    6/6 (photo and text), 8/4 (content and summary panel), 7/5 or 3/5/4. Tile grids use the
+    same 32px gutter, so 3-up and 4-up tiles land on the same column lines.
+  - A split's two columns share their top and bottom edges: the photo stretches to the text
+    column's height. Nothing floats vertically centred beside a taller neighbour.
+  - A section is either edge-positioned (on the text line) or centred on the page axis (home
+    introduction, reviews, strips, empty states). Never in between.
+  - Display type is for titles of a few words (three lines at most at any width). A sentence
+    is body text, however important; the one exception is the featured review on the home page.
+  - Nothing wraps to leave one item alone on a line. A set of buttons or tiles sits in equal
+    grid cells (2-up, 3-up or 4-up, never 2 and 1); the fact strip is a balanced inline block.
+    A label and its value share a line only where both always fit; otherwise the value goes under.
+  - Two-up lists (dishes, fields, checklists) need about 28rem per cell. Below that they are one
+    column: dishes pair up from 1024px, form pairs by container width.
+  - Where a split collapses to one column, the price and the action come before the long
+    content (catering menu and buffet pages: photo, panel, then the menu).
+  - Footer: one invitation and three link columns on the 12 columns, then the name sized to
+    run from the text line to the trailing line, then the small print. Keep it near 560px at
+    desktop widths; it has no second call-to-action block above it. Bars fixed to the bottom
+    of the window add their height to the footer's padding (--bar-space, --palette-space).
+  - Header: the logo starts on the text line; the cart and menu buttons are pulled out by their
+    inner padding so the last icon's ink, not its 44px hit area, ends on the trailing line.
+    The Order Online tab strip is pulled out the same way, so its first label is on the text line.
+  - Overlays: the dish dialog insets body and footer alike (16px, 24px from 768px); the mobile
+    menu's title sits on its links' label line (28px), its boxes on 16px.
+  - Tile grids (home services, Our Story, buffets) are subgrids: titles, texts, prices and
+    actions of neighbouring tiles share rows whatever their length.
+  - Panels (.panel) inset their content 24px. Rows inside lists have no side padding: their
+    text sits on the text line and their actions end on the trailing line.
+  - Sections are separated by .section spacing (56px, 80px from 768px), rules (border-rule)
+    or a change of background (bg-cream, bg-band), not by boxes. Cards are kept for package
+    choices only. Dishes are ruled rows: photo on the text line, then name, price and a
+    two-line description stacked beside it, add button centred on the trailing line. A row is
+    as tall as its content; nothing is pinned to the bottom of a stretched box.
 */
 :root {
   color-scheme: light dark;
@@ -35,12 +76,14 @@
   --mc-note-line-dark: #655041;
   --mc-error-light: #b42318;
   --mc-error-dark: #ffb0a8;
-  --mc-footer-bg-light: #27231f;
-  --mc-footer-bg-dark: #131211;
-  --mc-footer-ink-light: #f6f1ea;
-  --mc-footer-ink-dark: #f6f1ea;
-  --mc-footer-muted-light: #c7bdb2;
-  --mc-footer-muted-dark: #c7bdb2;
+  /* Band: the strips under a hero, the photo tile captions and the footer. */
+  --mc-band-light: #98442e;
+  --mc-band-dark: #7a3423;
+  --mc-band-ink-light: #fcf4ea;
+  --mc-band-ink-dark: #fcf4ea;
+  /* Cream: tinted sections and summary panels. */
+  --mc-cream-light: #f6eee2;
+  --mc-cream-dark: #221e1b;
   --mc-scrim-light: #1e1713a6;
   --mc-scrim-dark: #080706b8;
 
@@ -57,13 +100,16 @@
   --mc-note-bg: light-dark(var(--mc-note-bg-light), var(--mc-note-bg-dark));
   --mc-note-line: light-dark(var(--mc-note-line-light), var(--mc-note-line-dark));
   --mc-error: light-dark(var(--mc-error-light), var(--mc-error-dark));
-  --mc-footer-bg: light-dark(var(--mc-footer-bg-light), var(--mc-footer-bg-dark));
-  --mc-footer-ink: light-dark(var(--mc-footer-ink-light), var(--mc-footer-ink-dark));
-  --mc-footer-muted: light-dark(var(--mc-footer-muted-light), var(--mc-footer-muted-dark));
+  --mc-band: light-dark(var(--mc-band-light), var(--mc-band-dark));
+  --mc-band-ink: light-dark(var(--mc-band-ink-light), var(--mc-band-ink-dark));
+  --mc-cream: light-dark(var(--mc-cream-light), var(--mc-cream-dark));
+  /* Rules between rows and sections: the accent, thinned. */
+  --mc-rule: color-mix(in oklab, var(--mc-accent) 40%, transparent);
   --mc-scrim: light-dark(var(--mc-scrim-light), var(--mc-scrim-dark));
 
   --mc-shadow: 0 1px 3px #33221108, 0 4px 16px #33221106;
   --mc-font: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --mc-font-display: 'Young Serif', Georgia, 'Times New Roman', serif;
   --mc-radius-card: 12px;
   --mc-radius-control: 8px;
 

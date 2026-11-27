@@ -8,8 +8,10 @@ interface Props {
   /** Largest rendered width in CSS pixels; 1x and 2x copies are made at this size. */
   px: number;
   class?: string;
+  /** On the first screen: load with the page, not when scrolled to. */
+  eager?: boolean;
 }
-const { px, class: cls = '' } = Astro.props;
+const { px, class: cls = '', eager = false } = Astro.props;
 const alt = 'Muslim-Owned Enterprise, Singapore Malay Chamber of Commerce and Industry';
 const [l, d] = await Promise.all(
   [light, dark].map((src) => getImage({ src, width: px, densities: [1, 2] })),
@@ -24,8 +26,8 @@ const [l, d] = await Promise.all(
     alt={alt}
     width={px}
     height={px}
-    loading="lazy"
-    decoding="async"
+    loading={eager ? 'eager' : 'lazy'}
+    decoding={eager ? 'sync' : 'async'}
     class={`${cls} aspect-square max-w-none object-contain`}
   />
 </picture>

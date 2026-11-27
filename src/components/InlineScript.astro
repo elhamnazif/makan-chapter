@@ -1,0 +1,18 @@
+---
+// Runs one of src/scripts/pages/*.ts before the page is first drawn.
+//
+// Astro's own <script> is a module, and modules run after the first frame. A page whose
+// first screen comes from the browser's storage (the cart's rows, the delivery summary, the
+// catering order's totals) would be drawn empty and filled in a moment later, moving the
+// footer. This puts the script and its imports into the page as one classic script, which
+// the parser runs where it stands. Layout.astro holds the first frame until the end of
+// <body> is parsed, so use it with slot="scripts", which is the last thing there.
+import { inlineScript } from '../lib/inlineScript';
+interface Props {
+  /** File name in src/scripts/pages, without the extension. */
+  entry: 'cart' | 'delivery' | 'catering-order';
+}
+const code = await inlineScript(Astro.props.entry);
+---
+
+<script is:inline set:html={code} />

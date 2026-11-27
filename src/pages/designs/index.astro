@@ -1,0 +1,33 @@
+---
+// For the client: the six palettes to choose from, each opening the site in that palette.
+import { palettes } from '../../data/palettes';
+import { url } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Palettes">
+  <section class="container-page section">
+    <p class="eyebrow">For review</p>
+    <h1 class="display mt-4 text-4xl text-price md:text-5xl">Choose a Palette</h1>
+    <p class="mt-5 max-w-[60ch] leading-relaxed text-muted">
+      Each link opens the site in that palette. A bar at the bottom of the window then lets you
+      switch palettes on any page; close it to return to the default.
+    </p>
+    <ul class="mt-10 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+      {palettes.map((p) => (
+        <li class="border-t border-rule">
+          <a
+            href={`${url('')}?palette=${p.slug}`}
+            class="group flex min-h-20 items-center gap-4 py-4"
+          >
+            <span
+              class="size-12 shrink-0 rounded-full ring-1 ring-black/15"
+              style={`background: linear-gradient(135deg, ${p.swatch} 50%, ${p.second} 50%)`}
+            />
+            <span class="display text-2xl group-hover:text-price">{p.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>

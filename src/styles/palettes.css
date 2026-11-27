@@ -1,0 +1,91 @@
+/*
+  PALETTE PREVIEW. Five alternatives to the default terracotta, for the client to choose from.
+  Each block overrides raw tokens from theme.css, so everything else follows. Opened with
+  ?palette=<name> (see PaletteBar.astro). Once a palette is chosen, copy its values into
+  theme.css and delete this file, PaletteBar.astro and data/palettes.ts.
+*/
+:root[data-palette='sambal'] {
+  --mc-bg-light: #fcf6ef;
+  --mc-accent-light: #a8281e;
+  --mc-accent-dark: #f4a396;
+  --mc-accent-hover-light: #861d15;
+  --mc-accent-hover-dark: #f9bdb3;
+  --mc-accent-ink-light: #ffffff;
+  --mc-accent-ink-dark: #3a0f0b;
+  --mc-price-light: #a8281e;
+  --mc-price-dark: #f4a396;
+  --mc-band-light: #a8281e;
+  --mc-band-dark: #8a2018;
+  --mc-band-ink-light: #fff3ea;
+  --mc-band-ink-dark: #fff3ea;
+  --mc-cream-light: #f6e8dc;
+  --mc-cream-dark: #251c1a;
+}
+:root[data-palette='rendang'] {
+  --mc-bg-light: #fbf5ec;
+  --mc-accent-light: #a8281e;
+  --mc-accent-dark: #f4a396;
+  --mc-accent-hover-light: #861d15;
+  --mc-accent-hover-dark: #f9bdb3;
+  --mc-accent-ink-light: #ffffff;
+  --mc-accent-ink-dark: #3a0f0b;
+  --mc-price-light: #a8281e;
+  --mc-price-dark: #f4a396;
+  --mc-band-light: #3f2517;
+  --mc-band-dark: #35200f;
+  --mc-band-ink-light: #f5e8d6;
+  --mc-band-ink-dark: #f5e8d6;
+  --mc-cream-light: #f3e6d6;
+  --mc-cream-dark: #231d18;
+}
+:root[data-palette='pandan'] {
+  --mc-bg-light: #f8f7ee;
+  --mc-accent-light: #2e5a3c;
+  --mc-accent-dark: #a8d3b0;
+  --mc-accent-hover-light: #23472e;
+  --mc-accent-hover-dark: #c2e2c8;
+  --mc-accent-ink-light: #ffffff;
+  --mc-accent-ink-dark: #10291a;
+  --mc-price-light: #2e5a3c;
+  --mc-price-dark: #a8d3b0;
+  --mc-band-light: #2e5a3c;
+  --mc-band-dark: #234a30;
+  --mc-band-ink-light: #f1f3e6;
+  --mc-band-ink-dark: #f1f3e6;
+  --mc-cream-light: #e9eedc;
+  --mc-cream-dark: #1c211c;
+}
+:root[data-palette='kunyit'] {
+  --mc-bg-light: #fdf7ea;
+  --mc-accent-light: #5c3516;
+  --mc-accent-dark: #f1c27b;
+  --mc-accent-hover-light: #45270f;
+  --mc-accent-hover-dark: #f6d49e;
+  --mc-accent-ink-light: #fff6e6;
+  --mc-accent-ink-dark: #2e1c08;
+  --mc-price-light: #5c3516;
+  --mc-price-dark: #f1c27b;
+  --mc-band-light: #eba83f;
+  --mc-band-dark: #d9972f;
+  --mc-band-ink-light: #2e1c0b;
+  --mc-band-ink-dark: #2e1c0b;
+  --mc-cream-light: #f8e9c8;
+  --mc-cream-dark: #241f17;
+}
+:root[data-palette='gula'] {
+  --mc-bg-light: #faf4ea;
+  --mc-accent-light: #5e3723;
+  --mc-accent-dark: #e3b792;
+  --mc-accent-hover-light: #482819;
+  --mc-accent-hover-dark: #eccaae;
+  --mc-accent-ink-light: #fbf1e4;
+  --mc-accent-ink-dark: #2c190e;
+  --mc-price-light: #5e3723;
+  --mc-price-dark: #e3b792;
+  --mc-band-light: #3f2517;
+  --mc-band-dark: #35200f;
+  --mc-band-ink-light: #f5e8d6;
+  --mc-band-ink-dark: #f5e8d6;
+  --mc-cream-light: #f0e2cf;
+  --mc-cream-dark: #231d18;
+}

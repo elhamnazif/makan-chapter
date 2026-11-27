@@ -1,6 +1,7 @@
 // Client-side cart for Order Online. Stored in localStorage; nothing is sent anywhere until
 // the customer chooses to open WhatsApp with the prepared order message.
 import { deliveryFeeCents } from '../data/catalogue.json';
+import { CART_KEY } from '../lib/cartNumbers';
 import { toast } from './toast';
 
 export interface CartItem {
@@ -13,7 +14,7 @@ export interface CartItem {
   note?: string;
 }
 
-const KEY = 'mc-cart-v2';
+const KEY = CART_KEY;
 
 export const DELIVERY_CENTS = deliveryFeeCents;
 

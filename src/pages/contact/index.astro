@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import PageHero from '../../components/PageHero.astro';
+import Photo from '../../components/Photo.astro';
 import { business } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
 import { phonePattern } from '../../lib/fields';
@@ -13,6 +14,7 @@ const events = [
   'Family gathering',
   'Other',
 ];
+const link = 'font-medium underline decoration-rule underline-offset-4 hover:decoration-current';
 ---
 
 <Layout title="Contact Us">
@@ -22,91 +24,81 @@ const events = [
     image="buffet-line"
   />
 
-  <div class="container-page grid gap-10 py-14 lg:grid-cols-[1fr_26rem]">
-    <div>
-      <h2 class="text-2xl font-bold tracking-tight md:text-3xl">
+  <!-- The form is a size container: its paired fields sit side by side only when the form
+       itself is wide enough for their labels and the date control. -->
+  <!-- A 7/5 split. The photo under the contact details takes the height left over beside the
+       form, so the two columns share their top and bottom edges. -->
+  <div class="container-page section cols">
+    <div class="flex flex-col lg:col-span-7">
+      <p class="eyebrow">Enquiries</p>
+      <h2 class="display mt-4 text-4xl text-price md:text-5xl">
         Tell us about your catering plans
       </h2>
-      <p class="mt-4 max-w-[60ch] leading-relaxed text-muted">
+      <p class="mt-6 max-w-[60ch] leading-relaxed text-muted">
         Planning a gathering, office lunch or wedding? Send us the details and we will reply on
         WhatsApp with options and a quotation.
       </p>
-      <dl class="mt-8 grid gap-6 sm:grid-cols-2">
-        <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold">
-            <Icon name="ph:phone" class="size-4" aria-hidden="true" />
-            Phone and WhatsApp
-          </dt>
-          <dd class="mt-1">
-            <a href={business.phoneHref} class="font-medium underline underline-offset-4">
+      <dl class="mt-8 grid gap-x-8 border-t border-rule sm:grid-cols-2">
+        <div class="border-b border-rule py-4">
+          <dt class="eyebrow">Phone and WhatsApp</dt>
+          <dd class="mt-1.5">
+            <a href={business.phoneHref} class={link}>
               {business.phoneDisplay}
             </a>
           </dd>
         </div>
-        <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold">
-            <Icon name="ph:envelope-simple" class="size-4" aria-hidden="true" />
-            Email
-          </dt>
-          <dd class="mt-1">
-            <a href={`mailto:${business.email}`} class="font-medium underline underline-offset-4">
+        <div class="border-b border-rule py-4">
+          <dt class="eyebrow">Email</dt>
+          <dd class="mt-1.5">
+            <a href={`mailto:${business.email}`} class={link}>
               {business.email}
             </a>
           </dd>
         </div>
-        <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold">
-            <Icon name="ph:map-pin" class="size-4" aria-hidden="true" />
-            Address
-          </dt>
-          <dd class="mt-1">
+        <div class="border-b border-rule py-4">
+          <dt class="eyebrow">Address</dt>
+          <dd class="mt-1.5">
             {business.address[0]}, {business.address[1]}
             <br />
             <a
               href={business.mapsUrl}
               target="_blank"
               rel="noopener"
-              class="inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4"
+              class:list={['inline-flex min-h-11 items-center text-sm', link]}
             >
               Open in Google Maps
             </a>
           </dd>
         </div>
-        <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold">
-            <Icon name="ph:instagram-logo" class="size-4" aria-hidden="true" />
-            Social
-          </dt>
-          <dd class="mt-1 flex gap-4">
-            <a
-              href={business.instagram}
-              target="_blank"
-              rel="noopener"
-              class="font-medium underline underline-offset-4"
-            >
+        <div class="border-b border-rule py-4">
+          <dt class="eyebrow">Social</dt>
+          <dd class="mt-1.5 flex gap-4">
+            <a href={business.instagram} target="_blank" rel="noopener" class={link}>
               Instagram
             </a>
-            <a
-              href={business.facebook}
-              target="_blank"
-              rel="noopener"
-              class="font-medium underline underline-offset-4"
-            >
+            <a href={business.facebook} target="_blank" rel="noopener" class={link}>
               Facebook
             </a>
           </dd>
         </div>
       </dl>
+      <div class="relative mt-8 hidden min-h-56 flex-1 lg:block">
+        <Photo
+          name="lauk"
+          sizes="(min-width: 1200px) 650px, 55vw"
+          class="absolute inset-0 size-full rounded-card object-cover"
+        />
+      </div>
     </div>
 
     <form
-      class="card space-y-4 self-start p-5 md:p-6"
+      class="panel @container space-y-4 self-start lg:col-span-5"
       novalidate
       aria-labelledby="contact-form-title"
       data-contact
     >
-      <h2 id="contact-form-title" class="text-lg font-bold">
-        Contact Us
+      <h2 id="contact-form-title" class="display text-2xl md:text-3xl">
+        Send an Enquiry
       </h2>
       <div>
         <label for="c-name" class="field-label">
@@ -154,7 +146,7 @@ const events = [
       </div>
       <fieldset>
         <legend class="field-label">Services required (optional)</legend>
-        <div class="grid grid-cols-2 gap-x-4">
+        <div class="grid gap-x-4 @[20rem]:grid-cols-2">
           {services.map((s) => (
             <label class="flex min-h-10 cursor-pointer items-center gap-2 text-sm">
               <input type="checkbox" name="services" value={s} class="size-4" />
@@ -163,7 +155,7 @@ const events = [
           ))}
         </div>
       </fieldset>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid gap-4 @[26rem]:grid-cols-2 @[26rem]:gap-3">
         <div>
           <label for="c-date" class="field-label">
             Event date (optional)

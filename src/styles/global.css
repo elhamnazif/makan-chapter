@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/geist';
+@import '@fontsource/young-serif';
 @import './theme.css';
+@import './palettes.css';
 
 @theme inline {
   --color-bg: var(--mc-bg);
@@ -16,10 +18,12 @@
   --color-note: var(--mc-note-bg);
   --color-note-line: var(--mc-note-line);
   --color-error: var(--mc-error);
-  --color-footer: var(--mc-footer-bg);
-  --color-footer-ink: var(--mc-footer-ink);
-  --color-footer-muted: var(--mc-footer-muted);
+  --color-band: var(--mc-band);
+  --color-band-ink: var(--mc-band-ink);
+  --color-cream: var(--mc-cream);
+  --color-rule: var(--mc-rule);
   --font-sans: var(--mc-font);
+  --font-display: var(--mc-font-display);
   --radius-card: var(--mc-radius-card);
   --radius-control: var(--mc-radius-control);
   --shadow-card: var(--mc-shadow);
@@ -59,6 +63,13 @@
   [hidden] {
     display: none !important;
   }
+  /* Avoid a single word on a paragraph's last line. Titles balance instead (.display).
+     text-wrap-style, not the text-wrap shorthand: the shorthand also resets nowrap. */
+  p,
+  blockquote,
+  li {
+    text-wrap-style: pretty;
+  }
 }
 
 @layer components {
@@ -72,6 +83,52 @@
     .container-page {
       padding-inline: 2rem;
     }
+  }
+
+  /* Layout lines: see the policy at the top of theme.css. */
+  .cols {
+    display: grid;
+    /* minmax(0, …): a long word or wide control must wrap or shrink, never widen the page. */
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .cols {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2rem;
+    }
+  }
+  .section {
+    padding-block: 3.5rem;
+  }
+  @media (min-width: 768px) {
+    .section {
+      padding-block: 5rem;
+    }
+  }
+
+  /* Display type: page and section titles. Young Serif has one weight. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    text-wrap-style: balance;
+  }
+  /* The small label above a title, and the label of a group of rows. */
+  .eyebrow {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-price);
+  }
+  /* A tinted panel for summaries and forms that sit beside the main column. */
+  .panel {
+    background: var(--color-cream);
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
   }
 
   .btn {
@@ -170,6 +227,21 @@
   }
 }
 
+/* Going to another page cross-fades instead of cutting. The header is the same picture on
+   both sides of the fade, so it holds still. Browsers without cross-document view
+   transitions change page as before. */
+@view-transition {
+  navigation: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+::view-transition-group(root) {
+  animation-duration: 0.15s;
+}
+
 /* Modal dialogs: scrolling over the backdrop or inside the dialog must not scroll the page. */
 dialog:modal {
   overscroll-behavior: contain;
@@ -264,13 +336,83 @@ dialog::backdrop {
   border-color: transparent;
   color: var(--color-muted);
 }
+/* The label again in the current tab's weight, unseen, in the same cell: every tab is always
+   as wide as its bold label, so the row does not shift when the current tab changes. */
+.menu-tab::after {
+  content: attr(data-label);
+  grid-area: 1 / 1;
+  font-weight: 600;
+  visibility: hidden;
+}
 .menu-tab:hover {
   color: var(--color-ink);
 }
-.menu-tab:is(:target-current, .target-current) {
+/* The current tab. Until a section has been scrolled to (and before any script runs) that is
+   the first one, so the row is drawn finished in the first frame. :is() is forgiving, so
+   browsers without :target-current keep the rule. */
+.menu-tab:is(:target-current, .target-current),
+.menu-tabs:not(:has(:is(:target-current, .target-current))) li:first-child .menu-tab {
   border-color: var(--color-accent);
   color: var(--color-price);
   font-weight: 600;
+}
+
+/* The name across the footer (Footer.astro). The size follows the frame's width, so the first
+   and last letters sit on the text and trailing lines at every width. The factor is the
+   frame width divided by the width of "Makan Chapter" in the display face at 1px. */
+.footer-name {
+  white-space: nowrap;
+  line-height: 0.95;
+  /* The M's side bearing, so its stem (not its box) is on the text line. */
+  margin-left: -0.032em;
+  font-size: calc((100vw - 2rem) * 0.131);
+}
+@media (min-width: 768px) {
+  .footer-name {
+    font-size: calc((min(100vw, 1200px) - 4rem) * 0.131);
+  }
+}
+
+/* Palette preview bar (PaletteBar.astro): fixed to the bottom of the window, raised above the
+   bars that the ordering pages fix there on small screens. */
+.palette-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 1rem;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  padding-inline: 0.75rem;
+  pointer-events: none;
+}
+@media (max-width: 639px) {
+  body:has([data-cart-bar]:not([hidden])) .palette-bar {
+    bottom: 5.25rem;
+  }
+}
+@media (max-width: 1023px) {
+  body:has(form[data-order]) .palette-bar {
+    bottom: 5.25rem;
+  }
+}
+
+/* Whatever is fixed to the bottom of the window (the palette bar, the cart bar on Order Online,
+   the total bar of the catering order) must not cover the last lines of the footer. */
+body > footer {
+  padding-bottom: calc(var(--bar-space, 0px) + var(--palette-space, 0px));
+}
+:root[data-palette-preview] {
+  --palette-space: 4.5rem;
+}
+@media (max-width: 639px) {
+  body:has([data-cart-bar]:not([hidden])) {
+    --bar-space: 4.5rem;
+  }
+}
+@media (max-width: 1023px) {
+  body:has(form[data-order]) {
+    --bar-space: 4.5rem;
+  }
 }
 
 /* Toast (Layout.astro, scripts/toast.ts): a manual popover in the top layer, bottom centre. */

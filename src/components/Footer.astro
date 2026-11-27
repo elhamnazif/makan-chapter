@@ -1,145 +1,106 @@
 ---
-import { Icon } from 'astro-icon/components';
-import { Image } from 'astro:assets';
-import logo from '../assets/brand/logo.png';
-import { business, url, menuPdfs } from '../data/site';
+// Band-coloured footer on the page grid: one invitation and three link columns (4/2/3/3 from
+// 1024px), then the name set across the full width, then the small print. On phones the
+// Explore column is only as wide as its longest link, so the email address beside it fits.
+import { business, nav, url, menuPdfs } from '../data/site';
 const year = new Date().getFullYear();
+const heading = 'text-xs font-semibold uppercase tracking-[.16em] opacity-75';
+const link = 'inline-flex min-h-9 items-center gap-1.5 hover:underline';
 ---
 
-<footer class="mt-auto bg-footer text-footer-ink">
-  <div class="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
-    <div>
-      <div class="flex items-center gap-3">
-        <span class="grid size-12 place-items-center overflow-hidden rounded-full bg-white">
-          <Image src={logo} alt="" width={48} densities={[1, 2]} class="size-12" />
-        </span>
-        <span class="text-lg font-bold">{business.name}</span>
+<footer class="mt-auto bg-band text-band-ink">
+  <div class="container-page">
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-8 py-10 text-sm min-[22.5rem]:gap-x-6 sm:gap-x-8 md:grid-cols-12 md:py-12">
+      <div class="col-span-2 md:col-span-12 lg:col-span-4">
+        <p class="display text-3xl md:text-4xl">{business.tagline}</p>
+        <p class="mt-4 max-w-[38ch] leading-relaxed opacity-90 max-md:hidden md:max-lg:max-w-[60ch]">
+          Tell us the date, the number of guests and what you have in mind. We will help you choose
+          a package or put together a quotation.
+        </p>
+        <a href={url('contact/')} class="btn mt-6 !bg-band-ink !text-band hover:!bg-white">
+          Contact Us
+        </a>
       </div>
-      <address class="mt-5 space-y-3 text-sm not-italic text-footer-muted">
-        <p>
-          {business.address[0]},<br />
-          {business.address[1]}
-        </p>
-        <p>
-          <span class="font-semibold text-footer-ink">Phone:</span>{' '}
-          <a href={business.phoneHref} class="hover:underline">
-            {business.phoneDisplay}
-          </a>
-        </p>
-        <p>
-          <span class="font-semibold text-footer-ink">Email:</span>{' '}
-          <a href={`mailto:${business.email}`} class="hover:underline">
-            {business.email}
-          </a>
-        </p>
-      </address>
-      <ul class="mt-5 flex gap-2">
-        <li>
-          <a
-            href={business.instagram}
-            target="_blank"
-            rel="noopener"
-            aria-label="Instagram"
-            class="grid size-11 place-items-center rounded-full bg-white/10 hover:bg-white/20"
-          >
-            <Icon name="ph:instagram-logo" class="size-5" aria-hidden="true" />
-          </a>
-        </li>
-        <li>
-          <a
-            href={business.facebook}
-            target="_blank"
-            rel="noopener"
-            aria-label="Facebook"
-            class="grid size-11 place-items-center rounded-full bg-white/10 hover:bg-white/20"
-          >
-            <Icon name="ph:facebook-logo" class="size-5" aria-hidden="true" />
-          </a>
-        </li>
-        <li>
-          <a
-            href={`mailto:${business.email}`}
-            aria-label="Email"
-            class="grid size-11 place-items-center rounded-full bg-white/10 hover:bg-white/20"
-          >
-            <Icon name="ph:envelope-simple" class="size-5" aria-hidden="true" />
-          </a>
-        </li>
-        <li>
-          <a
-            href={business.mapsUrl}
-            target="_blank"
-            rel="noopener"
-            aria-label="Location on Google Maps"
-            class="grid size-11 place-items-center rounded-full bg-white/10 hover:bg-white/20"
-          >
-            <Icon name="ph:map-pin" class="size-5" aria-hidden="true" />
-          </a>
-        </li>
-      </ul>
-    </div>
 
-    <div>
-      <h2 class="font-semibold">Site Map</h2>
-      <ul class="mt-3 space-y-1 text-sm text-footer-muted">
-        <li>
-          <a class="inline-flex min-h-9 items-center hover:text-footer-ink" href={url('')}>
-            Home
-          </a>
-        </li>
-        <li>
-          <a
-            class="inline-flex min-h-9 items-center hover:text-footer-ink"
-            href={url('our-story/')}
-          >
-            Our Story
-          </a>
-        </li>
-        <li>
-          <a class="inline-flex min-h-9 items-center hover:text-footer-ink" href={url('catering/')}>
-            Catering
-          </a>
-        </li>
-        <li>
-          <a class="inline-flex min-h-9 items-center hover:text-footer-ink" href={url('order/')}>
-            Order Online
-          </a>
-        </li>
-        <li>
-          <a class="inline-flex min-h-9 items-center hover:text-footer-ink" href={url('contact/')}>
-            Contact
-          </a>
-        </li>
-        <li>
-          <a class="inline-flex min-h-9 items-center hover:text-footer-ink" href={url('cart/')}>
-            Cart
-          </a>
-        </li>
-      </ul>
-    </div>
+      <nav aria-label="Footer" class="md:col-span-4 lg:col-span-2">
+        <h2 class={heading}>Explore</h2>
+        <ul class="mt-2">
+          {nav.map((item) => (
+            <li>
+              <a class={link} href={url(item.href)}>
+                {item.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a class={link} href={url('cart/')}>
+              Cart
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-    <div>
-      <h2 class="font-semibold">Menus</h2>
-      <ul class="mt-3 space-y-1 text-sm text-footer-muted">
-        {menuPdfs.map((m) => (
+      <div class="md:col-span-4 lg:col-span-3">
+        <h2 class={heading}>Contact</h2>
+        <ul class="mt-2">
+          <li>
+            <a class={link} href={business.phoneHref}>
+              {business.phoneDisplay}
+            </a>
+          </li>
+          <li>
+            <a class:list={[link, '[overflow-wrap:anywhere]']} href={`mailto:${business.email}`}>
+              {business.email}
+            </a>
+          </li>
           <li>
             <a
-              class="inline-flex min-h-9 items-center gap-1.5 hover:text-footer-ink"
-              href={m.href}
+              class="block py-1.5 leading-snug hover:underline"
+              href={business.mapsUrl}
               target="_blank"
               rel="noopener"
             >
-              {m.label}
-              <Icon name="ph:file-pdf" class="size-4" aria-label="PDF" />
+              {business.address[0]}
+              <br />
+              {business.address[1]}
             </a>
           </li>
-        ))}
-      </ul>
+          <li>
+            <a class={link} href={business.instagram} target="_blank" rel="noopener">
+              Instagram
+            </a>
+          </li>
+          <li>
+            <a class={link} href={business.facebook} target="_blank" rel="noopener">
+              Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-span-2 md:col-span-4 lg:col-span-3">
+        <h2 class={heading}>Menus (PDF)</h2>
+        <ul class="mt-2 grid gap-x-8 min-[22.5rem]:grid-cols-2 md:grid-cols-1">
+          {menuPdfs.map((m) => (
+            <li>
+              <a class={link} href={m.href} target="_blank" rel="noopener">
+                {m.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </div>
-  <div class="border-t border-white/10">
-    <p class="container-page py-6 text-center text-sm text-footer-muted">
-      © {year} Makan Chapter Pte Ltd. All rights reserved.
+
+  <!-- The name, sized to the frame so it runs from the text line to the trailing line. -->
+  <div class="container-page">
+    <p class="footer-name display border-t border-current/30 pt-6" aria-hidden="true">
+      {business.name}
+    </p>
+    <p class="flex flex-wrap justify-between gap-x-6 gap-y-1 py-5 text-xs opacity-90">
+      <span>© {year} Makan Chapter Pte Ltd. All rights reserved.</span>
+      <span>Muslim-owned kitchen, Serangoon Road, Singapore</span>
     </p>
   </div>
 </footer>

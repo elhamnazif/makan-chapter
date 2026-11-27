@@ -1,10 +1,16 @@
 ---
 import '../styles/global.css';
+import bodyFont from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import displayFont from '@fontsource/young-serif/files/young-serif-latin-400-normal.woff2?url';
 import { Icon } from 'astro-icon/components';
 import { getImage } from 'astro:assets';
 import logo from '../assets/brand/logo.png';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import PaletteBar from '../components/PaletteBar.astro';
+import { url } from '../data/site';
+import { CART_KEY, cartNumbers } from '../lib/cartNumbers';
+import { money, plural } from '../lib/format';
 interface Props {
   title?: string;
   description?: string;
@@ -17,6 +23,63 @@ const fullTitle = title
   ? `${title} | Makan Chapter`
   : 'Makan Chapter | Malay Catering in Singapore';
 const favicon = await getImage({ src: logo, width: 64, format: 'png' });
+
+// The cart numbers (header badge, Order Online cart button and bar) live in localStorage, so
+// the server cannot print them, and a module script would fill them in after the first frame.
+// This classic script defines the painter in the head; a one-line inline script beside each
+// element calls it as soon as the element is parsed, and Header.astro calls it again whenever
+// the cart changes. It is built from the source of the shared functions, so there is one
+// implementation of the count, the subtotal and the format.
+const cartPainter = `{
+  const money = ${money.toString()};
+  const plural = ${plural.toString()};
+  const cartNumbers = ${cartNumbers.toString()};
+  globalThis.mcPaintCart = () => {
+    let stored = null;
+    try {
+      stored = JSON.parse(localStorage.getItem(${JSON.stringify(CART_KEY)}) || '[]');
+    } catch {
+      // Storage is blocked or holds something else: an empty cart.
+    }
+    const { count, cents } = cartNumbers(stored);
+    const each = (selector, paint) => document.querySelectorAll(selector).forEach(paint);
+    each('[data-cart-count], [data-cart-button-count]', (el) => {
+      el.textContent = String(count);
+      el.hidden = count === 0;
+    });
+    each('[data-cart-summary]', (el) => {
+      el.textContent = money(cents);
+      el.hidden = count === 0;
+    });
+    each('[data-cart-bar-summary]', (el) => {
+      el.textContent = plural(count, 'item') + ' · ' + money(cents);
+    });
+    each('[data-cart-bar]', (el) => {
+      el.hidden = count === 0;
+    });
+    each('[data-cart-link]', (el) => {
+      el.setAttribute('aria-label', count ? 'Cart, ' + plural(count, 'item') : 'Cart');
+    });
+  };
+}`;
+
+// When a link to a page of this site is hovered or pressed, Chrome and Edge load that page in
+// the background, photos included, so it is shown whole on the click. Other browsers ignore
+// this. Left out: the PDFs, links with a query (the palette links act when loaded), and the
+// pages drawn from the cart or holding a form in progress, which are only fetched.
+const base = url('');
+const sameSite = [
+  { href_matches: `${base}*` },
+  { not: { href_matches: `${base}*.pdf` } },
+  { not: { href_matches: `${base}*\\?*` } },
+];
+const stateful = ['cart/*', 'delivery/*', 'catering/order/*'].map((p) => ({
+  href_matches: `${base}${p}`,
+}));
+const speculationRules = JSON.stringify({
+  prerender: [{ where: { and: [...sameSite, { not: { or: stateful } }] }, eagerness: 'moderate' }],
+  prefetch: [{ where: { or: stateful }, eagerness: 'moderate' }],
+});
 ---
 
 <!doctype html>
@@ -29,6 +92,38 @@ const favicon = await getImage({ src: logo, width: 64, format: 'png' });
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" href={favicon.src} type="image/png" />
+    <!-- The two fonts of every first screen, fetched with the page, so titles are not drawn
+         in the fallback face for a frame before swapping. -->
+    <link rel="preload" as="font" type="font/woff2" href={bodyFont} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={displayFont} crossorigin />
+    <!-- Do not draw the page (or start the cross-fade from the last one) until all of it is
+         parsed and its inline scripts have run, so the first frame is the finished page: no
+         half-built panels, no numbers that arrive later. The pages are small static files, so
+         this costs a few milliseconds. -->
+    <link rel="expect" href="#page-end" blocking="render" />
+    <script is:inline set:html={cartPainter} />
+    <script is:inline type="speculationrules" set:html={speculationRules} />
+    <!-- Palette preview (PaletteBar.astro): set before first paint, so the page does not
+         flash the default palette. An unknown name matches no rule in palettes.css. -->
+    <script is:inline>
+      {
+        let asked = new URLSearchParams(location.search).get('palette');
+        try {
+          asked ??= sessionStorage.getItem('palette');
+        } catch {
+          // Storage is blocked: only the address can name a palette.
+        }
+        if (asked && /^[a-z]+$/.test(asked)) {
+          document.documentElement.dataset.palettePreview = asked;
+          document.documentElement.dataset.palette = asked;
+          try {
+            sessionStorage.setItem('palette', asked);
+          } catch {
+            // Shown on this page, but not carried to the next.
+          }
+        }
+      }
+    </script>
   </head>
   <body class="antialiased">
     <a
@@ -42,6 +137,7 @@ const favicon = await getImage({ src: logo, width: 64, format: 'png' });
       <slot />
     </main>
     <Footer />
+    <PaletteBar />
     <div role="region" aria-label="Notifications">
       <div
         id="toast"
@@ -63,6 +159,9 @@ const favicon = await getImage({ src: logo, width: 64, format: 'png' });
       </div>
       <p class="sr-only" aria-live="polite" data-toast-live></p>
     </div>
+    <!-- Page scripts that must run before the first frame (InlineScript.astro). -->
+    <slot name="scripts" />
+    <span id="page-end" hidden></span>
   </body>
 </html>
 

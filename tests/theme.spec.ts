@@ -34,8 +34,11 @@ const pairs = [
   ['accent-ink', 'accent'],
   ['price', 'surface'],
   ['muted', 'note-bg'],
-  ['footer-ink', 'footer-bg'],
-  ['footer-muted', 'footer-bg'],
+  ['ink', 'cream'],
+  ['muted', 'cream'],
+  ['price', 'bg'],
+  ['price', 'cream'],
+  ['band-ink', 'band'],
 ] as const;
 
 function luminance(hex: string): number {

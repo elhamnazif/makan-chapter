@@ -1,17 +1,18 @@
 ---
 import { Icon } from 'astro-icon/components';
+import InlineScript from '../../components/InlineScript.astro';
 import RowTemplate from '../../components/RowTemplate.astro';
 import { url } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title="Cart">
-  <div class="container-page pb-16 pt-8">
-    <h1 class="text-2xl font-bold tracking-tight md:text-3xl">Shopping Cart</h1>
+  <div class="container-page pb-14 pt-10 md:pb-20">
+    <h1 class="display text-4xl text-price md:text-5xl">Shopping Cart</h1>
 
     <div class="mx-auto max-w-md py-14 text-center" hidden data-empty>
       <Icon name="ph:shopping-cart-simple" class="mx-auto size-14 text-muted" aria-hidden="true" />
-      <h2 class="mt-4 text-xl font-bold">Your cart is empty</h2>
+      <h2 class="display mt-4 text-3xl">Your cart is empty</h2>
       <p class="mt-2 text-muted">Add a meal or some kuih to get started.</p>
       <a href={url('order/')} class="btn mt-6">
         <Icon name="ph:arrow-left" class="size-5" aria-hidden="true" />
@@ -19,17 +20,18 @@ import Layout from '../../layouts/Layout.astro';
       </a>
     </div>
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_22rem]" hidden data-filled>
-      <section class="card self-start overflow-hidden" aria-labelledby="items-title">
-        <h2 id="items-title" class="border-b border-line bg-surface-2 px-4 py-3 font-bold">
+    <!-- An 8/4 split: ruled rows on the text line, and the summary panel -->
+    <div class="cols mt-8" hidden data-filled>
+      <section class="lg:col-span-8" aria-labelledby="items-title">
+        <h2 id="items-title" class="eyebrow">
           Meals and kuih
         </h2>
-        <ul class="divide-y divide-line" data-items></ul>
+        <ul class="mt-3 border-t border-rule" data-items></ul>
       </section>
-      <aside class="card self-start p-5 lg:sticky lg:top-20" aria-label="Order summary">
-        <h2 class="font-bold">Order Summary</h2>
+      <aside class="panel self-start lg:sticky lg:top-20 lg:col-span-4" aria-label="Order summary">
+        <h2 class="display text-2xl">Order Summary</h2>
         <dl class="mt-4 space-y-2 text-sm" data-totals></dl>
-        <div class="mt-4 flex items-baseline justify-between border-t border-line pt-4">
+        <div class="mt-4 flex items-baseline justify-between border-t border-rule pt-4">
           <span class="font-semibold">Total</span>
           <span class="text-2xl font-bold" data-total></span>
         </div>
@@ -48,22 +50,13 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 
   <template id="tpl-cart-item">
-    <li class="grid gap-3 p-4 sm:grid-cols-[1fr_auto] sm:items-start">
-      <div>
-        <p class="font-semibold" data-slot="name"></p>
-        <p class="text-sm text-muted" data-slot="unit"></p>
-        <label class="mt-3 block text-sm font-medium" data-note-label>
-          Notes for the kitchen (optional)
-        </label>
-        <input
-          name="note"
-          class="field mt-1.5 max-w-sm"
-          maxlength="200"
-          placeholder="e.g. less spicy"
-          data-note
-        />
+    <li class="border-b border-rule py-5">
+      <div class="flex items-baseline justify-between gap-4">
+        <p class="text-lg font-semibold" data-slot="name"></p>
+        <p class="shrink-0 text-lg font-bold" data-slot="total"></p>
       </div>
-      <div class="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
+      <p class="text-sm text-muted" data-slot="unit"></p>
+      <div class="mt-3 flex items-center justify-between gap-4">
         <div class="flex items-center gap-1">
           <button
             type="button"
@@ -81,74 +74,26 @@ import Layout from '../../layouts/Layout.astro';
             +
           </button>
         </div>
-        <div class="text-right">
-          <p class="font-bold" data-slot="total"></p>
-          <button
-            type="button"
-            class="min-h-11 text-sm font-medium text-muted underline-offset-2 hover:text-ink hover:underline"
-            data-remove
-          >
-            Remove
-          </button>
-        </div>
+        <button
+          type="button"
+          class="min-h-11 text-sm font-medium text-muted underline-offset-2 hover:text-ink hover:underline"
+          data-remove
+        >
+          Remove
+        </button>
       </div>
+      <label class="mt-3 block text-sm font-medium" data-note-label>
+        Notes for the kitchen (optional)
+      </label>
+      <input
+        name="note"
+        class="field mt-1.5 max-w-md"
+        maxlength="200"
+        placeholder="e.g. less spicy"
+        data-note
+      />
     </li>
   </template>
   <RowTemplate />
+  <InlineScript slot="scripts" entry="cart" />
 </Layout>
-
-<script>
-  import { money } from '../../lib/format';
-  import { readCart, writeCart, totals, DELIVERY_CENTS } from '../../scripts/cart';
-  import type { CartItem } from '../../scripts/cart';
-  import { fillRows, find, stamp } from '../../scripts/dom';
-
-  const list = find('[data-items]');
-
-  function update(key: string, fn: (i: CartItem) => CartItem | null) {
-    writeCart(readCart().flatMap((i) => (i.key === key ? (fn(i) ?? []) : [i])));
-    render();
-  }
-
-  function row(item: CartItem): DocumentFragment {
-    const li = stamp('tpl-cart-item', {
-      name: item.name,
-      unit: `${money(item.unitCents)} each`,
-      qty: String(item.qty),
-      total: money(item.unitCents * item.qty),
-    });
-    const id = `note-${item.key.replaceAll(/[^a-z0-9]/gi, '')}`;
-    find('[data-note-label]', li).setAttribute('for', id);
-    const note = find<HTMLInputElement>('[data-note]', li);
-    note.id = id;
-    note.value = item.note ?? '';
-    note.addEventListener('change', () =>
-      update(item.key, (i) => ({ ...i, note: note.value.trim() })),
-    );
-    const minus = find<HTMLButtonElement>('[data-minus]', li);
-    minus.setAttribute('aria-label', `Decrease ${item.name}`);
-    minus.disabled = item.qty <= 1;
-    minus.addEventListener('click', () => update(item.key, (i) => ({ ...i, qty: i.qty - 1 })));
-    const plus = find('[data-plus]', li);
-    plus.setAttribute('aria-label', `Increase ${item.name}`);
-    plus.addEventListener('click', () => update(item.key, (i) => ({ ...i, qty: i.qty + 1 })));
-    const remove = find('[data-remove]', li);
-    remove.setAttribute('aria-label', `Remove ${item.name}`);
-    remove.addEventListener('click', () => update(item.key, () => null));
-    return li;
-  }
-
-  function render() {
-    const items = readCart();
-    find('[data-empty]').hidden = items.length > 0;
-    find('[data-filled]').hidden = items.length === 0;
-    list.replaceChildren(...items.map(row));
-    const t = totals(items);
-    fillRows(find('[data-totals]'), [
-      ['Subtotal', money(t.subtotal)],
-      ['Meal delivery', money(DELIVERY_CENTS)],
-    ]);
-    find('[data-total]').textContent = money(t.total);
-  }
-  render();
-</script>

@@ -9,69 +9,94 @@ import Layout from '../../layouts/Layout.astro';
 
 const offerings = [
   {
-    icon: 'ph:bowl-food',
     title: 'Mini and Classic Catering',
     text: 'Five menus in ready-to-enjoy trays from 20 pax, or a full buffet in warmers from 50 pax.',
     href: 'catering/',
+    action: 'See the menus',
   },
   {
-    icon: 'ph:users-three',
     title: 'Wedding and Event Buffets',
     text: 'Full buffets with setup and collection for weddings and large events.',
     href: 'catering/#buffets',
+    action: 'See the buffets',
   },
   {
-    icon: 'ph:fire',
     title: 'Meals and Bakar-Bakar',
     text: 'Grilled and penyet plates, nasi ambeng and nasi lemak for one or for the table.',
     href: 'order/',
+    action: 'Order online',
   },
   {
-    icon: 'ph:cake',
     title: 'Kuih Muih',
     text: 'Traditional kuih for tea, festive tables and dessert corners.',
     href: 'order/#cat-6',
+    action: 'Order online',
   },
 ];
+const gallery = ['nasi-ambeng', 'bakar-bakar', 'kuih-tray'];
 ---
 
 <Layout title="Our Story" description="The people and stories behind Makan Chapter.">
   <PageHero title="Our Story" intro={business.tagline + '.'} image="kuih-tray" />
 
-  <!-- Who we are -->
-  <section class="container-page py-16 md:py-20">
-    <div class="mx-auto max-w-[65ch] space-y-5 text-lg leading-relaxed text-muted">
-      <p class="text-ink">
-        Makan Chapter is a Muslim-owned kitchen on Serangoon Road, cooking for Singapore's
-        gatherings big and small.
+  <!-- Who we are: a short title (two or three lines; never a sentence in display type), then
+       a 7/5 split of the paragraph and the recognition. -->
+  <section class="container-page section" aria-labelledby="who-title">
+    <p class="eyebrow">Who we are</p>
+    <h2
+      id="who-title"
+      class="display mt-4 max-w-[20ch] text-4xl text-price md:text-5xl lg:max-w-none"
+    >
+      A <span class="whitespace-nowrap">Muslim-Owned</span> Kitchen on Serangoon Road
+    </h2>
+    <div class="cols mt-8 max-lg:gap-y-6">
+      <p class="text-lg leading-relaxed text-muted lg:col-span-7">
+        We cook for Singapore’s gatherings, big and small. We cater intimate gatherings, birthdays,
+        corporate meetings, weddings and festive celebrations, with nasi ambeng, bakar-bakar, lauk
+        and kuih made the way our customers remember them.
       </p>
-      <p>
-        We cater intimate gatherings, birthdays, corporate meetings, weddings and festive
-        celebrations, with nasi ambeng, bakar-bakar, lauk and kuih made the way our customers
-        remember them.
-      </p>
+      <div class="flex items-center gap-4 self-start max-lg:border-t max-lg:border-rule max-lg:pt-6 lg:col-span-5">
+        <MoeBadge px={96} class="size-24 shrink-0" eager />
+        <p class="text-sm leading-relaxed text-muted">
+          <span class="block text-base font-semibold text-ink">Muslim-Owned Enterprise</span>
+          Makan Chapter carries the Muslim-Owned Enterprise mark of the Singapore Malay Chamber of
+          Commerce and Industry.
+        </p>
+      </div>
     </div>
+    <ul class="mt-14 grid grid-cols-3 gap-3 md:gap-8" aria-hidden="true">
+      {gallery.map((name) => (
+        <li>
+          <Photo
+            name={name}
+            sizes="(min-width: 1200px) 357px, 31vw"
+            loading="eager"
+            class="aspect-square w-full rounded-card object-cover md:aspect-[4/3]"
+          />
+        </li>
+      ))}
+    </ul>
   </section>
 
-  <!-- Stories, supplied by the owners in src/data/stories.ts -->
+  <!-- Stories, supplied by the owners in src/data/stories.ts. Each is a 6/6 split whose photo
+       takes the text column's height. -->
   {stories.length > 0 && (
     <section class="container-page space-y-16 pb-20" aria-label="Stories behind Makan Chapter">
       {stories.map((s, i) => (
-        <article class:list={['grid items-center gap-8', s.image && 'md:grid-cols-2']}>
+        <article class="cols">
           {s.image && (
-            <Photo
-              name={s.image}
-              alt={s.imageAlt ?? ''}
-              sizes="(min-width: 1200px) 568px, (min-width: 768px) 45vw, 100vw"
-              class:list={[
-                'aspect-[4/3] w-full rounded-card object-cover shadow-card',
-                i % 2 === 1 && 'md:order-2',
-              ]}
-            />
+            <div class:list={['relative lg:col-span-6', i % 2 === 1 && 'lg:order-2']}>
+              <Photo
+                name={s.image}
+                alt={s.imageAlt ?? ''}
+                sizes="(min-width: 1200px) 552px, (min-width: 1024px) 46vw, 100vw"
+                class="aspect-[4/3] w-full rounded-card object-cover lg:absolute lg:inset-0 lg:aspect-auto lg:h-full"
+              />
+            </div>
           )}
-          <div class:list={[!s.image && 'mx-auto max-w-[65ch]']}>
-            <h2 class="text-2xl font-bold tracking-tight md:text-3xl">{s.title}</h2>
-            <div class="mt-4 space-y-4 leading-relaxed text-muted">
+          <div class:list={[s.image ? 'lg:col-span-6 lg:min-h-80' : 'lg:col-span-8']}>
+            <h2 class="display text-3xl text-price md:text-4xl">{s.title}</h2>
+            <div class="mt-5 space-y-4 leading-relaxed text-muted">
               {s.paragraphs.map((p) => (
                 <p>{p}</p>
               ))}
@@ -82,71 +107,32 @@ const offerings = [
     </section>
   )}
 
-  <!-- What we cook -->
-  <section class="bg-surface-2 py-16 md:py-20" aria-labelledby="offer-title">
+  <!-- What we cook: four ruled columns on the 12-column lines -->
+  <section class="section border-t border-rule bg-cream" aria-labelledby="offer-title">
     <div class="container-page">
-      <h2 id="offer-title" class="text-center text-3xl font-bold tracking-tight">
+      <p class="eyebrow">From our kitchen</p>
+      <h2 id="offer-title" class="display mt-4 text-4xl text-price md:text-5xl">
         What We Cook
       </h2>
-      <ul class="mx-auto mt-10 grid max-w-4xl gap-x-10 gap-y-8 sm:grid-cols-2">
+      <!-- Each item is a subgrid of three rows (title, text, action), so neighbours line up. -->
+      <ul class="mt-10 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
         {offerings.map((o) => (
-          <li>
-            <a href={url(o.href)} class="group flex gap-4 rounded-card">
-              <span class="grid size-12 shrink-0 place-items-center rounded-full bg-surface text-ink ring-1 ring-line">
-                <Icon name={o.icon} class="size-6" aria-hidden="true" />
-              </span>
-              <span>
-                <span class="block font-bold group-hover:underline">{o.title}</span>
-                <span class="mt-1 block text-sm leading-relaxed text-muted">{o.text}</span>
+          <li class="row-span-3 grid grid-rows-subgrid border-t border-rule pt-5 max-sm:[&:not(:first-child)]:mt-8 sm:max-lg:[&:nth-child(n+3)]:mt-8">
+            <a href={url(o.href)} class="group row-span-3 grid grid-rows-subgrid">
+              <span class="display text-2xl">{o.title}</span>
+              <span class="pt-3 text-sm leading-relaxed text-muted">{o.text}</span>
+              <span class="flex items-center gap-1.5 self-end pt-5 text-xs font-semibold uppercase tracking-[.12em] text-price">
+                {o.action}
+                <Icon
+                  name="ph:arrow-right"
+                  class="size-4 transition-transform group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
               </span>
             </a>
           </li>
         ))}
       </ul>
-    </div>
-  </section>
-
-  <!-- Recognition -->
-  <section class="container-page py-16" aria-labelledby="recognition-title">
-    <h2 id="recognition-title" class="sr-only">
-      Recognition
-    </h2>
-    <div class="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
-      <MoeBadge px={144} class="size-32 sm:size-36" />
-      <div>
-        <p class="text-xl font-bold">Muslim-Owned Enterprise</p>
-        <p class="mt-2 leading-relaxed text-muted">
-          Makan Chapter carries the Muslim-Owned Enterprise mark of the Singapore Malay Chamber of
-          Commerce and Industry.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Call to action -->
-  <section class="bg-surface-2 py-16 md:py-20">
-    <div class="container-page grid items-center gap-10 lg:grid-cols-2">
-      <div>
-        <h2 class="text-3xl font-bold tracking-tight">Planning a gathering?</h2>
-        <p class="mt-4 max-w-[55ch] leading-relaxed text-muted">
-          Tell us the date, the number of guests and what you have in mind. We will help you choose
-          a package or put together a quotation.
-        </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a href={url('contact/')} class="btn">
-            Contact Us
-          </a>
-          <a href={url('catering/')} class="btn btn-outline">
-            Explore Our Catering Menu
-          </a>
-        </div>
-      </div>
-      <Photo
-        name="buffet-setup"
-        alt="A Makan Chapter buffet set up with warmers at an event"
-        sizes="(min-width: 1200px) 568px, (min-width: 1024px) 45vw, 100vw"
-        class="aspect-[4/3] w-full rounded-card object-cover shadow-card"
-      />
     </div>
   </section>
 </Layout>

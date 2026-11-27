@@ -1,11 +1,11 @@
 ---
-// Order Online, modelled on the Pick n Go store menu layout: store header,
-// sticky category tabs with scroll-spy, photo dish cards and a dish dialog.
+// Order Online: page hero and a strip of ordering facts, sticky search and category tabs
+// with scroll-spy, ruled dish rows (photo, name and price, add button) and a dish dialog.
 import { Icon } from 'astro-icon/components';
-import { getImage, Image } from 'astro:assets';
-import logo from '../../assets/brand/logo.png';
-import MoeBadge from '../../components/MoeBadge.astro';
+import { getImage } from 'astro:assets';
+import PageHero from '../../components/PageHero.astro';
 import Photo from '../../components/Photo.astro';
+import Strip from '../../components/Strip.astro';
 import catalogue from '../../data/catalogue.json';
 import { url, business } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
@@ -41,52 +41,21 @@ const sections = await Promise.all(
 ---
 
 <Layout title="Order Online" description="Order meals, nasi ambeng and kuih online for delivery.">
-  <!-- Store header -->
-  <section class="bg-surface">
-    <div class="relative h-44 overflow-hidden bg-surface-2 md:h-72">
-      <Photo
-        name="nasi-ambeng"
-        sizes="100vw"
-        widths={[640, 960, 1280, 1600]}
-        loading="eager"
-        fetchpriority="high"
-        class="size-full object-cover"
-      />
-    </div>
-    <div class="container-page pb-6">
-      <div class="flex items-end gap-4">
-        <span class="relative z-10 -mt-10 grid size-24 shrink-0 place-items-center overflow-hidden rounded-card border border-line bg-white shadow-card md:-mt-12 md:size-32">
-          <Image
-            src={logo}
-            alt=""
-            width={128}
-            densities={[1, 2]}
-            loading="eager"
-            class="size-full object-contain p-1"
-          />
-        </span>
-        <div class="min-w-0 pb-1">
-          <h1 class="text-2xl font-bold tracking-tight md:text-3xl">{business.name}</h1>
-          <p class="text-sm text-muted">{business.address[0]}</p>
-        </div>
-      </div>
-      <p class="mt-4 text-sm font-semibold">
-        {money(catalogue.deliveryFeeCents)} delivery
-        <span class="mx-2 text-muted" aria-hidden="true">
-          •
-        </span>
-        {catalogue.items.length} dishes
-      </p>
-      <p class="mt-1.5 max-w-[80ch] text-sm leading-relaxed text-muted">
-        <span class="font-semibold text-ink">{business.name}</span>, {business.address[0]}.
-        Bakar-bakar, penyet, nasi ambeng, nasi lemak and kuih, cooked to order in our kitchen.
-      </p>
-      <p class="mt-2 flex items-center gap-2 text-sm font-semibold">
-        <MoeBadge px={24} class="size-6" />
-        Muslim-Owned Enterprise
-      </p>
-    </div>
-  </section>
+  <PageHero
+    title="Order Online"
+    intro="Bakar-bakar, penyet, nasi ambeng, nasi lemak and kuih, cooked to order in our kitchen."
+    image="nasi-ambeng"
+    compact
+  />
+  <Strip
+    label="Ordering details"
+    items={[
+      { icon: 'ph:truck', text: `${money(catalogue.deliveryFeeCents)} delivery` },
+      { icon: 'ph:bowl-food', text: `${catalogue.items.length} dishes` },
+      { icon: 'ph:storefront', text: 'Muslim-owned' },
+      { icon: 'ph:map-pin', text: business.address[0] },
+    ]}
+  />
 
   <!-- Sticky search and category tabs -->
   <div class="sticky top-16 z-20 border-b border-line bg-surface/95 backdrop-blur" data-menu-bar>
@@ -123,19 +92,34 @@ const sections = await Promise.all(
           data-cart-button
         >
           <Icon name="ph:shopping-cart-simple" class="size-5" aria-hidden="true" />
-          Cart<span class="font-normal text-muted" data-cart-summary></span>
+          Cart
+          <span
+            class="grid min-w-5 place-items-center rounded-full bg-accent px-1.5 text-xs font-bold leading-5 text-accent-ink"
+            hidden
+            data-cart-button-count
+          />
+          <span class="font-normal text-muted" hidden data-cart-summary />
         </a>
+        <!-- Paints the count and subtotal before the first frame (cartPainter, Layout.astro). -->
+        <script is:inline>
+          globalThis.mcPaintCart?.();
+        </script>
       </div>
-      <nav aria-label="Menu categories" class="-mb-px mt-1 overflow-x-auto [scrollbar-width:none]">
-        <ul class="menu-tabs flex gap-1 whitespace-nowrap" data-tabs>
+      <!-- Pulled out by the tabs' side padding, so the first label sits on the text line. -->
+      <nav
+        aria-label="Menu categories"
+        class="-mx-3 -mb-px mt-1 overflow-x-auto [scrollbar-width:none] max-lg:[mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)]"
+      >
+        <ul class="menu-tabs flex gap-1 whitespace-nowrap max-lg:pr-10" data-tabs>
           {sections.map((s) => (
             <li>
               <a
                 href={`#${s.id}`}
-                class="menu-tab inline-flex min-h-11 items-center border-b-2 px-3 text-[15px] transition-colors"
+                class="menu-tab inline-grid min-h-11 place-items-center border-b-2 px-3 text-[15px] transition-colors"
                 data-tab={s.id}
+                data-label={s.name}
               >
-                {s.name}
+                <span class="col-start-1 row-start-1">{s.name}</span>
               </a>
             </li>
           ))}
@@ -145,28 +129,28 @@ const sections = await Promise.all(
   </div>
 
   <!-- Menu sections -->
-  <div class="container-page pb-28 pt-6 sm:pb-16">
-    {sections.map((s) => (
+  <div class="container-page pb-8 pt-10 md:pb-14">
+    {sections.map((s, n) => (
       <section
         id={s.id}
         aria-labelledby={`${s.id}-title`}
-        class="scroll-mt-44 pb-10 focus:outline-none"
+        class="scroll-mt-44 pb-12 focus:outline-none"
         tabindex="-1"
         data-section={s.id}
       >
-        <h2 id={`${s.id}-title`} class="mb-4 text-xl font-bold">
+        <h2 id={`${s.id}-title`} class="display mb-5 text-3xl text-price md:text-4xl">
           {s.name}
         </h2>
-        <ul class="grid gap-4 md:grid-cols-2">
-          {s.items.map((i) => (
+        <ul class="grid lg:grid-cols-2 lg:gap-x-8">
+          {s.items.map((i, k) => (
             <li
-              class="relative"
+              class="relative border-t border-rule"
               data-item
               data-search={`${i.name} ${i.description} ${s.name}`.toLowerCase()}
             >
               <button
                 type="button"
-                class="card grid h-full w-full grid-cols-[1fr_auto] overflow-hidden text-left !shadow-none transition-colors hover:border-ink/40"
+                class="group flex h-full w-full items-center gap-4 py-4 pr-14 text-left"
                 data-open={JSON.stringify({
                   id: i.id,
                   name: i.name,
@@ -176,29 +160,28 @@ const sections = await Promise.all(
                   category: s.name,
                 })}
               >
-                <span class="flex min-w-0 flex-col p-4">
-                  <span class="text-[1.0625rem]/[1.45] font-semibold">{i.name}</span>
-                  {i.description && (
-                    <span class="mt-1 line-clamp-2 text-base/[1.6] text-muted">
-                      {i.description}
-                    </span>
-                  )}
-                  <span class="mt-auto pt-4 text-lg font-bold text-price">
-                    {money(i.priceCents)}
-                  </span>
-                </span>
-                <span class="relative block h-full min-h-44 w-28 bg-surface-2 md:w-36">
+                <span class="block size-22 shrink-0 overflow-hidden rounded-control bg-surface-2 sm:size-26">
                   <Photo
                     name={s.image}
-                    sizes="(min-width: 768px) 240px, 200px"
-                    widths={[200, 240, 400, 480]}
-                    class="size-full object-cover"
+                    sizes="104px"
+                    widths={[104, 208, 312]}
+                    loading={n === 0 && k < 6 ? 'eager' : 'lazy'}
+                    class="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block text-[1.0625rem]/[1.4] font-semibold group-hover:text-price">
+                    {i.name}
+                  </span>
+                  <span class="mt-0.5 block font-bold text-price">{money(i.priceCents)}</span>
+                  {i.description && (
+                    <span class="mt-1 line-clamp-2 text-sm/[1.5] text-muted">{i.description}</span>
+                  )}
                 </span>
               </button>
               <button
                 type="button"
-                class="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-accent text-accent-ink shadow-card ring-1 ring-black/10 transition-transform hover:scale-105 active:scale-95"
+                class="absolute right-0 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-accent text-accent-ink transition-colors hover:bg-accent-hover"
                 aria-label={`Add ${i.name} to cart`}
                 data-quick-add={JSON.stringify({
                   id: i.id,
@@ -213,7 +196,7 @@ const sections = await Promise.all(
         </ul>
       </section>
     ))}
-    <div class="card flex flex-col items-center px-6 py-14 text-center" hidden data-empty>
+    <div class="flex flex-col items-center py-14 text-center" hidden data-empty>
       <Icon name="ph:magnifying-glass" class="size-10 text-muted" aria-hidden="true" />
       <p class="mt-3 font-semibold">No dishes match your search.</p>
       <button type="button" class="btn btn-outline mt-5" data-reset>
@@ -236,6 +219,9 @@ const sections = await Promise.all(
       <span data-cart-bar-summary></span>
     </a>
   </div>
+  <script is:inline>
+    globalThis.mcPaintCart?.();
+  </script>
 
   <!-- Dish dialog: centred on desktop, full screen on mobile -->
   <dialog
@@ -266,17 +252,17 @@ const sections = await Promise.all(
         </button>
       </div>
       <div class="flex min-h-0 flex-1 flex-col">
-        <div class="relative flex-1 overflow-y-auto p-5 md:p-6">
+        <div class="relative flex-1 overflow-y-auto px-4 py-5 md:p-6">
           <button
             type="submit"
             value="cancel"
-            class="absolute right-4 top-4 hidden size-11 place-items-center rounded-control bg-surface-2 hover:bg-line md:grid"
+            class="absolute right-6 top-5 hidden size-11 place-items-center rounded-control bg-surface-2 hover:bg-line md:grid"
             aria-label="Close"
           >
             <Icon name="ph:x-bold" class="size-5" aria-hidden="true" />
           </button>
           <p class="text-sm text-muted" data-dish-category></p>
-          <h1 id="dish-name" class="pr-12 text-2xl font-bold tracking-tight" data-dish-name></h1>
+          <h1 id="dish-name" class="display pr-12 text-3xl" data-dish-name></h1>
           <p class="mt-1 text-lg font-semibold" data-dish-price></p>
           <p class="mt-3 leading-relaxed text-muted" data-dish-desc></p>
           <div class="mt-6 border-t border-line pt-5">
@@ -293,7 +279,7 @@ const sections = await Promise.all(
             ></textarea>
           </div>
         </div>
-        <div class="flex items-center gap-3 border-t border-line p-4">
+        <div class="flex items-center gap-3 border-t border-line p-4 md:px-6">
           <div class="flex items-center rounded-control border border-line">
             <button
               type="button"
@@ -326,8 +312,8 @@ const sections = await Promise.all(
 </Layout>
 
 <script>
-  import { money, plural } from '../../lib/format';
-  import { addItem, readCart, totals } from '../../scripts/cart';
+  import { money } from '../../lib/format';
+  import { addItem } from '../../scripts/cart';
   import type { CartItem } from '../../scripts/cart';
   import { find, findAll, dataValue } from '../../scripts/dom';
   import { toast } from '../../scripts/toast';
@@ -341,18 +327,8 @@ const sections = await Promise.all(
     category: string;
   };
 
-  // Cart summary in the bar and on mobile
-  const cartSummary = find('[data-cart-summary]');
-  const cartBar = find('[data-cart-bar]');
-  const cartBarSummary = find('[data-cart-bar-summary]');
-  function syncCart() {
-    const { count, subtotal } = totals(readCart());
-    cartSummary.textContent = count ? ` · ${count} · ${money(subtotal)}` : '';
-    cartBar.hidden = count === 0;
-    cartBarSummary.textContent = `${plural(count, 'item')} · ${money(subtotal)}`;
-  }
-  syncCart();
-  document.addEventListener('cart:change', syncCart);
+  // The cart count and subtotal in the bar and on mobile are painted by mcPaintCart
+  // (Layout.astro): inline before the first frame, and by Header.astro on every change.
 
   const add = (d: { id: string; name: string; priceCents: number }, qty: number, note = '') => {
     const item: Omit<CartItem, 'key'> = { id: d.id, name: d.name, unitCents: d.priceCents, qty };
@@ -385,7 +361,13 @@ const sections = await Promise.all(
       current = JSON.parse(dataValue(b, 'open')) as Dish;
       qty = 1;
       note.value = '';
-      find<HTMLImageElement>('[data-dish-img]', dialog).src = current.image;
+      // The row's small photo is already loaded: show it behind the large one until that arrives,
+      // and drop the last dish's photo first so it never shows under this dish's name.
+      const photo = find<HTMLImageElement>('[data-dish-img]', dialog);
+      const thumb = b.querySelector('img')?.currentSrc;
+      photo.removeAttribute('src');
+      photo.style.background = thumb ? `url("${thumb}") center / cover` : '';
+      photo.src = current.image;
       find('[data-dish-category]', dialog).textContent = current.category;
       find('[data-dish-name]', dialog).textContent = current.name;
       find('[data-dish-price]', dialog).textContent = money(current.priceCents);

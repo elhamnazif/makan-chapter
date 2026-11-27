@@ -1,0 +1,94 @@
+---
+// Palette preview for the client. Hidden unless the page was opened with ?palette=<name>;
+// the choice then follows the visitor from page to page for the rest of the session.
+// Remove with styles/palettes.css and data/palettes.ts once a palette is chosen.
+import { Icon } from 'astro-icon/components';
+import { palettes } from '../data/palettes';
+---
+
+<div class="palette-bar" hidden data-palette-bar>
+  <div
+    role="group"
+    aria-label="Palette preview"
+    class="pointer-events-auto flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-line bg-surface p-1.5 shadow-card"
+  >
+    <span class="hidden px-2 text-xs font-semibold uppercase tracking-[.12em] text-muted sm:block">
+      Palette
+    </span>
+    {palettes.map((p) => (
+      <button
+        type="button"
+        class="flex min-h-9 shrink-0 items-center gap-2 rounded-full px-3 text-sm font-medium hover:bg-surface-2 aria-pressed:bg-ink aria-pressed:text-bg"
+        aria-pressed="false"
+        data-palette-choice={p.slug}
+      >
+        <span
+          class="size-4 rounded-full ring-1 ring-black/15"
+          style={`background: linear-gradient(135deg, ${p.swatch} 50%, ${p.second} 50%)`}
+        />
+        {p.name}
+      </button>
+    ))}
+    <button
+      type="button"
+      class="grid size-9 shrink-0 place-items-center rounded-full hover:bg-surface-2"
+      aria-label="Close palette preview"
+      data-palette-close
+    >
+      <Icon name="ph:x" class="size-4" aria-hidden="true" />
+    </button>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const bar = document.querySelector<HTMLElement>('[data-palette-bar]');
+  const choices = [...document.querySelectorAll<HTMLElement>('[data-palette-choice]')];
+
+  // Keeps the choice for the next page. The palette still applies when storage is blocked.
+  function remember(slug: string | undefined) {
+    try {
+      if (slug === undefined) {
+        sessionStorage.removeItem('palette');
+      } else {
+        sessionStorage.setItem('palette', slug);
+      }
+    } catch {
+      // Not kept: the address still carries the choice.
+    }
+  }
+
+  // undefined ends the preview and returns to the default palette.
+  function apply(slug: string | undefined) {
+    if (!bar) {
+      return;
+    }
+    bar.hidden = slug === undefined;
+    for (const c of choices) {
+      c.setAttribute('aria-pressed', String(c.dataset.paletteChoice === slug));
+    }
+    const address = new URL(location.href);
+    if (slug === undefined) {
+      root.removeAttribute('data-palette-preview');
+      root.removeAttribute('data-palette');
+      address.searchParams.delete('palette');
+    } else {
+      root.dataset.palettePreview = slug;
+      root.dataset.palette = slug;
+      address.searchParams.set('palette', slug);
+    }
+    remember(slug);
+    history.replaceState(history.state, '', address);
+  }
+
+  // The script in Layout.astro has already applied the palette named in the address or kept
+  // from the last page. A name that is not on the bar ends the preview.
+  const asked = root.dataset.palettePreview;
+  if (asked !== undefined) {
+    apply(choices.some((c) => c.dataset.paletteChoice === asked) ? asked : undefined);
+  }
+  for (const c of choices) {
+    c.addEventListener('click', () => apply(c.dataset.paletteChoice));
+  }
+  bar?.querySelector('[data-palette-close]')?.addEventListener('click', () => apply(undefined));
+</script>

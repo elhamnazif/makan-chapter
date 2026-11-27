@@ -13,7 +13,7 @@ const isActive = (item: NavItem) =>
     : (item.match ?? [item.href]).some((p) => path.startsWith(url(p)));
 ---
 
-<header class="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur">
+<header id="site-header" class="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur">
   <div class="container-page flex h-16 items-center justify-between gap-4">
     <a
       href={home}
@@ -23,7 +23,7 @@ const isActive = (item: NavItem) =>
       <span class="grid size-11 place-items-center overflow-hidden rounded-full bg-white ring-1 ring-line">
         <Image src={logo} alt="" width={44} densities={[1, 2]} loading="eager" class="size-11" />
       </span>
-      <span class="text-lg font-bold tracking-tight">{business.name}</span>
+      <span class="display whitespace-nowrap text-lg sm:text-xl">{business.name}</span>
     </a>
 
     <nav aria-label="Main" class="hidden lg:block">
@@ -45,7 +45,9 @@ const isActive = (item: NavItem) =>
       </ul>
     </nav>
 
-    <div class="flex items-center gap-1">
+    <!-- Pulled out by the icon buttons' inner padding, so the last icon's ink (not its 44px
+         hit area) ends on the trailing line. -->
+    <div class="-mr-3 flex items-center gap-1">
       <a
         href={url('cart/')}
         class="relative grid size-11 place-items-center rounded-full hover:bg-surface-2"
@@ -61,6 +63,10 @@ const isActive = (item: NavItem) =>
           0
         </span>
       </a>
+      <!-- Paints the count before the first frame (see cartPainter in Layout.astro). -->
+      <script is:inline>
+        globalThis.mcPaintCart?.();
+      </script>
       <button
         type="button"
         class="grid size-11 place-items-center rounded-full hover:bg-surface-2 lg:hidden"
@@ -78,7 +84,8 @@ const isActive = (item: NavItem) =>
 <dialog id="mobile-nav" class="drawer" aria-labelledby="mobile-nav-title" data-drawer>
   <div class="drawer-scroller" data-drawer-scroller>
     <nav aria-label="Mobile" class="drawer-sheet bg-surface p-4 shadow-card" data-drawer-sheet>
-      <div class="mb-4 flex items-center justify-between">
+      <!-- The title sits on the links' label line (the sheet's 16px plus their 12px). -->
+      <div class="mb-4 flex items-center justify-between pl-3">
         <span id="mobile-nav-title" class="font-bold">
           Menu
         </span>
@@ -113,21 +120,21 @@ const isActive = (item: NavItem) =>
 </dialog>
 
 <script>
-  import { plural } from '../lib/format';
-  import { readCart, totals } from '../scripts/cart';
   import { find } from '../scripts/dom';
 
-  const badge = find('[data-cart-count]');
-  const cartLink = find('[data-cart-link]');
-  const syncCount = () => {
-    const n = totals(readCart()).count;
-    badge.textContent = String(n);
-    badge.hidden = n === 0;
-    cartLink.setAttribute('aria-label', n ? `Cart, ${plural(n, 'item')}` : 'Cart');
-  };
-  syncCount();
-  document.addEventListener('cart:change', syncCount);
-  window.addEventListener('storage', syncCount);
+  // The cart numbers on the page (this badge, and the Order Online cart button and bar) are
+  // first painted inline, before the first frame. Repaint them when the cart changes: on this
+  // page, in another tab, or while this page was kept in the back/forward cache.
+  const paintCart = () => window.mcPaintCart();
+  document.addEventListener('cart:change', paintCart);
+  window.addEventListener('storage', paintCart);
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      paintCart();
+    }
+  });
+  // A page loaded in the background before the click (speculation rules in Layout.astro).
+  document.addEventListener('prerenderingchange', paintCart);
 
   // Mobile drawer. Opening shows the modal dialog, then scrolls the sheet in; closing scrolls
   // it out, and the observer closes the dialog once the sheet has left, so a swipe, a tap on

@@ -1,11 +1,14 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 import { Picture } from 'astro:assets';
-import { photo } from '../lib/photos';
+import { photo, photoColour } from '../lib/photos';
 
 // A photo from src/assets/images by name, served as AVIF with a WebP fallback in the widths
 // below. sizes must describe the rendered width, so phones download small files. Lazy by
-// default; pass loading="eager" and fetchpriority="high" for the page's largest image.
+// default; pass loading="eager" and fetchpriority="high" for the page's largest image, and
+// loading="eager" for anything else on the first screen: an eager photo is decoded with the
+// frame it appears in, a lazy one arrives a moment later. Behind every photo is its own
+// average colour, so one that is still loading is never an empty box.
 
 type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'width' | 'height' | 'sizes'> & {
   name: string;
@@ -16,6 +19,7 @@ type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'width' | 'height' |
 const { name, sizes, alt = '', widths = [320, 480, 640, 960, 1280, 1600], ...attrs } = Astro.props;
 const src = photo(name);
 const fitting = widths.filter((w) => w <= src.width);
+const eager = attrs.loading === 'eager';
 ---
 
 <Picture
@@ -25,5 +29,7 @@ const fitting = widths.filter((w) => w <= src.width);
   widths={fitting.length ? fitting : [src.width]}
   formats={['avif']}
   fallbackFormat="webp"
+  decoding={eager ? 'sync' : 'async'}
   {...attrs}
+  style={`background-color:${photoColour(name)}`}
 />

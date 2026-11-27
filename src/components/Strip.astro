@@ -1,0 +1,24 @@
+---
+// A band-coloured strip of short facts under a hero, centred on the page axis. The items are
+// inline in a balanced block: when they do not fit on one line they break into even lines.
+import { Icon } from 'astro-icon/components';
+interface Props {
+  label: string;
+  items: Array<{ icon: string; text: string }>;
+}
+const { label, items } = Astro.props;
+---
+
+<div class="bg-band text-band-ink">
+  <ul
+    aria-label={label}
+    class="container-page py-3 text-center text-[0.75rem]/7 font-semibold uppercase tracking-[.06em] text-balance sm:text-xs/8 sm:tracking-[.12em] lg:text-sm/8"
+  >
+    {items.map((i) => (
+      <li class="mx-2 inline-flex items-center gap-1.5 whitespace-nowrap align-middle sm:mx-4 sm:gap-2 lg:mx-5">
+        <Icon name={i.icon} class="size-4 shrink-0 sm:size-5" aria-hidden="true" />
+        {i.text}
+      </li>
+    ))}
+  </ul>
+</div>
