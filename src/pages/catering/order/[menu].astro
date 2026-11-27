@@ -412,7 +412,7 @@ const pkgs = Object.values(eventPackages);
     if (n === 4) {
       const checks: Array<[string, (v: string) => string | null]> = [
         ['name', (v) => (v ? null : 'Enter your name.')],
-        ['phone', (v) => (/^(\+?65)?[3689]\d{7}$/.test(v.replace(/[\s-]/g, '')) ? null : 'Enter a Singapore mobile number, e.g. 9123 4567.')],
+        ['phone', (v) => (/^(\+?65)?[3689]\d{7}$/.test(v.replaceAll(/[\s-]/g, '')) ? null : 'Enter a Singapore mobile number, e.g. 9123 4567.')],
         ['email', (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? null : 'Enter an email address, e.g. name@email.com.')],
         ['address', (v) => (v ? null : 'Enter the delivery address.')],
         ['postal', (v) => (/^\d{6}$/.test(v) ? null : 'Enter a 6-digit postal code.')],

@@ -16,7 +16,6 @@ export default defineConfig({
     'typescript/no-unsafe-return': 'off',
     'unicorn/consistent-function-scoping': 'off',
     'unicorn/prefer-single-call': 'off',
-    'unicorn/prefer-string-replace-all': 'off',
   },
   overrides: [
     {

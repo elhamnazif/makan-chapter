@@ -72,7 +72,7 @@ import { url } from '../../data/site';
           info.append(dl);
         }
         if (item.kind === 'meal') {
-          const id = `note-${item.key.replace(/[^a-z0-9]/gi, '')}`;
+          const id = `note-${item.key.replaceAll(/[^a-z0-9]/gi, '')}`;
           const lab = el('label', 'mt-3 block text-sm font-medium', 'Notes for the kitchen (optional)');
           lab.setAttribute('for', id);
           const inp = el('input', 'field mt-1.5 max-w-sm');

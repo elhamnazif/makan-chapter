@@ -14,7 +14,7 @@ const photo: Record<string, string> = {
 };
 // Light tidy-up of source text: spacing around punctuation and a capital first letter.
 const tidy = (s = '') => {
-  const t = s.replace(/\s+,/g, ',').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')').replace(/\s{2,}/g, ' ').trim();
+  const t = s.replaceAll(/\s+,/g, ',').replaceAll(/\(\s+/g, '(').replaceAll(/\s+\)/g, ')').replaceAll(/\s{2,}/g, ' ').trim();
   return t.charAt(0).toUpperCase() + t.slice(1);
 };
 const sections = catalogue.categories.map((c) => ({
