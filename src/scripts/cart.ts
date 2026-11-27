@@ -45,13 +45,12 @@ export function cartCount(): number {
 
 export function groups(items: Array<CartItem>) {
   const kinds: Array<CartKind> = ['buffet', 'meal', 'gift'];
-  return kinds
-    .map((kind) => {
-      const list = items.filter((i) => i.kind === kind);
-      const subtotal = list.reduce((s, i) => s + i.unitCents * i.qty, 0);
-      return { kind, list, subtotal, delivery: list.length ? DELIVERY_CENTS[kind] : 0 };
-    })
-    .filter((g) => g.list.length);
+  return kinds.flatMap((kind) => {
+    const list = items.filter((i) => i.kind === kind);
+    if (!list.length) { return []; }
+    const subtotal = list.reduce((s, i) => s + i.unitCents * i.qty, 0);
+    return [{ kind, list, subtotal, delivery: DELIVERY_CENTS[kind] }];
+  });
 }
 
 export function totals(items: Array<CartItem>) {

@@ -135,7 +135,7 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
   const grid = document.querySelector<HTMLElement>('[data-grid]')!;
   const count = document.querySelector<HTMLElement>('[data-result-count]')!;
 
-  const checked = (key: string) => boxes.filter((b) => b.dataset.filter === key && b.checked).map((b) => b.value);
+  const checked = (key: string) => boxes.flatMap((b) => (b.dataset.filter === key && b.checked ? [b.value] : []));
 
   function apply() {
     const q = search.value.trim().toLowerCase();
