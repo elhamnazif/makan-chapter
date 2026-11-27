@@ -1,8 +1,9 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
 import { url } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 ---
+
 <Layout title="Cart">
   <div class="container-page pb-16 pt-8">
     <h1 class="text-2xl font-bold tracking-tight md:text-3xl">Shopping Cart</h1>
@@ -11,7 +12,10 @@ import { url } from '../../data/site';
       <Icon name="ph:shopping-cart-simple" class="mx-auto size-14 text-muted" aria-hidden="true" />
       <h2 class="mt-4 text-xl font-bold">Your cart is empty</h2>
       <p class="mt-2 text-muted">Add a mini buffet set or a meal to get started.</p>
-      <a href={url('order/')} class="btn mt-6"><Icon name="ph:arrow-left" class="size-5" aria-hidden="true" />Continue Shopping</a>
+      <a href={url('order/')} class="btn mt-6">
+        <Icon name="ph:arrow-left" class="size-5" aria-hidden="true" />
+        Continue Shopping
+      </a>
     </div>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_22rem]" hidden data-filled>
@@ -23,29 +27,51 @@ import { url } from '../../data/site';
           <span class="font-semibold">Total</span>
           <span class="text-2xl font-bold" data-total></span>
         </div>
-        <a href={url('delivery/')} class="btn btn-block mt-5">Proceed to Delivery<Icon name="ph:arrow-right-bold" class="size-5" aria-hidden="true" /></a>
-        <a href={url('order/')} class="mt-3 flex min-h-11 items-center justify-center text-sm font-medium hover:underline">Continue Shopping</a>
+        <a href={url('delivery/')} class="btn btn-block mt-5">
+          Proceed to Delivery
+          <Icon name="ph:arrow-right-bold" class="size-5" aria-hidden="true" />
+        </a>
+        <a
+          href={url('order/')}
+          class="mt-3 flex min-h-11 items-center justify-center text-sm font-medium hover:underline"
+        >
+          Continue Shopping
+        </a>
       </aside>
     </div>
   </div>
 </Layout>
 
 <script>
-  import { find } from '../../scripts/dom';
-  import { readCart, writeCart, groups, totals, money, KIND_LABEL, DELIVERY_LABEL } from '../../scripts/cart';
+  import {
+    readCart,
+    writeCart,
+    groups,
+    totals,
+    money,
+    KIND_LABEL,
+    DELIVERY_LABEL,
+  } from '../../scripts/cart';
   import type { CartItem } from '../../scripts/cart';
+  import { find } from '../../scripts/dom';
 
   const wrap = find<HTMLElement>('[data-groups]');
 
   function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text?: string) {
     const n = document.createElement(tag);
-    if (cls) { n.className = cls; }
-    if (text !== undefined) { n.textContent = text; }
+    if (cls) {
+      n.className = cls;
+    }
+    if (text !== undefined) {
+      n.textContent = text;
+    }
     return n;
   }
 
   function update(key: string, fn: (i: CartItem) => CartItem | null) {
-    const next = readCart().map((i) => (i.key === key ? fn(i) : i)).filter(Boolean) as Array<CartItem>;
+    const next = readCart()
+      .map((i) => (i.key === key ? fn(i) : i))
+      .filter(Boolean) as Array<CartItem>;
     writeCart(next);
     render();
   }
@@ -58,9 +84,16 @@ import { url } from '../../data/site';
     const gs = groups(items);
     for (const g of gs) {
       const section = el('section', 'card overflow-hidden');
-      const head = el('div', 'flex items-center justify-between border-b border-line bg-surface-2 px-4 py-3');
+      const head = el(
+        'div',
+        'flex items-center justify-between border-b border-line bg-surface-2 px-4 py-3',
+      );
       head.append(el('h2', 'font-bold', KIND_LABEL[g.kind]));
-      if (g.delivery) { head.append(el('span', 'text-sm text-muted', `${DELIVERY_LABEL[g.kind]} ${money(g.delivery)}`)); }
+      if (g.delivery) {
+        head.append(
+          el('span', 'text-sm text-muted', `${DELIVERY_LABEL[g.kind]} ${money(g.delivery)}`),
+        );
+      }
       section.append(head);
       const ul = el('ul', 'divide-y divide-line');
       for (const item of g.list) {
@@ -75,30 +108,55 @@ import { url } from '../../data/site';
         }
         if (item.kind === 'meal') {
           const id = `note-${item.key.replaceAll(/[^a-z0-9]/gi, '')}`;
-          const lab = el('label', 'mt-3 block text-sm font-medium', 'Notes for the kitchen (optional)');
+          const lab = el(
+            'label',
+            'mt-3 block text-sm font-medium',
+            'Notes for the kitchen (optional)',
+          );
           lab.setAttribute('for', id);
           const inp = el('input', 'field mt-1.5 max-w-sm');
-          inp.id = id; inp.value = item.note ?? ''; inp.placeholder = 'e.g. less spicy';
-          inp.addEventListener('change', () => update(item.key, (i) => ({ ...i, note: inp.value.trim() })));
+          inp.id = id;
+          inp.value = item.note ?? '';
+          inp.placeholder = 'e.g. less spicy';
+          inp.addEventListener('change', () =>
+            update(item.key, (i) => ({ ...i, note: inp.value.trim() })),
+          );
           info.append(lab, inp);
         }
         const side = el('div', 'flex items-center justify-between gap-4 sm:flex-col sm:items-end');
         const stepper = el('div', 'flex items-center gap-1');
-        const minus = el('button', 'grid size-11 place-items-center rounded-control border border-line hover:bg-surface-2', '−');
-        minus.type = 'button'; minus.setAttribute('aria-label', `Decrease ${item.name}`);
+        const minus = el(
+          'button',
+          'grid size-11 place-items-center rounded-control border border-line hover:bg-surface-2',
+          '−',
+        );
+        minus.type = 'button';
+        minus.setAttribute('aria-label', `Decrease ${item.name}`);
         const qty = el('span', 'w-10 text-center font-semibold', String(item.qty));
         qty.setAttribute('aria-live', 'polite');
-        const plus = el('button', 'grid size-11 place-items-center rounded-control border border-line hover:bg-surface-2', '+');
-        plus.type = 'button'; plus.setAttribute('aria-label', `Increase ${item.name}`);
-        minus.addEventListener('click', () => update(item.key, (i) => (i.qty > 1 ? { ...i, qty: i.qty - 1 } : i)));
+        const plus = el(
+          'button',
+          'grid size-11 place-items-center rounded-control border border-line hover:bg-surface-2',
+          '+',
+        );
+        plus.type = 'button';
+        plus.setAttribute('aria-label', `Increase ${item.name}`);
+        minus.addEventListener('click', () =>
+          update(item.key, (i) => (i.qty > 1 ? { ...i, qty: i.qty - 1 } : i)),
+        );
         plus.addEventListener('click', () => update(item.key, (i) => ({ ...i, qty: i.qty + 1 })));
         minus.disabled = item.qty <= 1;
         minus.classList.toggle('opacity-40', item.qty <= 1);
         stepper.append(minus, qty, plus);
         const right = el('div', 'text-right');
         right.append(el('p', 'font-bold', money(item.unitCents * item.qty)));
-        const rm = el('button', 'min-h-11 text-sm font-medium text-muted underline-offset-2 hover:text-ink hover:underline', 'Remove');
-        rm.type = 'button'; rm.setAttribute('aria-label', `Remove ${item.name}`);
+        const rm = el(
+          'button',
+          'min-h-11 text-sm font-medium text-muted underline-offset-2 hover:text-ink hover:underline',
+          'Remove',
+        );
+        rm.type = 'button';
+        rm.setAttribute('aria-label', `Remove ${item.name}`);
         rm.addEventListener('click', () => update(item.key, () => null));
         right.append(rm);
         side.append(stepper, right);

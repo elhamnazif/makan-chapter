@@ -2,24 +2,36 @@
 // Order Online, modelled on the Pick n Go store menu layout: store header,
 // sticky category tabs with scroll-spy, photo dish cards and a dish dialog.
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
 import MoeBadge from '../../components/MoeBadge.astro';
 import catalogue from '../../data/catalogue.json';
 import { url, money, business } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 
 // No per-dish photos exist yet. Each section uses the closest real category photo.
 const photos = new Map([
-  ['cat-1', 'bakar-bakar'], ['cat-2', 'nasi-plate'], ['cat-3', 'nasi-ambeng'], ['cat-4', 'nasi-lemak-plate'],
-  ['cat-5', 'nasi-sotong-plate'], ['cat-6', 'kuih-tray'], ['cat-7', 'lauk'],
+  ['cat-1', 'bakar-bakar'],
+  ['cat-2', 'nasi-plate'],
+  ['cat-3', 'nasi-ambeng'],
+  ['cat-4', 'nasi-lemak-plate'],
+  ['cat-5', 'nasi-sotong-plate'],
+  ['cat-6', 'kuih-tray'],
+  ['cat-7', 'lauk'],
 ]);
 const photo = (categoryId: string) => {
   const image = photos.get(categoryId);
-  if (!image) { throw new Error(`No photo for catalogue category ${categoryId}`); }
+  if (!image) {
+    throw new Error(`No photo for catalogue category ${categoryId}`);
+  }
   return image;
 };
 // Light tidy-up of source text: spacing around punctuation and a capital first letter.
 const tidy = (s = '') => {
-  const t = s.replaceAll(/\s+,/g, ',').replaceAll(/\(\s+/g, '(').replaceAll(/\s+\)/g, ')').replaceAll(/\s{2,}/g, ' ').trim();
+  const t = s
+    .replaceAll(/\s+,/g, ',')
+    .replaceAll(/\(\s+/g, '(')
+    .replaceAll(/\s+\)/g, ')')
+    .replaceAll(/\s{2,}/g, ' ')
+    .trim();
   return t.charAt(0).toUpperCase() + t.slice(1);
 };
 const sections = catalogue.categories.map((c) => ({
@@ -27,28 +39,57 @@ const sections = catalogue.categories.map((c) => ({
   name: tidy(c.name),
   items: catalogue.items
     .filter((i) => i.categoryId === c.id)
-    .map((i) => ({ ...i, name: tidy(i.name), description: tidy(i.description), image: photo(c.id) })),
+    .map((i) => ({
+      ...i,
+      name: tidy(i.name),
+      description: tidy(i.description),
+      image: photo(c.id),
+    })),
 }));
 ---
+
 <Layout title="Order Online" description="Order meals, nasi ambeng and kuih online for delivery.">
   <!-- Store header -->
   <section class="bg-surface">
     <div class="relative h-44 overflow-hidden bg-surface-2 md:h-72">
-      <img src={url('images/nasi-ambeng.webp')} alt="" class="size-full object-cover" fetchpriority="high" />
+      <img
+        src={url('images/nasi-ambeng.webp')}
+        alt=""
+        class="size-full object-cover"
+        fetchpriority="high"
+      />
     </div>
     <div class="container-page pb-6">
       <div class="flex items-end gap-4">
         <span class="relative z-10 -mt-10 grid size-24 shrink-0 place-items-center overflow-hidden rounded-card border border-line bg-white shadow-card md:-mt-12 md:size-32">
-          <img src={url('brand/logo.png')} alt="" width="128" height="128" class="size-full object-contain p-1" />
+          <img
+            src={url('brand/logo.png')}
+            alt=""
+            width="128"
+            height="128"
+            class="size-full object-contain p-1"
+          />
         </span>
         <div class="min-w-0 pb-1">
           <h1 class="text-2xl font-bold tracking-tight md:text-3xl">{business.name}</h1>
           <p class="text-sm text-muted">{business.address[0]}</p>
         </div>
       </div>
-      <p class="mt-4 text-sm font-semibold">S$15 delivery<span class="mx-2 text-muted" aria-hidden="true">•</span>{catalogue.items.length} dishes</p>
-      <p class="mt-1.5 max-w-[80ch] text-sm leading-relaxed text-muted"><span class="font-semibold text-ink">{business.name}</span>, {business.address[0]}. Bakar-bakar, penyet, nasi ambeng, nasi lemak and kuih, cooked to order in our kitchen.</p>
-      <p class="mt-2 flex items-center gap-2 text-sm font-semibold"><MoeBadge class="size-6" />Muslim-Owned Enterprise</p>
+      <p class="mt-4 text-sm font-semibold">
+        S$15 delivery
+        <span class="mx-2 text-muted" aria-hidden="true">
+          •
+        </span>
+        {catalogue.items.length} dishes
+      </p>
+      <p class="mt-1.5 max-w-[80ch] text-sm leading-relaxed text-muted">
+        <span class="font-semibold text-ink">{business.name}</span>, {business.address[0]}.
+        Bakar-bakar, penyet, nasi ambeng, nasi lemak and kuih, cooked to order in our kitchen.
+      </p>
+      <p class="mt-2 flex items-center gap-2 text-sm font-semibold">
+        <MoeBadge class="size-6" />
+        Muslim-Owned Enterprise
+      </p>
     </div>
   </section>
 
@@ -57,19 +98,49 @@ const sections = catalogue.categories.map((c) => ({
     <div class="container-page">
       <div class="flex items-center gap-3 pt-3">
         <form class="relative flex-1" role="search" data-search-form>
-          <label for="menu-search" class="sr-only">Search the menu</label>
-          <input id="menu-search" type="search" class="field !min-h-10 !bg-surface-2 pr-10" placeholder="Search dishes" autocomplete="off" data-search />
-          <Icon name="ph:magnifying-glass" class="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted" aria-hidden="true" />
+          <label for="menu-search" class="sr-only">
+            Search the menu
+          </label>
+          <input
+            id="menu-search"
+            type="search"
+            class="field !min-h-10 !bg-surface-2 pr-10"
+            placeholder="Search dishes"
+            autocomplete="off"
+            data-search
+          />
+          <Icon
+            name="ph:magnifying-glass"
+            class="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted"
+            aria-hidden="true"
+          />
         </form>
-        <a href={url('cart/')} class="btn btn-outline !min-h-10 hidden sm:inline-flex" data-cart-button>
-          <Icon name="ph:shopping-cart-simple" class="size-5" aria-hidden="true" />Cart<span class="font-normal text-muted" data-cart-summary></span>
+        <a
+          href={url('cart/')}
+          class="btn btn-outline !min-h-10 hidden sm:inline-flex"
+          data-cart-button
+        >
+          <Icon name="ph:shopping-cart-simple" class="size-5" aria-hidden="true" />
+          Cart<span class="font-normal text-muted" data-cart-summary></span>
         </a>
       </div>
       <nav aria-label="Menu categories" class="-mb-px mt-1 overflow-x-auto [scrollbar-width:none]">
         <ul class="flex gap-1 whitespace-nowrap" data-tabs>
           {sections.map((s, i) => (
             <li>
-              <a href={`#${s.id}`} class:list={['inline-flex min-h-11 items-center border-b-2 px-3 text-[15px] transition-colors', i === 0 ? 'border-accent font-semibold text-price' : 'border-transparent text-muted hover:text-ink']} data-tab={s.id} aria-current={i === 0 ? 'true' : undefined}>{s.name}</a>
+              <a
+                href={`#${s.id}`}
+                class:list={[
+                  'inline-flex min-h-11 items-center border-b-2 px-3 text-[15px] transition-colors',
+                  i === 0
+                    ? 'border-accent font-semibold text-price'
+                    : 'border-transparent text-muted hover:text-ink',
+                ]}
+                data-tab={s.id}
+                aria-current={i === 0 ? 'true' : undefined}
+              >
+                {s.name}
+              </a>
             </li>
           ))}
         </ul>
@@ -80,30 +151,65 @@ const sections = catalogue.categories.map((c) => ({
   <!-- Menu sections -->
   <div class="container-page pb-28 pt-6 sm:pb-16">
     {sections.map((s) => (
-      <section id={s.id} aria-labelledby={`${s.id}-title`} class="scroll-mt-44 pb-10" data-section={s.id}>
-        <h2 id={`${s.id}-title`} class="mb-4 text-xl font-bold">{s.name}</h2>
+      <section
+        id={s.id}
+        aria-labelledby={`${s.id}-title`}
+        class="scroll-mt-44 pb-10"
+        data-section={s.id}
+      >
+        <h2 id={`${s.id}-title`} class="mb-4 text-xl font-bold">
+          {s.name}
+        </h2>
         <ul class="grid gap-4 md:grid-cols-2">
           {s.items.map((i) => (
-            <li class="relative" data-item data-search={`${i.name} ${i.description} ${s.name}`.toLowerCase()}>
+            <li
+              class="relative"
+              data-item
+              data-search={`${i.name} ${i.description} ${s.name}`.toLowerCase()}
+            >
               <button
                 type="button"
                 class="card grid h-full w-full grid-cols-[1fr_auto] overflow-hidden text-left !shadow-none transition-colors hover:border-ink/40"
-                data-open={JSON.stringify({ id: i.id, name: i.name, description: i.description, priceCents: i.priceCents, image: i.image, category: s.name })}
+                data-open={JSON.stringify({
+                  id: i.id,
+                  name: i.name,
+                  description: i.description,
+                  priceCents: i.priceCents,
+                  image: i.image,
+                  category: s.name,
+                })}
               >
                 <span class="flex min-w-0 flex-col p-4">
                   <span class="text-[1.0625rem]/[1.45] font-semibold">{i.name}</span>
-                  {i.description && <span class="mt-1 line-clamp-2 text-base/[1.6] text-muted">{i.description}</span>}
-                  <span class="mt-auto pt-4 text-lg font-bold text-price">{money(i.priceCents)}</span>
+                  {i.description && (
+                    <span class="mt-1 line-clamp-2 text-base/[1.6] text-muted">
+                      {i.description}
+                    </span>
+                  )}
+                  <span class="mt-auto pt-4 text-lg font-bold text-price">
+                    {money(i.priceCents)}
+                  </span>
                 </span>
                 <span class="relative block h-full min-h-44 w-28 bg-surface-2 md:w-36">
-                  <img src={url(`images/${i.image}.webp`)} alt="" loading="lazy" width="176" height="176" class="size-full object-cover" />
+                  <img
+                    src={url(`images/${i.image}.webp`)}
+                    alt=""
+                    loading="lazy"
+                    width="176"
+                    height="176"
+                    class="size-full object-cover"
+                  />
                 </span>
               </button>
               <button
                 type="button"
                 class="absolute bottom-3 right-3 grid size-11 place-items-center rounded-full bg-accent text-accent-ink shadow-card ring-1 ring-black/10 transition-transform hover:scale-105 active:scale-95"
                 aria-label={`Add ${i.name} to cart`}
-                data-quick-add={JSON.stringify({ id: i.id, name: i.name, priceCents: i.priceCents })}
+                data-quick-add={JSON.stringify({
+                  id: i.id,
+                  name: i.name,
+                  priceCents: i.priceCents,
+                })}
               >
                 <Icon name="ph:plus-bold" class="size-5" aria-hidden="true" />
               </button>
@@ -115,30 +221,61 @@ const sections = catalogue.categories.map((c) => ({
     <div class="card flex flex-col items-center px-6 py-14 text-center" hidden data-empty>
       <Icon name="ph:magnifying-glass" class="size-10 text-muted" aria-hidden="true" />
       <p class="mt-3 font-semibold">No dishes match your search.</p>
-      <button type="button" class="btn btn-outline mt-5" data-reset>Clear search</button>
+      <button type="button" class="btn btn-outline mt-5" data-reset>
+        Clear search
+      </button>
     </div>
   </div>
 
   <!-- Mobile cart bar -->
-  <div class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 p-3 backdrop-blur sm:hidden" hidden data-cart-bar>
+  <div
+    class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 p-3 backdrop-blur sm:hidden"
+    hidden
+    data-cart-bar
+  >
     <a href={url('cart/')} class="btn btn-block justify-between">
-      <span class="flex items-center gap-2"><Icon name="ph:shopping-cart-simple" class="size-5" aria-hidden="true" />View cart</span>
+      <span class="flex items-center gap-2">
+        <Icon name="ph:shopping-cart-simple" class="size-5" aria-hidden="true" />
+        View cart
+      </span>
       <span data-cart-bar-summary></span>
     </a>
   </div>
 
   <!-- Dish dialog: centred on desktop, full screen on mobile -->
-  <dialog class="m-0 h-dvh leading-[1.6] max-h-none w-full max-w-none bg-surface p-0 text-ink backdrop:bg-[var(--mc-scrim)] md:m-auto md:h-auto md:max-h-[85dvh] md:w-[min(64rem,92vw)] md:rounded-card" aria-labelledby="dish-name" data-dish>
-    <form method="dialog" class="flex h-full flex-col md:grid md:max-h-[85dvh] md:grid-cols-2" data-dish-form>
+  <dialog
+    class="m-0 h-dvh leading-[1.6] max-h-none w-full max-w-none bg-surface p-0 text-ink backdrop:bg-[var(--mc-scrim)] md:m-auto md:h-auto md:max-h-[85dvh] md:w-[min(64rem,92vw)] md:rounded-card"
+    aria-labelledby="dish-name"
+    data-dish
+  >
+    <form
+      method="dialog"
+      class="flex h-full flex-col md:grid md:max-h-[85dvh] md:grid-cols-2"
+      data-dish-form
+    >
       <div class="relative shrink-0">
-        <img alt="" class="aspect-[4/3] w-full object-cover max-md:max-h-[32dvh] md:aspect-auto md:h-full" data-dish-img />
-        <button type="submit" value="cancel" class="absolute left-3 top-3 grid size-11 place-items-center rounded-full bg-white text-zinc-900 shadow-card md:hidden" aria-label="Close">
+        <img
+          alt=""
+          class="aspect-[4/3] w-full object-cover max-md:max-h-[32dvh] md:aspect-auto md:h-full"
+          data-dish-img
+        />
+        <button
+          type="submit"
+          value="cancel"
+          class="absolute left-3 top-3 grid size-11 place-items-center rounded-full bg-white text-zinc-900 shadow-card md:hidden"
+          aria-label="Close"
+        >
           <Icon name="ph:caret-left-bold" class="size-5" aria-hidden="true" />
         </button>
       </div>
       <div class="flex min-h-0 flex-1 flex-col">
         <div class="relative flex-1 overflow-y-auto p-5 md:p-6">
-          <button type="submit" value="cancel" class="absolute right-4 top-4 hidden size-11 place-items-center rounded-control bg-surface-2 hover:bg-line md:grid" aria-label="Close">
+          <button
+            type="submit"
+            value="cancel"
+            class="absolute right-4 top-4 hidden size-11 place-items-center rounded-control bg-surface-2 hover:bg-line md:grid"
+            aria-label="Close"
+          >
             <Icon name="ph:x-bold" class="size-5" aria-hidden="true" />
           </button>
           <p class="text-sm text-muted" data-dish-category></p>
@@ -146,18 +283,43 @@ const sections = catalogue.categories.map((c) => ({
           <p class="mt-1 text-lg font-semibold" data-dish-price></p>
           <p class="mt-3 leading-relaxed text-muted" data-dish-desc></p>
           <div class="mt-6 border-t border-line pt-5">
-            <label for="dish-note" class="field-label">Notes for the kitchen (optional)</label>
-            <textarea id="dish-note" rows="2" maxlength="200" class="field" placeholder="e.g. less spicy"></textarea>
+            <label for="dish-note" class="field-label">
+              Notes for the kitchen (optional)
+            </label>
+            <textarea
+              id="dish-note"
+              rows="2"
+              maxlength="200"
+              class="field"
+              placeholder="e.g. less spicy"
+            ></textarea>
           </div>
         </div>
         <div class="flex items-center gap-3 border-t border-line p-4">
           <div class="flex items-center rounded-control border border-line">
-            <button type="button" class="grid size-11 place-items-center" aria-label="Decrease quantity" data-dish-step="-1"><Icon name="ph:minus-bold" class="size-4" aria-hidden="true" /></button>
-            <output class="w-8 text-center font-semibold" aria-live="polite" data-dish-qty>1</output>
-            <button type="button" class="grid size-11 place-items-center" aria-label="Increase quantity" data-dish-step="1"><Icon name="ph:plus-bold" class="size-4" aria-hidden="true" /></button>
+            <button
+              type="button"
+              class="grid size-11 place-items-center"
+              aria-label="Decrease quantity"
+              data-dish-step="-1"
+            >
+              <Icon name="ph:minus-bold" class="size-4" aria-hidden="true" />
+            </button>
+            <output class="w-8 text-center font-semibold" aria-live="polite" data-dish-qty>
+              1
+            </output>
+            <button
+              type="button"
+              class="grid size-11 place-items-center"
+              aria-label="Increase quantity"
+              data-dish-step="1"
+            >
+              <Icon name="ph:plus-bold" class="size-4" aria-hidden="true" />
+            </button>
           </div>
           <button type="submit" value="add" class="btn flex-1 justify-between">
-            <span>Add To Cart</span><span data-dish-total></span>
+            <span>Add To Cart</span>
+            <span data-dish-total></span>
           </button>
         </div>
       </div>
@@ -166,10 +328,17 @@ const sections = catalogue.categories.map((c) => ({
 </Layout>
 
 <script>
-  import { find, dataValue } from '../../scripts/dom';
   import { addItem, readCart, totals, money, toast, base } from '../../scripts/cart';
+  import { find, dataValue } from '../../scripts/dom';
 
-  type Dish = { id: string; name: string; description: string; priceCents: number; image: string; category: string };
+  type Dish = {
+    id: string;
+    name: string;
+    description: string;
+    priceCents: number;
+    image: string;
+    category: string;
+  };
 
   // Cart summary in the bar and on mobile
   const cartSummary = find<HTMLElement>('[data-cart-summary]');
@@ -187,13 +356,25 @@ const sections = catalogue.categories.map((c) => ({
   document.addEventListener('cart:change', syncCart);
 
   const add = (d: { id: string; name: string; priceCents: number }, qty: number, note = '') => {
-    addItem({ kind: 'meal', id: d.id, name: d.name, unitCents: d.priceCents, unitLabel: 'each', qty, details: [], note, key: note ? `${d.id}:${note}` : d.id });
+    addItem({
+      kind: 'meal',
+      id: d.id,
+      name: d.name,
+      unitCents: d.priceCents,
+      unitLabel: 'each',
+      qty,
+      details: [],
+      note,
+      key: note ? `${d.id}:${note}` : d.id,
+    });
     toast(`${qty > 1 ? `${qty} x ` : ''}${d.name} added to cart`);
   };
 
-  document.querySelectorAll<HTMLButtonElement>('[data-quick-add]').forEach((b) =>
-    b.addEventListener('click', () => add(JSON.parse(dataValue(b, 'quickAdd')), 1)),
-  );
+  document
+    .querySelectorAll<HTMLButtonElement>('[data-quick-add]')
+    .forEach((b) =>
+      b.addEventListener('click', () => add(JSON.parse(dataValue(b, 'quickAdd')), 1)),
+    );
 
   // Dish dialog
   const dialog = find<HTMLDialogElement>('[data-dish]');
@@ -221,14 +402,23 @@ const sections = catalogue.categories.map((c) => ({
     }),
   );
   dialog.querySelectorAll<HTMLButtonElement>('[data-dish-step]').forEach((b) =>
-    b.addEventListener('click', () => { qty = Math.max(1, Math.min(99, qty + Number(b.dataset.dishStep))); renderQty(); }),
+    b.addEventListener('click', () => {
+      qty = Math.max(1, Math.min(99, qty + Number(b.dataset.dishStep)));
+      renderQty();
+    }),
   );
   dialog.addEventListener('close', () => {
     document.documentElement.style.overflow = '';
-    if (dialog.returnValue === 'add' && current) { add(current, qty, note.value.trim()); }
+    if (dialog.returnValue === 'add' && current) {
+      add(current, qty, note.value.trim());
+    }
     dialog.returnValue = '';
   });
-  dialog.addEventListener('click', (e) => { if (e.target === dialog) { dialog.close('cancel'); } });
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) {
+      dialog.close('cancel');
+    }
+  });
 
   // Search
   const search = find<HTMLInputElement>('[data-search]');
@@ -243,18 +433,29 @@ const sections = catalogue.categories.map((c) => ({
       s.querySelectorAll<HTMLElement>('[data-item]').forEach((it) => {
         const ok = !q || dataValue(it, 'search').includes(q);
         it.hidden = !ok;
-        if (ok) { n++; }
+        if (ok) {
+          n++;
+        }
       });
       s.hidden = n === 0;
       const tab = tabs.find((t) => t.dataset.tab === s.id)?.parentElement;
-      if (tab) { tab.hidden = n === 0; }
+      if (tab) {
+        tab.hidden = n === 0;
+      }
       total += n;
     }
     empty.hidden = total > 0;
   }
-  find('[data-search-form]').addEventListener('submit', (e) => { e.preventDefault(); apply(); });
+  find('[data-search-form]').addEventListener('submit', (e) => {
+    e.preventDefault();
+    apply();
+  });
   search.addEventListener('input', apply);
-  find('[data-reset]').addEventListener('click', () => { search.value = ''; apply(); search.focus(); });
+  find('[data-reset]').addEventListener('click', () => {
+    search.value = '';
+    apply();
+    search.focus();
+  });
 
   // Scroll-spy: highlight the tab of the section nearest the top of the viewport.
   const setActive = (id: string) => {
@@ -265,19 +466,31 @@ const sections = catalogue.categories.map((c) => ({
       t.classList.toggle('text-price', on);
       t.classList.toggle('border-transparent', !on);
       t.classList.toggle('text-muted', !on);
-      if (on) { t.setAttribute('aria-current', 'true'); t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
-      else { t.removeAttribute('aria-current'); }
+      if (on) {
+        t.setAttribute('aria-current', 'true');
+        t.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      } else {
+        t.removeAttribute('aria-current');
+      }
     }
   };
   const visible = new Map<string, number>();
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (e.isIntersecting) { visible.set(e.target.id, e.boundingClientRect.top); }
-      else { visible.delete(e.target.id); }
-    }
-    const first = sections.find((s) => visible.has(s.id));
-    if (first) { setActive(first.id); }
-  }, { rootMargin: '-180px 0px -55% 0px' });
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          visible.set(e.target.id, e.boundingClientRect.top);
+        } else {
+          visible.delete(e.target.id);
+        }
+      }
+      const first = sections.find((s) => visible.has(s.id));
+      if (first) {
+        setActive(first.id);
+      }
+    },
+    { rootMargin: '-180px 0px -55% 0px' },
+  );
   sections.forEach((s) => io.observe(s));
   tabs.forEach((t) => t.addEventListener('click', () => setActive(dataValue(t, 'tab'))));
 </script>

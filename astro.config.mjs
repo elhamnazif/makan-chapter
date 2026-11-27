@@ -1,7 +1,7 @@
-// @ts-check
-import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import icon from 'astro-icon';
+// @ts-check
+import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   // Set BASE when hosting under a subdirectory, e.g. BASE=/layout/ npm run build

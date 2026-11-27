@@ -1,34 +1,99 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import { business } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 const services = ['Mini buffet', 'Buffet catering', 'Individual meals', 'Kuih and desserts'];
-const events = ['Corporate event', 'Wedding', 'Birthday party', 'Festive gathering', 'Family gathering', 'Other'];
+const events = [
+  'Corporate event',
+  'Wedding',
+  'Birthday party',
+  'Festive gathering',
+  'Family gathering',
+  'Other',
+];
 ---
+
 <Layout title="Contact Us">
-  <PageHero title="Contact Us" intro="Here are a few ways to get in touch with us." image="buffet-line" />
+  <PageHero
+    title="Contact Us"
+    intro="Here are a few ways to get in touch with us."
+    image="buffet-line"
+  />
 
   <div class="container-page grid gap-10 py-14 lg:grid-cols-[1fr_26rem]">
     <div>
-      <h2 class="text-2xl font-bold tracking-tight md:text-3xl">Tell us about your catering plans</h2>
-      <p class="mt-4 max-w-[60ch] leading-relaxed text-muted">Planning a gathering, office lunch or wedding? Send us the details and we will reply on WhatsApp with options and a quotation.</p>
+      <h2 class="text-2xl font-bold tracking-tight md:text-3xl">
+        Tell us about your catering plans
+      </h2>
+      <p class="mt-4 max-w-[60ch] leading-relaxed text-muted">
+        Planning a gathering, office lunch or wedding? Send us the details and we will reply on
+        WhatsApp with options and a quotation.
+      </p>
       <dl class="mt-8 grid gap-6 sm:grid-cols-2">
         <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold"><Icon name="ph:phone" class="size-4" aria-hidden="true" />Phone and WhatsApp</dt>
-          <dd class="mt-1"><a href={business.phoneHref} class="font-medium underline underline-offset-4">{business.phoneDisplay}</a></dd>
+          <dt class="flex items-center gap-2 text-sm font-semibold">
+            <Icon name="ph:phone" class="size-4" aria-hidden="true" />
+            Phone and WhatsApp
+          </dt>
+          <dd class="mt-1">
+            <a href={business.phoneHref} class="font-medium underline underline-offset-4">
+              {business.phoneDisplay}
+            </a>
+          </dd>
         </div>
         <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold"><Icon name="ph:envelope-simple" class="size-4" aria-hidden="true" />Email</dt>
-          <dd class="mt-1"><a href={`mailto:${business.email}`} class="font-medium underline underline-offset-4">{business.email}</a></dd>
+          <dt class="flex items-center gap-2 text-sm font-semibold">
+            <Icon name="ph:envelope-simple" class="size-4" aria-hidden="true" />
+            Email
+          </dt>
+          <dd class="mt-1">
+            <a href={`mailto:${business.email}`} class="font-medium underline underline-offset-4">
+              {business.email}
+            </a>
+          </dd>
         </div>
         <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold"><Icon name="ph:map-pin" class="size-4" aria-hidden="true" />Address</dt>
-          <dd class="mt-1">{business.address[0]}, {business.address[1]}<br /><a href={business.mapsUrl} target="_blank" rel="noopener" class="inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4">Open in Google Maps</a></dd>
+          <dt class="flex items-center gap-2 text-sm font-semibold">
+            <Icon name="ph:map-pin" class="size-4" aria-hidden="true" />
+            Address
+          </dt>
+          <dd class="mt-1">
+            {business.address[0]}, {business.address[1]}
+            <br />
+            <a
+              href={business.mapsUrl}
+              target="_blank"
+              rel="noopener"
+              class="inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4"
+            >
+              Open in Google Maps
+            </a>
+          </dd>
         </div>
         <div>
-          <dt class="flex items-center gap-2 text-sm font-semibold"><Icon name="ph:instagram-logo" class="size-4" aria-hidden="true" />Social</dt>
-          <dd class="mt-1 flex gap-4"><a href={business.instagram} target="_blank" rel="noopener" class="font-medium underline underline-offset-4">Instagram</a><a href={business.facebook} target="_blank" rel="noopener" class="font-medium underline underline-offset-4">Facebook</a></dd>
+          <dt class="flex items-center gap-2 text-sm font-semibold">
+            <Icon name="ph:instagram-logo" class="size-4" aria-hidden="true" />
+            Social
+          </dt>
+          <dd class="mt-1 flex gap-4">
+            <a
+              href={business.instagram}
+              target="_blank"
+              rel="noopener"
+              class="font-medium underline underline-offset-4"
+            >
+              Instagram
+            </a>
+            <a
+              href={business.facebook}
+              target="_blank"
+              rel="noopener"
+              class="font-medium underline underline-offset-4"
+            >
+              Facebook
+            </a>
+          </dd>
         </div>
       </dl>
     </div>
@@ -36,66 +101,113 @@ const events = ['Corporate event', 'Wedding', 'Birthday party', 'Festive gatheri
     <form class="card space-y-4 self-start p-5 md:p-6" novalidate data-contact>
       <h2 class="text-lg font-bold">Contact Us</h2>
       <div>
-        <label for="c-name" class="field-label">Your name</label>
+        <label for="c-name" class="field-label">
+          Your name
+        </label>
         <input id="c-name" class="field" autocomplete="name" aria-describedby="c-name-error" />
         <p id="c-name-error" class="field-error" hidden></p>
       </div>
       <div>
-        <label for="c-phone" class="field-label">Contact number</label>
-        <input id="c-phone" type="tel" class="field" autocomplete="tel" aria-describedby="c-phone-error" />
+        <label for="c-phone" class="field-label">
+          Contact number
+        </label>
+        <input
+          id="c-phone"
+          type="tel"
+          class="field"
+          autocomplete="tel"
+          aria-describedby="c-phone-error"
+        />
         <p id="c-phone-error" class="field-error" hidden></p>
       </div>
       <div>
-        <label for="c-event" class="field-label">Event type</label>
+        <label for="c-event" class="field-label">
+          Event type
+        </label>
         <select id="c-event" class="field">
           <option value="">Select event type</option>
-          {events.map((e) => <option>{e}</option>)}
+          {events.map((e) => (
+            <option>{e}</option>
+          ))}
         </select>
       </div>
       <fieldset>
         <legend class="field-label">Services required</legend>
         <div class="grid grid-cols-2 gap-x-4">
-          {services.map((s) => <label class="flex min-h-10 cursor-pointer items-center gap-2 text-sm"><input type="checkbox" value={s} class="size-4 accent-[var(--mc-accent)]" data-service />{s}</label>)}
+          {services.map((s) => (
+            <label class="flex min-h-10 cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                value={s}
+                class="size-4 accent-[var(--mc-accent)]"
+                data-service
+              />
+              {s}
+            </label>
+          ))}
         </div>
       </fieldset>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="c-date" class="field-label">Event date</label>
+          <label for="c-date" class="field-label">
+            Event date
+          </label>
           <input id="c-date" type="date" class="field" />
         </div>
         <div>
-          <label for="c-pax" class="field-label">Guests</label>
+          <label for="c-pax" class="field-label">
+            Guests
+          </label>
           <input id="c-pax" type="number" min="1" inputmode="numeric" class="field" />
         </div>
       </div>
       <div>
-        <label for="c-msg" class="field-label">Your message</label>
+        <label for="c-msg" class="field-label">
+          Your message
+        </label>
         <textarea id="c-msg" rows="4" class="field"></textarea>
       </div>
-      <button type="submit" class="btn btn-block"><Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />Send Enquiry</button>
+      <button type="submit" class="btn btn-block">
+        <Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />
+        Send Enquiry
+      </button>
     </form>
   </div>
 </Layout>
 
 <script>
-  import { find, byId } from '../../scripts/dom';
   import { waUrl, isoDate, prettyDate } from '../../scripts/cart';
+  import { find, byId } from '../../scripts/dom';
   const form = find<HTMLFormElement>('[data-contact]');
   const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => find<T>(`#${id}`, form);
   const v = (id: string) => ($(id) as HTMLInputElement).value.trim();
   $('c-date').setAttribute('min', isoDate(new Date()));
   const req = (id: string, msg: string) => {
-    const input = $(id); const err = byId(`${id}-error`);
+    const input = $(id);
+    const err = byId(`${id}-error`);
     const bad = !(input as HTMLInputElement).value.trim();
-    err.textContent = bad ? msg : ''; err.hidden = !bad;
-    if (bad) { input.setAttribute('aria-invalid', 'true'); } else { input.removeAttribute('aria-invalid'); }
+    err.textContent = bad ? msg : '';
+    err.hidden = !bad;
+    if (bad) {
+      input.setAttribute('aria-invalid', 'true');
+    } else {
+      input.removeAttribute('aria-invalid');
+    }
     return bad ? input : null;
   };
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const bad = [req('c-name', 'Enter your name.'), req('c-phone', 'Enter a contact number.')].filter(Boolean)[0];
-    if (bad) { bad.focus(); return; }
-    const services = [...form.querySelectorAll<HTMLInputElement>('[data-service]:checked')].map((s) => s.value);
+    const bad = [
+      req('c-name', 'Enter your name.'),
+      req('c-phone', 'Enter a contact number.'),
+    ].filter(Boolean)[0];
+    if (bad) {
+      bad.focus();
+      return;
+    }
+    const services = [...form.querySelectorAll<HTMLInputElement>('[data-service]:checked')].map(
+      (s) => s.value,
+    );
     const lines = [
       'Hi Makan Chapter, I would like to enquire about catering.',
       `Name: ${v('c-name')}`,

@@ -1,32 +1,57 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
-import PageHero from '../../components/PageHero.astro';
 import DemoBanner from '../../components/DemoBanner.astro';
 import MenuImage from '../../components/MenuImage.astro';
+import PageHero from '../../components/PageHero.astro';
 import { eventMenus, eventPackages, fromPriceCents } from '../../data/eventCatering';
 import { url, money } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 ---
-<Layout title="Catering" description="Choose from five catering menus, then pick Mini or Classic catering for your event.">
+
+<Layout
+  title="Catering"
+  description="Choose from five catering menus, then pick Mini or Classic catering for your event."
+>
   <DemoBanner />
-  <PageHero title="Catering" intro="Choose a menu, pick Mini or Classic catering, and book your event online." image="buffet-setup" />
+  <PageHero
+    title="Catering"
+    intro="Choose a menu, pick Mini or Classic catering, and book your event online."
+    image="buffet-setup"
+  />
 
   <section class="container-page py-14" aria-labelledby="menus-title">
-    <h2 id="menus-title" class="text-center text-3xl font-bold tracking-tight">Our Catering Menus</h2>
-    <p class="mx-auto mt-3 max-w-[55ch] text-center text-muted">Every menu comes as Mini Catering (20 to 50 pax) or Classic Catering (from 50 pax). You choose one dish from each category.</p>
+    <h2 id="menus-title" class="text-center text-3xl font-bold tracking-tight">
+      Our Catering Menus
+    </h2>
+    <p class="mx-auto mt-3 max-w-[55ch] text-center text-muted">
+      Every menu comes as Mini Catering (20 to 50 pax) or Classic Catering (from 50 pax). You choose
+      one dish from each category.
+    </p>
 
     <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-menu-list>
       {eventMenus.map((m, i) => (
         <li class="card flex flex-col overflow-hidden" data-menu-card={m.slug}>
           <MenuImage image={m.image} class="aspect-[4/3] w-full" />
           <div class="flex flex-1 flex-col items-center p-5 text-center">
-            <p class="text-xs font-semibold tracking-[.14em] text-accent">MENU {String(i + 1).padStart(2, '0')}</p>
+            <p class="text-xs font-semibold tracking-[.14em] text-accent">
+              MENU {String(i + 1).padStart(2, '0')}
+            </p>
             <h3 class="mt-1 text-xl font-bold">{m.name}</h3>
             <p class="mt-1.5 text-sm leading-relaxed text-muted">{m.blurb}</p>
-            <p class="mt-auto pt-4 text-lg font-bold text-price">From {money(fromPriceCents(m))}/pax</p>
+            <p class="mt-auto pt-4 text-lg font-bold text-price">
+              From {money(fromPriceCents(m))}/pax
+            </p>
             <div class="mt-4 w-full rounded-card border border-line p-2">
-              <a href={url(`catering/order/${m.slug}/`)} class="btn btn-block" data-order>Order</a>
-              <a href={url(`catering/menu/${m.slug}/`)} class="mt-1 flex min-h-11 items-center justify-center rounded-control text-base font-medium hover:bg-surface-2" data-view-menu>View Menu</a>
+              <a href={url(`catering/order/${m.slug}/`)} class="btn btn-block" data-order>
+                Order
+              </a>
+              <a
+                href={url(`catering/menu/${m.slug}/`)}
+                class="mt-1 flex min-h-11 items-center justify-center rounded-control text-base font-medium hover:bg-surface-2"
+                data-view-menu
+              >
+                View Menu
+              </a>
             </div>
           </div>
         </li>
@@ -36,19 +61,32 @@ import { url, money } from '../../data/site';
 
   <section class="bg-surface-2 py-14" aria-labelledby="packages-title">
     <div class="container-page">
-      <h2 id="packages-title" class="text-center text-3xl font-bold tracking-tight">Mini or Classic?</h2>
+      <h2 id="packages-title" class="text-center text-3xl font-bold tracking-tight">
+        Mini or Classic?
+      </h2>
       <ul class="mt-8 grid gap-6 md:grid-cols-2">
         {Object.values(eventPackages).map((p) => (
           <li class="card p-6">
             <h3 class="text-xl font-bold">{p.name}</h3>
             <p class="mt-2 leading-relaxed text-muted">{p.description}</p>
             <ul class="mt-4 grid gap-2 sm:grid-cols-2">
-              {p.includes.map((x) => <li class="flex items-center gap-2 text-sm"><Icon name="ph:check-circle" class="size-5 shrink-0 text-accent" aria-hidden="true" />{x}</li>)}
+              {p.includes.map((x) => (
+                <li class="flex items-center gap-2 text-sm">
+                  <Icon
+                    name="ph:check-circle"
+                    class="size-5 shrink-0 text-accent"
+                    aria-hidden="true"
+                  />
+                  {x}
+                </li>
+              ))}
             </ul>
           </li>
         ))}
       </ul>
-      <p class="mt-6 text-center text-sm text-muted">Book at least 3 days ahead. Full payment is taken when you order.</p>
+      <p class="mt-6 text-center text-sm text-muted">
+        Book at least 3 days ahead. Full payment is taken when you order.
+      </p>
     </div>
   </section>
 </Layout>

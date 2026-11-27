@@ -14,12 +14,30 @@ export const business = {
 };
 
 export const menuPdfs = [
-  { label: 'Bakar-Bakar menu', href: 'https://www.makanchapter.com/_files/ugd/8a18f2_8c79f4b71a2c4cfbae9b0fb10d35aedf.pdf' },
-  { label: 'Nasi Ambeng menu', href: 'https://www.makanchapter.com/_files/ugd/8a18f2_ef419c866c7d47c1a717f5f01849147e.pdf' },
-  { label: 'Nasi menu', href: 'https://www.makanchapter.com/_files/ugd/8a18f2_df947655229949a78d3e6baaf78c77b3.pdf' },
-  { label: 'Kuih Kuih menu', href: 'https://www.makanchapter.com/_files/ugd/8a18f2_f82a1416565a4f16bb79202c24212171.pdf' },
-  { label: 'Kuih muih minimum order list', href: 'https://www.makanchapter.com/_files/ugd/8a18f2_121e681d7eaa4474a5da0aef6ceb9dde.pdf' },
-  { label: 'Kuih muih and cakes price list', href: 'https://www.makanchapter.com/_files/ugd/8a18f2_dd268273de20453586d07543602b013d.pdf' },
+  {
+    label: 'Bakar-Bakar menu',
+    href: 'https://www.makanchapter.com/_files/ugd/8a18f2_8c79f4b71a2c4cfbae9b0fb10d35aedf.pdf',
+  },
+  {
+    label: 'Nasi Ambeng menu',
+    href: 'https://www.makanchapter.com/_files/ugd/8a18f2_ef419c866c7d47c1a717f5f01849147e.pdf',
+  },
+  {
+    label: 'Nasi menu',
+    href: 'https://www.makanchapter.com/_files/ugd/8a18f2_df947655229949a78d3e6baaf78c77b3.pdf',
+  },
+  {
+    label: 'Kuih Kuih menu',
+    href: 'https://www.makanchapter.com/_files/ugd/8a18f2_f82a1416565a4f16bb79202c24212171.pdf',
+  },
+  {
+    label: 'Kuih muih minimum order list',
+    href: 'https://www.makanchapter.com/_files/ugd/8a18f2_121e681d7eaa4474a5da0aef6ceb9dde.pdf',
+  },
+  {
+    label: 'Kuih muih and cakes price list',
+    href: 'https://www.makanchapter.com/_files/ugd/8a18f2_dd268273de20453586d07543602b013d.pdf',
+  },
 ];
 
 /** Prefix a site-relative path with the configured base. */
@@ -38,7 +56,12 @@ export function money(cents: number): string {
   return `S$${Number.isInteger(v) ? v.toFixed(0) : v.toFixed(2)}`;
 }
 
-export interface NavItem { label: string; href: string; match?: Array<string>; children?: Array<{ label: string; href: string }> }
+export interface NavItem {
+  label: string;
+  href: string;
+  match?: Array<string>;
+  children?: Array<{ label: string; href: string }>;
+}
 
 export const nav: Array<NavItem> = [
   { label: 'Home', href: '' },

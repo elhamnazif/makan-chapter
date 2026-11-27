@@ -21,7 +21,8 @@ export const eventPackages: Record<PackageKey, EventPackage> = {
   mini: {
     key: 'mini',
     name: 'Mini Catering',
-    description: 'Ready-to-enjoy food served in disposable trays, perfect for smaller gatherings. From 20 pax (max 50), cutlery provided. Drinks not included.',
+    description:
+      'Ready-to-enjoy food served in disposable trays, perfect for smaller gatherings. From 20 pax (max 50), cutlery provided. Drinks not included.',
     image: 'mini-buffet-tray',
     minPax: 20,
     maxPax: 50,
@@ -32,14 +33,20 @@ export const eventPackages: Record<PackageKey, EventPackage> = {
   classic: {
     key: 'classic',
     name: 'Classic Catering',
-    description: 'The full buffet experience, served in warmers to keep your food hot throughout your event. From 50 pax, with cutlery and drinks included.',
+    description:
+      'The full buffet experience, served in warmers to keep your food hot throughout your event. From 50 pax, with cutlery and drinks included.',
     image: 'buffet-setup',
     minPax: 50,
     /** Larger orders are routed to WhatsApp for bulk terms, as on makanchapter.com. */
     maxPax: 100,
     deliveryCents: 8000,
     deliveryLabel: 'Delivery and collection',
-    includes: ['Buffet setup with warmers', 'Cutlery and drinks included', '50 to 100 pax online', 'Our team sets up 1 hour before'],
+    includes: [
+      'Buffet setup with warmers',
+      'Cutlery and drinks included',
+      '50 to 100 pax online',
+      'Our team sets up 1 hour before',
+    ],
   },
 };
 
@@ -75,7 +82,11 @@ function seafood(sections: Array<{ label: string; options: Array<string> }>): Me
   return { label: 'Seafood', options: sections.flatMap((s) => s.options), sections };
 }
 
-const classicDrinks: MenuCategory = { label: 'Drinks', options: ['Teh Tarik Panas', 'Teh O Pandan', 'Honeydew Selasih', 'Bandung'], only: 'classic' };
+const classicDrinks: MenuCategory = {
+  label: 'Drinks',
+  options: ['Teh Tarik Panas', 'Teh O Pandan', 'Honeydew Selasih', 'Bandung'],
+  only: 'classic',
+};
 
 export const eventMenus: Array<EventMenu> = [
   {
@@ -86,8 +97,24 @@ export const eventMenus: Array<EventMenu> = [
     priceCents: { mini: 1590, classic: 2390 },
     categories: [
       { label: 'Rice', options: ['Nasi Putih', 'Nasi Kuning', 'Nasi Minyak'] },
-      { label: 'Chicken', options: ['Ayam Lemak Cili Api', 'Ayam Masak Merah', 'Ayam Goreng Berempah', 'Ayam Masak Kicap'] },
-      { label: 'Beef', options: ['Daging Rendang', 'Paru Goreng Berempah', 'Daging Masak Hitam', 'Daging Black Pepper'] },
+      {
+        label: 'Chicken',
+        options: [
+          'Ayam Lemak Cili Api',
+          'Ayam Masak Merah',
+          'Ayam Goreng Berempah',
+          'Ayam Masak Kicap',
+        ],
+      },
+      {
+        label: 'Beef',
+        options: [
+          'Daging Rendang',
+          'Paru Goreng Berempah',
+          'Daging Masak Hitam',
+          'Daging Black Pepper',
+        ],
+      },
       { label: 'Vegetables', options: ['Urap', 'Sambal Goreng Tahu Tempe', 'Terong Belado'] },
       { label: 'Dessert', options: ['Kuih Lopes', 'Kaswi Pandan Gula Melaka', 'Putri Salat'] },
       classicDrinks,
@@ -100,10 +127,16 @@ export const eventMenus: Array<EventMenu> = [
     blurb: 'Coconut rice with sambal and all the favourite sides.',
     priceCents: { mini: 1490, classic: 2290 },
     categories: [
-      { label: 'Chicken', options: ['Ayam Goreng', 'Ayam Goreng Berempah', 'Ayam Masak Merah', 'Ayam Rendang'] },
+      {
+        label: 'Chicken',
+        options: ['Ayam Goreng', 'Ayam Goreng Berempah', 'Ayam Masak Merah', 'Ayam Rendang'],
+      },
       { label: 'Seafood', options: ['Sambal Sotong', 'Sambal Udang', 'Ikan Kuning Goreng'] },
       { label: 'Side', options: ['Telur Goreng', 'Telur Sambal', 'Bergedil'] },
-      { label: 'Vegetables', options: ['Kangkung Belacan', 'Sayur Lodeh', 'Sambal Goreng Tahu Tempe'] },
+      {
+        label: 'Vegetables',
+        options: ['Kangkung Belacan', 'Sayur Lodeh', 'Sambal Goreng Tahu Tempe'],
+      },
       { label: 'Dessert', options: ['Kuih Lopes', 'Ondeh-Ondeh', 'Pudding cup'] },
       classicDrinks,
     ],
@@ -115,7 +148,10 @@ export const eventMenus: Array<EventMenu> = [
     blurb: 'Festive ghee rice with rich curries, made for celebrations.',
     priceCents: { mini: 1490, classic: 2290 },
     categories: [
-      { label: 'Chicken', options: ['Ayam Masak Merah', 'Ayam Korma', 'Ayam Rendang', 'Ayam Masak Kicap'] },
+      {
+        label: 'Chicken',
+        options: ['Ayam Masak Merah', 'Ayam Korma', 'Ayam Rendang', 'Ayam Masak Kicap'],
+      },
       { label: 'Meat', options: ['Daging Masala', 'Kambing Kurma', 'Daging Rendang'] },
       { label: 'Vegetables', options: ['Dhalcar', 'Sayur Lodeh', 'Pajeri Nenas'] },
       { label: 'Side', options: ['Acar', 'Papadom', 'Telur Rebus Masak Merah'] },
@@ -133,10 +169,19 @@ export const eventMenus: Array<EventMenu> = [
     categories: [
       { label: 'Rice', options: ['Nasi Goreng Kampung', 'Butter Rice', 'Lemon Rice'] },
       { label: 'Pasta', options: ['Seafood Aglio Olio', 'Creamy Pasta', 'Tom Yum Pasta'] },
-      { label: 'Chicken', options: ['Fried Chicken with Honey Sauce', 'Lemon Chicken', 'Cereal Chicken'] },
+      {
+        label: 'Chicken',
+        options: ['Fried Chicken with Honey Sauce', 'Lemon Chicken', 'Cereal Chicken'],
+      },
       seafood([
-        { label: 'Fish options', options: ['Sweet & Sour Fish', 'Black Pepper Fish', 'Creamy Lemon Fish'] },
-        { label: 'Prawn options', options: ['Black Pepper Prawns', 'Cereal Prawns', 'Sambal Prawns'] },
+        {
+          label: 'Fish options',
+          options: ['Sweet & Sour Fish', 'Black Pepper Fish', 'Creamy Lemon Fish'],
+        },
+        {
+          label: 'Prawn options',
+          options: ['Black Pepper Prawns', 'Cereal Prawns', 'Sambal Prawns'],
+        },
       ]),
       { label: 'Dessert', options: ['Chocolate Brownies', 'Tiramisu', 'Blue Pea Pomelo Jelly'] },
       { label: 'Drinks', options: ['Teh Tarik', 'Cordial Drink'], only: 'classic' },
@@ -149,8 +194,14 @@ export const eventMenus: Array<EventMenu> = [
     blurb: 'Local favourites everyone knows and loves.',
     priceCents: { mini: 1490, classic: 2290 },
     categories: [
-      { label: 'Rice or Noodles', options: ['Mee Goreng', 'Bee Hoon Goreng', 'Nasi Goreng Kampung', 'Mee Hoon Soto'] },
-      { label: 'Main', options: ['Chicken Satay', 'Ayam Masak Merah', 'Chilli Prawns', 'Sweet and Sour Fish'] },
+      {
+        label: 'Rice or Noodles',
+        options: ['Mee Goreng', 'Bee Hoon Goreng', 'Nasi Goreng Kampung', 'Mee Hoon Soto'],
+      },
+      {
+        label: 'Main',
+        options: ['Chicken Satay', 'Ayam Masak Merah', 'Chilli Prawns', 'Sweet and Sour Fish'],
+      },
       { label: 'Vegetables', options: ['Sayur Chap Chai', 'Kangkung Belacan', 'Sayur Lodeh'] },
       { label: 'Side', options: ['Bergedil', 'Epok-Epok', 'Popiah'] },
       { label: 'Dessert', options: ['Bubur Cha Cha', 'Kuih Selection', 'Pudding cup'] },

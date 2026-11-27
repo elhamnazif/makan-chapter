@@ -18,41 +18,71 @@ const KEY = 'mc-cart-v1';
 const DRAFT = 'mc-draft-v1';
 
 export const DELIVERY_CENTS: Record<CartKind, number> = { buffet: 3000, meal: 1500, gift: 0 };
-export const KIND_LABEL: Record<CartKind, string> = { buffet: 'Mini buffet', meal: 'Meals and kuih', gift: 'Gift cards' };
-export const DELIVERY_LABEL: Record<CartKind, string> = { buffet: 'Mini buffet delivery', meal: 'Meal delivery', gift: '' };
+export const KIND_LABEL: Record<CartKind, string> = {
+  buffet: 'Mini buffet',
+  meal: 'Meals and kuih',
+  gift: 'Gift cards',
+};
+export const DELIVERY_LABEL: Record<CartKind, string> = {
+  buffet: 'Mini buffet delivery',
+  meal: 'Meal delivery',
+  gift: '',
+};
 
-const isStrings = (v: unknown): v is Array<string> => Array.isArray(v) && v.every((s) => typeof s === 'string');
+const isStrings = (v: unknown): v is Array<string> =>
+  Array.isArray(v) && v.every((s) => typeof s === 'string');
 
 // Storage is outside the app's control, so check its shape before trusting it.
 // JSON has no undefined, so an optional field is either absent or of its type.
 function isCartItem(v: unknown): v is CartItem {
-  return typeof v === 'object' && v !== null
-    && 'key' in v && typeof v.key === 'string'
-    && 'kind' in v && typeof v.kind === 'string' && Object.hasOwn(DELIVERY_CENTS, v.kind)
-    && 'id' in v && typeof v.id === 'string'
-    && 'name' in v && typeof v.name === 'string'
-    && 'unitLabel' in v && typeof v.unitLabel === 'string'
-    && 'unitCents' in v && typeof v.unitCents === 'number'
-    && 'qty' in v && typeof v.qty === 'number'
-    && 'details' in v && isStrings(v.details)
-    && (!('note' in v) || typeof v.note === 'string');
+  return (
+    typeof v === 'object' &&
+    v !== null &&
+    'key' in v &&
+    typeof v.key === 'string' &&
+    'kind' in v &&
+    typeof v.kind === 'string' &&
+    Object.hasOwn(DELIVERY_CENTS, v.kind) &&
+    'id' in v &&
+    typeof v.id === 'string' &&
+    'name' in v &&
+    typeof v.name === 'string' &&
+    'unitLabel' in v &&
+    typeof v.unitLabel === 'string' &&
+    'unitCents' in v &&
+    typeof v.unitCents === 'number' &&
+    'qty' in v &&
+    typeof v.qty === 'number' &&
+    'details' in v &&
+    isStrings(v.details) &&
+    (!('note' in v) || typeof v.note === 'string')
+  );
 }
 
 function isDraft(v: unknown): v is Draft {
-  return typeof v === 'object' && v !== null
-    && 'slug' in v && typeof v.slug === 'string'
-    && (!('date' in v) || typeof v.date === 'string')
-    && (!('time' in v) || typeof v.time === 'string')
-    && (!('qty' in v) || typeof v.qty === 'number')
-    && (!('setup' in v) || typeof v.setup === 'boolean')
-    && (!('choices' in v) || (typeof v.choices === 'object' && v.choices !== null && Object.values(v.choices).every(isStrings)));
+  return (
+    typeof v === 'object' &&
+    v !== null &&
+    'slug' in v &&
+    typeof v.slug === 'string' &&
+    (!('date' in v) || typeof v.date === 'string') &&
+    (!('time' in v) || typeof v.time === 'string') &&
+    (!('qty' in v) || typeof v.qty === 'number') &&
+    (!('setup' in v) || typeof v.setup === 'boolean') &&
+    (!('choices' in v) ||
+      (typeof v.choices === 'object' &&
+        v.choices !== null &&
+        Object.values(v.choices).every(isStrings)))
+  );
 }
 
 export function readCart(): Array<CartItem> {
   try {
     const stored: unknown = JSON.parse(localStorage.getItem(KEY) || '[]');
     return Array.isArray(stored) ? stored.filter(isCartItem) : [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 export function writeCart(items: Array<CartItem>): void {
@@ -64,8 +94,11 @@ export function addItem(item: Omit<CartItem, 'key'> & { key?: string }): void {
   const items = readCart();
   const key = item.key ?? `${item.id}:${item.details.join('|')}`;
   const existing = items.find((i) => i.key === key);
-  if (existing) { existing.qty += item.qty; }
-  else { items.push({ ...item, key }); }
+  if (existing) {
+    existing.qty += item.qty;
+  } else {
+    items.push({ ...item, key });
+  }
   writeCart(items);
 }
 
@@ -77,7 +110,9 @@ export function groups(items: Array<CartItem>) {
   const kinds: Array<CartKind> = ['buffet', 'meal', 'gift'];
   return kinds.flatMap((kind) => {
     const list = items.filter((i) => i.kind === kind);
-    if (!list.length) { return []; }
+    if (!list.length) {
+      return [];
+    }
     const subtotal = list.reduce((s, i) => s + i.unitCents * i.qty, 0);
     return [{ kind, list, subtotal, delivery: DELIVERY_CENTS[kind] }];
   });
@@ -108,10 +143,16 @@ export function readDraft(): Draft | null {
   try {
     const stored: unknown = JSON.parse(sessionStorage.getItem(DRAFT) || 'null');
     return isDraft(stored) ? stored : null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
-export function writeDraft(d: Draft): void { sessionStorage.setItem(DRAFT, JSON.stringify(d)); }
-export function clearDraft(): void { sessionStorage.removeItem(DRAFT); }
+export function writeDraft(d: Draft): void {
+  sessionStorage.setItem(DRAFT, JSON.stringify(d));
+}
+export function clearDraft(): void {
+  sessionStorage.removeItem(DRAFT);
+}
 
 export function waUrl(text: string): string {
   return `https://wa.me/6596865290?text=${encodeURIComponent(text)}`;
@@ -130,14 +171,25 @@ export function isoDate(d: Date): string {
 
 export function prettyDate(iso: string): string {
   const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('en-SG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  return new Date(y, m - 1, d).toLocaleDateString('en-SG', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 }
 
 export function toast(message: string): void {
   const region = document.getElementById('toast');
-  if (!region) { return; }
+  if (!region) {
+    return;
+  }
   region.textContent = message;
   region.dataset.show = 'true';
   window.clearTimeout(Number(region.dataset.timer));
-  region.dataset.timer = String(window.setTimeout(() => { region.dataset.show = 'false'; }, 2600));
+  region.dataset.timer = String(
+    window.setTimeout(() => {
+      region.dataset.show = 'false';
+    }, 2600),
+  );
 }

@@ -1,26 +1,57 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
 import { url } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 
 const fields = [
-  { id: 'name', label: 'Full name', icon: 'ph:user', type: 'text' as const, autocomplete: 'name', placeholder: 'Your full name', required: true },
-  { id: 'email', label: 'Email address', icon: 'ph:envelope-simple', type: 'email' as const, autocomplete: 'email', placeholder: 'you@example.com', required: true },
-  { id: 'phone', label: 'Phone number', icon: 'ph:phone', type: 'tel' as const, autocomplete: 'tel', placeholder: '9123 4567', required: true },
+  {
+    id: 'name',
+    label: 'Full name',
+    icon: 'ph:user',
+    type: 'text' as const,
+    autocomplete: 'name',
+    placeholder: 'Your full name',
+    required: true,
+  },
+  {
+    id: 'email',
+    label: 'Email address',
+    icon: 'ph:envelope-simple',
+    type: 'email' as const,
+    autocomplete: 'email',
+    placeholder: 'you@example.com',
+    required: true,
+  },
+  {
+    id: 'phone',
+    label: 'Phone number',
+    icon: 'ph:phone',
+    type: 'tel' as const,
+    autocomplete: 'tel',
+    placeholder: '9123 4567',
+    required: true,
+  },
 ];
 ---
+
 <Layout title="Delivery Details">
   <div class="container-page pb-16 pt-6">
     <div class="mx-auto max-w-md py-14 text-center" hidden data-empty>
       <Icon name="ph:shopping-cart-simple" class="mx-auto size-14 text-muted" aria-hidden="true" />
       <h1 class="mt-4 text-2xl font-bold">Your cart is empty</h1>
       <p class="mt-2 text-muted">Add something to your cart before entering delivery details.</p>
-      <a href={url('order/')} class="btn mt-6">Continue Shopping</a>
+      <a href={url('order/')} class="btn mt-6">
+        Continue Shopping
+      </a>
     </div>
 
     <div hidden data-filled>
-      <a href={url('cart/')} class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline">
-        <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />Back to Cart
+      <a
+        href={url('cart/')}
+        class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline"
+      >
+        <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />
+        Back to Cart
       </a>
       <h1 class="mt-2 text-2xl font-bold tracking-tight md:text-3xl">Delivery Details</h1>
       <p class="mt-1 text-muted">Enter your delivery information to complete your order.</p>
@@ -29,26 +60,65 @@ const fields = [
         <form class="card space-y-5 p-5 md:p-6" novalidate data-delivery>
           {fields.map((f) => (
             <div>
-              <label for={f.id} class="field-label flex items-center gap-2"><Icon name={f.icon} class="size-4" aria-hidden="true" />{f.label}</label>
-              <input id={f.id} name={f.id} type={f.type} class="field" autocomplete={f.autocomplete} placeholder={f.placeholder} required={f.required} aria-describedby={`${f.id}-error`} />
+              <label for={f.id} class="field-label flex items-center gap-2">
+                <Icon name={f.icon} class="size-4" aria-hidden="true" />
+                {f.label}
+              </label>
+              <input
+                id={f.id}
+                name={f.id}
+                type={f.type}
+                class="field"
+                autocomplete={f.autocomplete}
+                placeholder={f.placeholder}
+                required={f.required}
+                aria-describedby={`${f.id}-error`}
+              />
               <p id={`${f.id}-error`} class="field-error" hidden></p>
             </div>
           ))}
           <div>
-            <label for="address" class="field-label flex items-center gap-2"><Icon name="ph:map-pin" class="size-4" aria-hidden="true" />Delivery address</label>
-            <textarea id="address" name="address" rows="3" class="field" autocomplete="street-address" placeholder="Block, street, unit number and postal code" required aria-describedby="address-error"></textarea>
+            <label for="address" class="field-label flex items-center gap-2">
+              <Icon name="ph:map-pin" class="size-4" aria-hidden="true" />
+              Delivery address
+            </label>
+            <textarea
+              id="address"
+              name="address"
+              rows="3"
+              class="field"
+              autocomplete="street-address"
+              placeholder="Block, street, unit number and postal code"
+              required
+              aria-describedby="address-error"
+            ></textarea>
             <p id="address-error" class="field-error" hidden></p>
           </div>
           <div>
-            <label for="notes" class="field-label flex items-center gap-2"><Icon name="ph:note-pencil" class="size-4" aria-hidden="true" />Special instructions (optional)</label>
-            <textarea id="notes" name="notes" rows="3" class="field" placeholder="e.g. call on arrival, deliver to the lobby"></textarea>
+            <label for="notes" class="field-label flex items-center gap-2">
+              <Icon name="ph:note-pencil" class="size-4" aria-hidden="true" />
+              Special instructions (optional)
+            </label>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="3"
+              class="field"
+              placeholder="e.g. call on arrival, deliver to the lobby"
+            ></textarea>
           </div>
           <label class="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
             <input type="checkbox" name="marketing" class="size-4 accent-[var(--mc-accent)]" />
             Send me news and promotions from Makan Chapter.
           </label>
-          <button type="submit" class="btn btn-block"><Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />Send Order on WhatsApp</button>
-          <p class="text-center text-xs text-muted">Your order opens in WhatsApp as a message. Send it to place your order, and our team will confirm availability and payment.</p>
+          <button type="submit" class="btn btn-block">
+            <Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />
+            Send Order on WhatsApp
+          </button>
+          <p class="text-center text-xs text-muted">
+            Your order opens in WhatsApp as a message. Send it to place your order, and our team
+            will confirm availability and payment.
+          </p>
         </form>
 
         <aside class="card self-start p-5 lg:sticky lg:top-20" aria-label="Order summary">
@@ -66,18 +136,36 @@ const fields = [
     <div class="mx-auto max-w-lg py-14 text-center" hidden data-sent tabindex="-1">
       <Icon name="ph:whatsapp-logo" class="mx-auto size-14" aria-hidden="true" />
       <h1 class="mt-4 text-2xl font-bold">Your order is ready in WhatsApp</h1>
-      <p class="mt-2 text-muted">Press send in WhatsApp to place your order. We will reply to confirm availability, delivery and payment.</p>
+      <p class="mt-2 text-muted">
+        Press send in WhatsApp to place your order. We will reply to confirm availability, delivery
+        and payment.
+      </p>
       <div class="mt-6 flex flex-wrap justify-center gap-3">
-        <a href="#" target="_blank" rel="noopener" class="btn" data-reopen><Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />Open WhatsApp Again</a>
-        <button type="button" class="btn btn-outline" data-clear>Clear Cart</button>
+        <a href="#" target="_blank" rel="noopener" class="btn" data-reopen>
+          <Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />
+          Open WhatsApp Again
+        </a>
+        <button type="button" class="btn btn-outline" data-clear>
+          Clear Cart
+        </button>
       </div>
     </div>
   </div>
 </Layout>
 
 <script>
+  import {
+    readCart,
+    writeCart,
+    groups,
+    totals,
+    money,
+    DELIVERY_LABEL,
+    KIND_LABEL,
+    waUrl,
+    toast,
+  } from '../../scripts/cart';
   import { find, byId } from '../../scripts/dom';
-  import { readCart, writeCart, groups, totals, money, DELIVERY_LABEL, KIND_LABEL, waUrl, toast } from '../../scripts/cart';
 
   const items = readCart();
   const show = (sel: string, on: boolean) => (find<HTMLElement>(sel).hidden = !on);
@@ -88,48 +176,82 @@ const fields = [
   for (const i of items) {
     const li = document.createElement('li');
     li.className = 'flex justify-between gap-4';
-    const a = document.createElement('span'); a.textContent = `${i.qty} x ${i.name}`;
-    const b = document.createElement('span'); b.className = 'font-medium'; b.textContent = money(i.unitCents * i.qty);
-    li.append(a, b); lines.append(li);
+    const a = document.createElement('span');
+    a.textContent = `${i.qty} x ${i.name}`;
+    const b = document.createElement('span');
+    b.className = 'font-medium';
+    b.textContent = money(i.unitCents * i.qty);
+    li.append(a, b);
+    lines.append(li);
   }
   const t = totals(items);
   const dl = find('[data-totals]');
   const row = (k: string, v: string) => {
-    const d = document.createElement('div'); d.className = 'flex justify-between';
-    const dt = document.createElement('dt'); dt.className = 'text-muted'; dt.textContent = k;
-    const dd = document.createElement('dd'); dd.className = 'font-medium'; dd.textContent = v;
-    d.append(dt, dd); dl.append(d);
+    const d = document.createElement('div');
+    d.className = 'flex justify-between';
+    const dt = document.createElement('dt');
+    dt.className = 'text-muted';
+    dt.textContent = k;
+    const dd = document.createElement('dd');
+    dd.className = 'font-medium';
+    dd.textContent = v;
+    d.append(dt, dd);
+    dl.append(d);
   };
   row('Subtotal', money(t.subtotal));
-  groups(items).filter((g) => g.delivery).forEach((g) => row(DELIVERY_LABEL[g.kind], money(g.delivery)));
+  groups(items)
+    .filter((g) => g.delivery)
+    .forEach((g) => row(DELIVERY_LABEL[g.kind], money(g.delivery)));
   find('[data-total]').textContent = money(t.total);
 
   const form = find<HTMLFormElement>('[data-delivery]');
   type Rule = (v: string) => string;
   const rules = Object.entries({
     name: (v) => (v ? '' : 'Enter your full name.'),
-    email: (v) => (!v ? 'Enter your email address.' : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Enter a valid email address.'),
-    phone: (v) => (!v ? 'Enter your phone number.' : /^\+?[\d\s-]{8,15}$/.test(v) ? '' : 'Enter a valid phone number.'),
+    email: (v) =>
+      !v
+        ? 'Enter your email address.'
+        : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+          ? ''
+          : 'Enter a valid email address.',
+    phone: (v) =>
+      !v
+        ? 'Enter your phone number.'
+        : /^\+?[\d\s-]{8,15}$/.test(v)
+          ? ''
+          : 'Enter a valid phone number.',
     address: (v) => (v ? '' : 'Enter your delivery address.'),
   } satisfies Record<string, Rule>);
   const check = ([id, rule]: [string, Rule]) => {
     const input = find<HTMLInputElement>(`#${id}`, form);
     const msg = rule(input.value.trim());
     const err = byId(`${id}-error`);
-    err.textContent = msg; err.hidden = !msg;
-    if (msg) { input.setAttribute('aria-invalid', 'true'); } else { input.removeAttribute('aria-invalid'); }
+    err.textContent = msg;
+    err.hidden = !msg;
+    if (msg) {
+      input.setAttribute('aria-invalid', 'true');
+    } else {
+      input.removeAttribute('aria-invalid');
+    }
     return msg ? input : null;
   };
   // Re-check a flagged field while typing so its error clears before the customer reaches the button.
   rules.forEach(([id, rule]) => {
     const input = find<HTMLInputElement>(`#${id}`, form);
-    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid')) { check([id, rule]); } });
+    input.addEventListener('input', () => {
+      if (input.getAttribute('aria-invalid')) {
+        check([id, rule]);
+      }
+    });
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const bad = rules.map(check).filter(Boolean)[0];
-    if (bad) { bad.focus(); return; }
+    if (bad) {
+      bad.focus();
+      return;
+    }
     const v = (id: string) => find<HTMLInputElement>(`#${id}`, form).value.trim();
     const out: Array<string> = ['Hi Makan Chapter, I would like to place an order.', ''];
     for (const g of groups(items)) {
@@ -137,14 +259,29 @@ const fields = [
       for (const i of g.list) {
         out.push(`${i.qty} x ${i.name} (${money(i.unitCents * i.qty)})`);
         i.details.forEach((d) => out.push(`  ${d}`));
-        if (i.note) { out.push(`  Note: ${i.note}`); }
+        if (i.note) {
+          out.push(`  Note: ${i.note}`);
+        }
       }
-      if (g.delivery) { out.push(`${DELIVERY_LABEL[g.kind]}: ${money(g.delivery)}`); }
+      if (g.delivery) {
+        out.push(`${DELIVERY_LABEL[g.kind]}: ${money(g.delivery)}`);
+      }
       out.push('');
     }
-    out.push(`Total: ${money(t.total)}`, '', `Name: ${v('name')}`, `Email: ${v('email')}`, `Phone: ${v('phone')}`, `Address: ${v('address')}`);
-    if (v('notes')) { out.push(`Instructions: ${v('notes')}`); }
-    if (find<HTMLInputElement>('[name=marketing]', form).checked) { out.push('Happy to receive news and promotions.'); }
+    out.push(
+      `Total: ${money(t.total)}`,
+      '',
+      `Name: ${v('name')}`,
+      `Email: ${v('email')}`,
+      `Phone: ${v('phone')}`,
+      `Address: ${v('address')}`,
+    );
+    if (v('notes')) {
+      out.push(`Instructions: ${v('notes')}`);
+    }
+    if (find<HTMLInputElement>('[name=marketing]', form).checked) {
+      out.push('Happy to receive news and promotions.');
+    }
     const link = waUrl(out.join('\n'));
     window.open(link, '_blank', 'noopener');
     find<HTMLAnchorElement>('[data-reopen]').href = link;
@@ -153,5 +290,8 @@ const fields = [
     find<HTMLElement>('[data-sent]').focus();
   });
 
-  find('[data-clear]').addEventListener('click', () => { writeCart([]); toast('Cart cleared'); });
+  find('[data-clear]').addEventListener('click', () => {
+    writeCart([]);
+    toast('Cart cleared');
+  });
 </script>

@@ -1,11 +1,11 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
-import PageHero from '../../components/PageHero.astro';
 import PackageCard from '../../components/PackageCard.astro';
+import PageHero from '../../components/PageHero.astro';
 import { packages, categories, occasions } from '../../data/packages';
 import type { CategorySlug } from '../../data/packages';
 import { url, waLink } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 
 export function getStaticPaths() {
   return (Object.keys(categories) as Array<CategorySlug>).map((slug) => ({ params: { slug } }));
@@ -19,7 +19,10 @@ const allFilterGroups = [
   {
     key: 'menus',
     title: 'Menus',
-    items: (Object.keys(categories) as Array<CategorySlug>).map((k) => ({ value: k, label: categories[k].title })),
+    items: (Object.keys(categories) as Array<CategorySlug>).map((k) => ({
+      value: k,
+      label: categories[k].title,
+    })),
   },
   {
     key: 'budget',
@@ -40,33 +43,72 @@ const allFilterGroups = [
     ],
   },
 ];
-const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key === 'menus') : allFilterGroups;
+const filterGroups =
+  slug === 'buffet' ? allFilterGroups.filter((g) => g.key === 'menus') : allFilterGroups;
 ---
+
 <Layout title={cat.title} description={cat.intro}>
   <PageHero title={cat.title} intro={cat.intro} image={cat.image} />
 
   <div class="bg-surface-2">
     <div class="container-page py-8">
       <form class="flex gap-3" role="search" data-search-form>
-        <label for="pkg-search" class="sr-only">Search dishes and packages</label>
-        <input id="pkg-search" type="search" class="field flex-1" placeholder="Search dishes, packages..." autocomplete="off" data-search />
-        <button type="submit" class="btn"><Icon name="ph:magnifying-glass-bold" class="size-4" aria-hidden="true" />Search</button>
+        <label for="pkg-search" class="sr-only">
+          Search dishes and packages
+        </label>
+        <input
+          id="pkg-search"
+          type="search"
+          class="field flex-1"
+          placeholder="Search dishes, packages..."
+          autocomplete="off"
+          data-search
+        />
+        <button type="submit" class="btn">
+          <Icon name="ph:magnifying-glass-bold" class="size-4" aria-hidden="true" />
+          Search
+        </button>
       </form>
 
       <div class="mt-8 grid gap-8 lg:grid-cols-[15rem_1fr]">
         <!-- Filters: sidebar on desktop, drawer on mobile -->
         <div>
-          <button type="button" class="btn btn-outline btn-block lg:hidden" aria-expanded="false" aria-controls="filters" data-filter-open>
-            <Icon name="ph:sliders-horizontal" class="size-5" aria-hidden="true" />Filters
+          <button
+            type="button"
+            class="btn btn-outline btn-block lg:hidden"
+            aria-expanded="false"
+            aria-controls="filters"
+            data-filter-open
+          >
+            <Icon name="ph:sliders-horizontal" class="size-5" aria-hidden="true" />
+            Filters
           </button>
-          <div id="filters" class="fixed inset-0 z-50 hidden lg:static lg:z-auto lg:block" data-filter-panel>
+          <div
+            id="filters"
+            class="fixed inset-0 z-50 hidden lg:static lg:z-auto lg:block"
+            data-filter-panel
+          >
             <div class="absolute inset-0 bg-[var(--mc-scrim)] lg:hidden" data-filter-close></div>
-            <aside class="absolute inset-y-0 left-0 w-[min(20rem,85vw)] overflow-y-auto border-line bg-surface p-4 lg:static lg:w-auto lg:rounded-card lg:border lg:shadow-card" aria-label="Filters">
+            <aside
+              class="absolute inset-y-0 left-0 w-[min(20rem,85vw)] overflow-y-auto border-line bg-surface p-4 lg:static lg:w-auto lg:rounded-card lg:border lg:shadow-card"
+              aria-label="Filters"
+            >
               <div class="flex items-center justify-between gap-2 border-b border-line pb-3">
                 <h2 class="font-bold">Filters</h2>
                 <div class="flex items-center gap-1">
-                  <button type="button" class="min-h-11 px-2 text-sm font-medium underline-offset-2 hover:underline" data-filter-reset>Clear</button>
-                  <button type="button" class="grid size-11 place-items-center rounded-full hover:bg-surface-2 lg:hidden" aria-label="Close filters" data-filter-close>
+                  <button
+                    type="button"
+                    class="min-h-11 px-2 text-sm font-medium underline-offset-2 hover:underline"
+                    data-filter-reset
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    class="grid size-11 place-items-center rounded-full hover:bg-surface-2 lg:hidden"
+                    aria-label="Close filters"
+                    data-filter-close
+                  >
                     <Icon name="ph:x" class="size-5" aria-hidden="true" />
                   </button>
                 </div>
@@ -74,20 +116,34 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
               {filterGroups.map((g) => (
                 <details class="group border-b border-line py-1 last:border-0" open>
                   <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-bold">
-                    <Icon name="ph:caret-right-bold" class="size-3 transition-transform group-open:rotate-90" aria-hidden="true" />{g.title}
+                    <Icon
+                      name="ph:caret-right-bold"
+                      class="size-3 transition-transform group-open:rotate-90"
+                      aria-hidden="true"
+                    />
+                    {g.title}
                   </summary>
                   <fieldset class="pb-2">
                     <legend class="sr-only">{g.title}</legend>
                     {g.items.map((it) => (
                       <label class="flex min-h-10 cursor-pointer items-center gap-3 text-sm">
-                        <input type="checkbox" class="size-4 accent-[var(--mc-accent)]" name={g.key} value={it.value} checked={g.key === 'menus' && it.value === slug} data-filter={g.key} />
+                        <input
+                          type="checkbox"
+                          class="size-4 accent-[var(--mc-accent)]"
+                          name={g.key}
+                          value={it.value}
+                          checked={g.key === 'menus' && it.value === slug}
+                          data-filter={g.key}
+                        />
                         {it.label}
                       </label>
                     ))}
                   </fieldset>
                 </details>
               ))}
-              <button type="button" class="btn btn-block mt-4 lg:hidden" data-filter-close>Show results</button>
+              <button type="button" class="btn btn-block mt-4 lg:hidden" data-filter-close>
+                Show results
+              </button>
             </aside>
           </div>
         </div>
@@ -95,13 +151,17 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
         <div>
           <p class="mb-4 text-sm text-muted" aria-live="polite" data-result-count></p>
           <ul class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" data-grid>
-            {packages.map((p) => <PackageCard pkg={p} />)}
+            {packages.map((p) => (
+              <PackageCard pkg={p} />
+            ))}
           </ul>
           <div class="card flex flex-col items-center px-6 py-14 text-center" hidden data-empty>
             <Icon name="ph:bowl-food" class="size-10 text-muted" aria-hidden="true" />
             <p class="mt-3 font-semibold">No packages match these filters.</p>
             <p class="mt-1 text-sm text-muted">Clear a filter, or ask us for a custom quotation.</p>
-            <button type="button" class="btn btn-outline mt-5" data-filter-reset>Clear filters</button>
+            <button type="button" class="btn btn-outline mt-5" data-filter-reset>
+              Clear filters
+            </button>
           </div>
         </div>
       </div>
@@ -110,15 +170,30 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
 
   <!-- Occasions -->
   <section class="container-page py-16" aria-labelledby="occasions-title">
-    <h2 id="occasions-title" class="text-center text-3xl font-bold tracking-tight">We Cater for Any Occasion</h2>
+    <h2 id="occasions-title" class="text-center text-3xl font-bold tracking-tight">
+      We Cater for Any Occasion
+    </h2>
     <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {occasions.map((o) => (
         <li class="card overflow-hidden text-center">
-          <img src={url(`images/${o.image}.webp`)} alt="" loading="lazy" width="480" height="320" class="aspect-[3/2] w-full object-cover" />
+          <img
+            src={url(`images/${o.image}.webp`)}
+            alt=""
+            loading="lazy"
+            width="480"
+            height="320"
+            class="aspect-[3/2] w-full object-cover"
+          />
           <div class="p-4">
             <h3 class="font-bold">{o.title}</h3>
-            <a href={waLink(o.message)} target="_blank" rel="noopener" class="mt-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold underline underline-offset-4">
-              <Icon name="ph:whatsapp-logo" class="size-4" aria-hidden="true" />Get quotation
+            <a
+              href={waLink(o.message)}
+              target="_blank"
+              rel="noopener"
+              class="mt-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold underline underline-offset-4"
+            >
+              <Icon name="ph:whatsapp-logo" class="size-4" aria-hidden="true" />
+              Get quotation
             </a>
           </div>
         </li>
@@ -136,7 +211,8 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
   const grid = find<HTMLElement>('[data-grid]');
   const count = find<HTMLElement>('[data-result-count]');
 
-  const checked = (key: string) => boxes.flatMap((b) => (b.dataset.filter === key && b.checked ? [b.value] : []));
+  const checked = (key: string) =>
+    boxes.flatMap((b) => (b.dataset.filter === key && b.checked ? [b.value] : []));
 
   function apply() {
     const q = search.value.trim().toLowerCase();
@@ -151,21 +227,31 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
       const ok =
         (!q || dataValue(c, 'search').includes(q)) &&
         (!menus.length || menus.includes(dataValue(c, 'category'))) &&
-        (!budgets.length || (perPax !== null && budgets.some(([lo, hi]) => perPax >= lo && perPax < hi))) &&
+        (!budgets.length ||
+          (perPax !== null && budgets.some(([lo, hi]) => perPax >= lo && perPax < hi))) &&
         (!paxCaps.length || paxCaps.some((cap) => minPax <= cap));
       c.hidden = !ok;
-      if (ok) { shown++; }
+      if (ok) {
+        shown++;
+      }
     }
     grid.hidden = shown === 0;
     empty.hidden = shown !== 0;
     count.textContent = `${shown} package${shown === 1 ? '' : 's'}`;
   }
 
-  find('[data-search-form]').addEventListener('submit', (e) => { e.preventDefault(); apply(); });
+  find('[data-search-form]').addEventListener('submit', (e) => {
+    e.preventDefault();
+    apply();
+  });
   search.addEventListener('input', apply);
   boxes.forEach((b) => b.addEventListener('change', apply));
   document.querySelectorAll('[data-filter-reset]').forEach((b) =>
-    b.addEventListener('click', () => { boxes.forEach((x) => (x.checked = false)); search.value = ''; apply(); }),
+    b.addEventListener('click', () => {
+      boxes.forEach((x) => (x.checked = false));
+      search.value = '';
+      apply();
+    }),
   );
   apply();
 
@@ -177,9 +263,21 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
     panel.classList.toggle('hidden', !open);
     opener.setAttribute('aria-expanded', String(open));
     document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (!open) { opener.focus(); }
+    if (!open) {
+      opener.focus();
+    }
   };
   opener.addEventListener('click', () => setOpen(true));
-  panel.querySelectorAll('[data-filter-close]').forEach((b) => b.addEventListener('click', () => { if (isMobile()) { setOpen(false); } }));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMobile() && !panel.classList.contains('hidden')) { setOpen(false); } });
+  panel.querySelectorAll('[data-filter-close]').forEach((b) =>
+    b.addEventListener('click', () => {
+      if (isMobile()) {
+        setOpen(false);
+      }
+    }),
+  );
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isMobile() && !panel.classList.contains('hidden')) {
+      setOpen(false);
+    }
+  });
 </script>

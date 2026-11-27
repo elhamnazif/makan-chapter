@@ -1,10 +1,11 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
 import { packages } from '../../data/packages';
 import { url } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 const orderable = packages.filter((p) => p.mode === 'order');
 ---
+
 <Layout title="Add-ons">
   <div class="container-page pb-16 pt-6">
     <!-- Empty state when no package is in progress -->
@@ -12,26 +13,46 @@ const orderable = packages.filter((p) => p.mode === 'order');
       <Icon name="ph:bowl-food" class="mx-auto size-12 text-muted" aria-hidden="true" />
       <h1 class="mt-4 text-2xl font-bold">Choose a package first</h1>
       <p class="mt-2 text-muted">Pick a mini buffet set, then come back here for add-ons.</p>
-      <a href={url('catering/mini-buffet/')} class="btn mt-6">Browse Mini Buffet</a>
+      <a href={url('catering/mini-buffet/')} class="btn mt-6">
+        Browse Mini Buffet
+      </a>
     </div>
 
     <div hidden data-has-draft>
-      <a href="#" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline" data-back-link>
-        <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />Back to package
+      <a
+        href="#"
+        class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline"
+        data-back-link
+      >
+        <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />
+        Back to package
       </a>
-      <h1 class="mt-2 text-2xl font-bold tracking-tight md:text-3xl"><span data-pkg-name></span>: Add-ons</h1>
+      <h1 class="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
+        <span data-pkg-name></span>: Add-ons
+      </h1>
 
       <form class="mt-6 grid gap-6 lg:grid-cols-[19rem_1fr]" novalidate data-addons>
-        <aside class="space-y-5 self-start rounded-card border border-line bg-surface-2 p-4 lg:sticky lg:top-20" aria-label="Order details">
+        <aside
+          class="space-y-5 self-start rounded-card border border-line bg-surface-2 p-4 lg:sticky lg:top-20"
+          aria-label="Order details"
+        >
           <div class="rounded-control border border-line bg-surface p-3">
             <p class="text-sm font-semibold">Order progress</p>
             <ol class="mt-2 space-y-1.5 text-sm">
-              <li class="flex items-center gap-2 text-muted"><Icon name="ph:check-circle-fill" class="size-4" aria-hidden="true" />Package selection</li>
-              <li class="flex items-center gap-2 font-semibold" aria-current="step"><span class="size-2.5 rounded-full bg-accent"></span>Add-ons</li>
+              <li class="flex items-center gap-2 text-muted">
+                <Icon name="ph:check-circle-fill" class="size-4" aria-hidden="true" />
+                Package selection
+              </li>
+              <li class="flex items-center gap-2 font-semibold" aria-current="step">
+                <span class="size-2.5 rounded-full bg-accent"></span>Add-ons
+              </li>
             </ol>
           </div>
           <div class="rounded-control border-2 border-ink bg-surface p-4">
-            <p class="flex items-center gap-2 font-semibold"><Icon name="ph:receipt" class="size-5" aria-hidden="true" />Your order</p>
+            <p class="flex items-center gap-2 font-semibold">
+              <Icon name="ph:receipt" class="size-5" aria-hidden="true" />
+              Your order
+            </p>
             <p class="mt-2 text-sm font-semibold" data-pkg-name></p>
             <ul class="mt-1 space-y-0.5 text-sm text-muted" data-summary-details></ul>
             <div class="mt-3 flex items-baseline justify-between border-t border-line pt-3">
@@ -46,27 +67,54 @@ const orderable = packages.filter((p) => p.mode === 'order');
           <fieldset class="rounded-card border border-line bg-surface p-4">
             <legend class="float-left w-full font-bold">Optional add-ons</legend>
             <label class="clear-both flex min-h-11 cursor-pointer items-start gap-3 border-t border-line pt-4">
-              <input type="checkbox" name="setup" class="mt-1 size-4 shrink-0 accent-[var(--mc-accent)]" data-setup />
+              <input
+                type="checkbox"
+                name="setup"
+                class="mt-1 size-4 shrink-0 accent-[var(--mc-accent)]"
+                data-setup
+              />
               <span>
                 <span class="block font-medium">Warmers and buffet setup</span>
-                <span class="block text-sm text-muted">Additional charges apply. We confirm the price with you before your order is final.</span>
+                <span class="block text-sm text-muted">
+                  Additional charges apply. We confirm the price with you before your order is
+                  final.
+                </span>
               </span>
             </label>
           </fieldset>
 
           <div class="rounded-card border border-line bg-surface p-4">
             <h2 class="font-bold">Terms and conditions</h2>
-            <ul class="mt-3 list-disc space-y-1.5 border-t border-line pl-5 pt-3 text-sm text-muted" data-terms></ul>
+            <ul
+              class="mt-3 list-disc space-y-1.5 border-t border-line pl-5 pt-3 text-sm text-muted"
+              data-terms
+            ></ul>
             <label class="mt-4 flex min-h-11 cursor-pointer items-center gap-3">
-              <input type="checkbox" name="agree" class="size-4 shrink-0 accent-[var(--mc-accent)]" aria-describedby="agree-error" data-agree />
-              <span class="text-sm font-medium">I have read and agree to the terms and conditions.</span>
+              <input
+                type="checkbox"
+                name="agree"
+                class="size-4 shrink-0 accent-[var(--mc-accent)]"
+                aria-describedby="agree-error"
+                data-agree
+              />
+              <span class="text-sm font-medium">
+                I have read and agree to the terms and conditions.
+              </span>
             </label>
-            <p id="agree-error" class="field-error" hidden>Please agree to the terms to continue.</p>
+            <p id="agree-error" class="field-error" hidden>
+              Please agree to the terms to continue.
+            </p>
           </div>
 
           <div class="flex flex-wrap gap-3">
-            <a href="#" class="btn btn-outline" data-back-link><Icon name="ph:arrow-left" class="size-5" aria-hidden="true" />Back</a>
-            <button type="submit" class="btn"><Icon name="ph:shopping-cart-simple" class="size-5" aria-hidden="true" />Add to Cart</button>
+            <a href="#" class="btn btn-outline" data-back-link>
+              <Icon name="ph:arrow-left" class="size-5" aria-hidden="true" />
+              Back
+            </a>
+            <button type="submit" class="btn">
+              <Icon name="ph:shopping-cart-simple" class="size-5" aria-hidden="true" />
+              Add to Cart
+            </button>
           </div>
         </div>
       </form>
@@ -76,9 +124,17 @@ const orderable = packages.filter((p) => p.mode === 'order');
 </Layout>
 
 <script>
-  import { find, byId } from '../../scripts/dom';
   import type { Package } from '../../data/packages';
-  import { readDraft, writeDraft, clearDraft, addItem, money, prettyDate, base } from '../../scripts/cart';
+  import {
+    readDraft,
+    writeDraft,
+    clearDraft,
+    addItem,
+    money,
+    prettyDate,
+    base,
+  } from '../../scripts/cart';
+  import { find, byId } from '../../scripts/dom';
 
   const all = JSON.parse(byId('packages-data').textContent ?? '') as Array<Package>;
   const draft = readDraft();
@@ -91,25 +147,49 @@ const orderable = packages.filter((p) => p.mode === 'order');
     const qty = draft.qty ?? 1;
     const date = draft.date;
     document.querySelectorAll('[data-pkg-name]').forEach((el) => (el.textContent = pkg.name));
-    document.querySelectorAll<HTMLAnchorElement>('[data-back-link]').forEach((a) => (a.href = base(`package/${pkg.slug}/`)));
+    document
+      .querySelectorAll<HTMLAnchorElement>('[data-back-link]')
+      .forEach((a) => (a.href = base(`package/${pkg.slug}/`)));
     const picks = Object.entries(draft.choices ?? {}).map(([k, v]) => `${k}: ${v.join(', ')}`);
-    const details = [`${prettyDate(date)}, ${draft.time}`, `${qty} set${qty > 1 ? 's' : ''} (${qty * (pkg.paxPerSet ?? 20)} pax)`, ...picks];
+    const details = [
+      `${prettyDate(date)}, ${draft.time}`,
+      `${qty} set${qty > 1 ? 's' : ''} (${qty * (pkg.paxPerSet ?? 20)} pax)`,
+      ...picks,
+    ];
     const list = find('[data-summary-details]');
-    details.forEach((d) => { const li = document.createElement('li'); li.textContent = d; list.append(li); });
+    details.forEach((d) => {
+      const li = document.createElement('li');
+      li.textContent = d;
+      list.append(li);
+    });
     find('[data-summary-total]').textContent = money((pkg.setPriceCents ?? 0) * qty);
     const terms = find('[data-terms]');
-    pkg.terms.forEach((t) => { const li = document.createElement('li'); li.textContent = t; terms.append(li); });
+    pkg.terms.forEach((t) => {
+      const li = document.createElement('li');
+      li.textContent = t;
+      terms.append(li);
+    });
 
     const setup = find<HTMLInputElement>('[data-setup]');
     const agree = find<HTMLInputElement>('[data-agree]');
     const agreeErr = byId('agree-error');
     setup.checked = !!draft.setup;
     setup.addEventListener('change', () => writeDraft({ ...draft, setup: setup.checked }));
-    agree.addEventListener('change', () => { if (agree.checked) { agreeErr.hidden = true; agree.removeAttribute('aria-invalid'); } });
+    agree.addEventListener('change', () => {
+      if (agree.checked) {
+        agreeErr.hidden = true;
+        agree.removeAttribute('aria-invalid');
+      }
+    });
 
     find('[data-addons]').addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!agree.checked) { agreeErr.hidden = false; agree.setAttribute('aria-invalid', 'true'); agree.focus(); return; }
+      if (!agree.checked) {
+        agreeErr.hidden = false;
+        agree.setAttribute('aria-invalid', 'true');
+        agree.focus();
+        return;
+      }
       addItem({
         kind: 'buffet',
         id: pkg.slug,
@@ -117,7 +197,11 @@ const orderable = packages.filter((p) => p.mode === 'order');
         unitCents: pkg.setPriceCents ?? 0,
         unitLabel: `per set of ${pkg.paxPerSet} pax`,
         qty,
-        details: [`Delivery: ${prettyDate(date)}, ${draft.time}`, ...picks, ...(setup.checked ? ['Warmers and buffet setup requested'] : [])],
+        details: [
+          `Delivery: ${prettyDate(date)}, ${draft.time}`,
+          ...picks,
+          ...(setup.checked ? ['Warmers and buffet setup requested'] : []),
+        ],
       });
       clearDraft();
       window.location.href = base('cart/');

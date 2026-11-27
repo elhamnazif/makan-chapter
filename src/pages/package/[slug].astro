@@ -1,9 +1,9 @@
 ---
 import type { InferGetStaticPropsType } from 'astro';
 import { Icon } from 'astro-icon/components';
-import Layout from '../../layouts/Layout.astro';
 import { packages, categories, priceLabel } from '../../data/packages';
 import { url } from '../../data/site';
+import Layout from '../../layouts/Layout.astro';
 
 export function getStaticPaths() {
   return packages.map((pkg) => ({ params: { slug: pkg.slug }, props: { pkg } }));
@@ -15,72 +15,158 @@ const cat = categories[pkg.category];
 const isOrder = pkg.mode === 'order';
 const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
 ---
+
 <Layout title={pkg.name} description={pkg.blurb}>
   <div class="container-page pb-32 pt-6 lg:pb-16">
-    <a href={url(`catering/${pkg.category}/`)} class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline">
-      <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />Back to {cat.title}
+    <a
+      href={url(`catering/${pkg.category}/`)}
+      class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline"
+    >
+      <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />
+      Back to {cat.title}
     </a>
-    <h1 class="mt-2 text-2xl font-bold tracking-tight md:text-3xl">{pkg.name}: {isOrder ? 'Your Order' : 'Request a Quotation'}</h1>
+    <h1 class="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
+      {pkg.name}: {isOrder ? 'Your Order' : 'Request a Quotation'}
+    </h1>
 
     <form class="mt-6 grid gap-6 lg:grid-cols-[19rem_1fr]" novalidate data-config>
       <!-- Order details column -->
-      <aside class="space-y-5 self-start rounded-card border border-line bg-surface-2 p-4 lg:sticky lg:top-20" aria-label="Order details">
+      <aside
+        class="space-y-5 self-start rounded-card border border-line bg-surface-2 p-4 lg:sticky lg:top-20"
+        aria-label="Order details"
+      >
         {isOrder && (
           <div class="rounded-control border border-line bg-surface p-3">
             <p class="text-sm font-semibold">Order progress</p>
             <ol class="mt-2 space-y-1.5 text-sm">
-              <li class="flex items-center gap-2 font-semibold" aria-current="step"><span class="size-2.5 rounded-full bg-accent"></span>Package selection</li>
-              <li class="flex items-center gap-2 text-muted"><span class="size-2.5 rounded-full border border-note-line"></span>Add-ons</li>
+              <li class="flex items-center gap-2 font-semibold" aria-current="step">
+                <span class="size-2.5 rounded-full bg-accent"></span>Package selection
+              </li>
+              <li class="flex items-center gap-2 text-muted">
+                <span class="size-2.5 rounded-full border border-note-line"></span>Add-ons
+              </li>
             </ol>
           </div>
         )}
 
         <fieldset class="space-y-3">
-          <legend class="mb-2 font-semibold">{isOrder ? 'Delivery date and time' : 'Event date and time'}</legend>
+          <legend class="mb-2 font-semibold">
+            {isOrder ? 'Delivery date and time' : 'Event date and time'}
+          </legend>
           <div>
-            <label for="date" class="field-label">Date</label>
-            <input id="date" name="date" type="date" class="field" required aria-describedby="date-error" data-date />
+            <label for="date" class="field-label">
+              Date
+            </label>
+            <input
+              id="date"
+              name="date"
+              type="date"
+              class="field"
+              required
+              aria-describedby="date-error"
+              data-date
+            />
             <p id="date-error" class="field-error" hidden></p>
           </div>
           <div>
-            <label for="time" class="field-label">Time</label>
-            <input id="time" name="time" type="time" class="field" required aria-describedby="time-error" />
+            <label for="time" class="field-label">
+              Time
+            </label>
+            <input
+              id="time"
+              name="time"
+              type="time"
+              class="field"
+              required
+              aria-describedby="time-error"
+            />
             <p id="time-error" class="field-error" hidden></p>
           </div>
-          {pkg.notice && <p class="note flex gap-2"><Icon name="ph:clock" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />{pkg.notice}</p>}
+          {pkg.notice && (
+            <p class="note flex gap-2">
+              <Icon name="ph:clock" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              {pkg.notice}
+            </p>
+          )}
         </fieldset>
 
         <div>
-          <label for="qty" class="mb-2 block font-semibold">{isOrder ? 'Number of sets' : 'Number of guests'}</label>
+          <label for="qty" class="mb-2 block font-semibold">
+            {isOrder ? 'Number of sets' : 'Number of guests'}
+          </label>
           <div class="flex items-center gap-2">
-            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-control border border-line bg-surface hover:bg-bg" aria-label="Decrease" data-step="-1"><Icon name="ph:minus-bold" class="size-4" aria-hidden="true" /></button>
-            <input id="qty" name="qty" type="number" inputmode="numeric" class="field text-center" value={isOrder ? 1 : pkg.minPax} min={isOrder ? 1 : pkg.minPax} step={isOrder ? 1 : 10} aria-describedby="qty-help qty-error" />
-            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-control border border-line bg-surface hover:bg-bg" aria-label="Increase" data-step="1"><Icon name="ph:plus-bold" class="size-4" aria-hidden="true" /></button>
+            <button
+              type="button"
+              class="grid size-11 shrink-0 place-items-center rounded-control border border-line bg-surface hover:bg-bg"
+              aria-label="Decrease"
+              data-step="-1"
+            >
+              <Icon name="ph:minus-bold" class="size-4" aria-hidden="true" />
+            </button>
+            <input
+              id="qty"
+              name="qty"
+              type="number"
+              inputmode="numeric"
+              class="field text-center"
+              value={isOrder ? 1 : pkg.minPax}
+              min={isOrder ? 1 : pkg.minPax}
+              step={isOrder ? 1 : 10}
+              aria-describedby="qty-help qty-error"
+            />
+            <button
+              type="button"
+              class="grid size-11 shrink-0 place-items-center rounded-control border border-line bg-surface hover:bg-bg"
+              aria-label="Increase"
+              data-step="1"
+            >
+              <Icon name="ph:plus-bold" class="size-4" aria-hidden="true" />
+            </button>
           </div>
-          <p id="qty-help" class="field-help" data-qty-help>{isOrder ? `Each set serves ${pkg.paxPerSet} pax.` : `Minimum ${pkg.minPax} guests.`}</p>
+          <p id="qty-help" class="field-help" data-qty-help>
+            {isOrder ? `Each set serves ${pkg.paxPerSet} pax.` : `Minimum ${pkg.minPax} guests.`}
+          </p>
           <p id="qty-error" class="field-error" hidden></p>
         </div>
 
         <div>
-          <p class="mb-2 font-semibold">{isOrder ? 'Delivery and setup' : 'Included with this package'}</p>
+          <p class="mb-2 font-semibold">
+            {isOrder ? 'Delivery and setup' : 'Included with this package'}
+          </p>
           {isOrder ? (
-            <p class="note">Delivered islandwide in disposable trays for S$30. Warmers and buffet setup can be requested on the next step.</p>
+            <p class="note">
+              Delivered islandwide in disposable trays for S$30. Warmers and buffet setup can be
+              requested on the next step.
+            </p>
           ) : (
             <ul class="note space-y-1.5">
-              {pkg.includes?.map((i) => <li class="flex gap-2"><Icon name="ph:check" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />{i}</li>)}
+              {pkg.includes?.map((i) => (
+                <li class="flex gap-2">
+                  <Icon name="ph:check" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                  {i}
+                </li>
+              ))}
             </ul>
           )}
         </div>
 
-        <div class="hidden rounded-control border-2 border-ink bg-surface p-4 lg:block" aria-live="polite">
-          <p class="flex items-center gap-2 font-semibold"><Icon name="ph:receipt" class="size-5" aria-hidden="true" />Your order</p>
+        <div
+          class="hidden rounded-control border-2 border-ink bg-surface p-4 lg:block"
+          aria-live="polite"
+        >
+          <p class="flex items-center gap-2 font-semibold">
+            <Icon name="ph:receipt" class="size-5" aria-hidden="true" />
+            Your order
+          </p>
           <p class="mt-2 text-sm font-semibold">{pkg.name}</p>
           <p class="text-sm text-muted" data-summary-line></p>
           <div class="mt-3 flex items-baseline justify-between border-t border-line pt-3">
             <span class="font-semibold">{isOrder ? 'Total' : 'Estimate'}</span>
             <span class="text-2xl font-bold" data-summary-total></span>
           </div>
-          <p class="mt-1 text-xs text-muted">{isOrder ? 'Not including delivery fee.' : 'Final price confirmed in your quotation.'}</p>
+          <p class="mt-1 text-xs text-muted">
+            {isOrder ? 'Not including delivery fee.' : 'Final price confirmed in your quotation.'}
+          </p>
         </div>
       </aside>
 
@@ -89,29 +175,55 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
         <div class="grid gap-4 md:grid-cols-2">
           {pkg.groups.map((g, gi) => (
             <fieldset
-              class:list={['rounded-card border border-line bg-surface p-5', g.items.length > 6 && !g.choose && 'md:col-span-2', /^Main( course)?$/.test(g.label) && 'border-t-3 border-t-accent']}
+              class:list={[
+                'rounded-card border border-line bg-surface p-5',
+                g.items.length > 6 && !g.choose && 'md:col-span-2',
+                /^Main( course)?$/.test(g.label) && 'border-t-3 border-t-accent',
+              ]}
               data-group={gi}
               data-choose={g.choose ?? ''}
               data-label={g.label}
               aria-describedby={g.choose ? `g${gi}-status` : undefined}
             >
               <legend class="float-left w-full text-[1.125rem] text-price">
-                <span class="block font-bold">{g.label}{g.choose ? ` (choose ${g.choose})` : ''}</span>
-                <span id={`g${gi}-status`} class="mt-0.5 block text-base/[1.6] text-muted" data-status>
+                <span class="block font-bold">
+                  {g.label}
+                  {g.choose ? ` (choose ${g.choose})` : ''}
+                </span>
+                <span
+                  id={`g${gi}-status`}
+                  class="mt-0.5 block text-base/[1.6] text-muted"
+                  data-status
+                >
                   {g.choose ? `0 of ${g.choose} selected (required)` : 'Included in this package'}
                 </span>
               </legend>
-              <ul class:list={['clear-both mt-3 grid gap-1 border-t border-line pt-3', g.items.length > 6 && !g.choose && 'sm:grid-cols-2']}>
+              <ul
+                class:list={[
+                  'clear-both mt-3 grid gap-1 border-t border-line pt-3',
+                  g.items.length > 6 && !g.choose && 'sm:grid-cols-2',
+                ]}
+              >
                 {g.items.map((item) => (
                   <li class="not-first:mt-[.65rem]">
                     {g.choose ? (
                       <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-control px-2 hover:bg-surface-2">
-                        <input type={g.choose === 1 ? 'radio' : 'checkbox'} name={`g${gi}`} value={item} class="size-4 shrink-0 accent-[var(--mc-accent)]" />
+                        <input
+                          type={g.choose === 1 ? 'radio' : 'checkbox'}
+                          name={`g${gi}`}
+                          value={item}
+                          class="size-4 shrink-0 accent-[var(--mc-accent)]"
+                        />
                         <span class="text-base/[1.6]">{item}</span>
                       </label>
                     ) : (
                       <span class="flex min-h-9 items-center gap-3 px-2 text-base/[1.6]">
-                        <Icon name="ph:check-circle" class="size-4 shrink-0 text-muted" aria-hidden="true" />{item}
+                        <Icon
+                          name="ph:check-circle"
+                          class="size-4 shrink-0 text-muted"
+                          aria-hidden="true"
+                        />
+                        {item}
                       </span>
                     )}
                   </li>
@@ -123,14 +235,23 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
         </div>
 
         <details class="mt-6 rounded-card border border-line bg-surface p-4">
-          <summary class="flex min-h-11 cursor-pointer items-center font-semibold">Terms and conditions</summary>
+          <summary class="flex min-h-11 cursor-pointer items-center font-semibold">
+            Terms and conditions
+          </summary>
           <ul class="mt-2 list-disc space-y-1.5 pl-5 text-sm text-muted">
-            {pkg.terms.map((t) => <li>{t}</li>)}
+            {pkg.terms.map((t) => (
+              <li>{t}</li>
+            ))}
           </ul>
         </details>
 
         <button type="submit" class="btn mt-6 hidden lg:inline-flex">
-          <Icon name={isOrder ? 'ph:arrow-right-bold' : 'ph:whatsapp-logo'} class="size-5" aria-hidden="true" />{isOrder ? 'Next' : 'Get quotation'}
+          <Icon
+            name={isOrder ? 'ph:arrow-right-bold' : 'ph:whatsapp-logo'}
+            class="size-5"
+            aria-hidden="true"
+          />
+          {isOrder ? 'Next' : 'Get quotation'}
         </button>
       </div>
 
@@ -142,20 +263,37 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
             <p class="text-lg font-bold" data-summary-total></p>
           </div>
           <button type="submit" class="btn">
-            <Icon name={isOrder ? 'ph:arrow-right-bold' : 'ph:whatsapp-logo'} class="size-5" aria-hidden="true" />{isOrder ? 'Next' : 'Get quotation'}
+            <Icon
+              name={isOrder ? 'ph:arrow-right-bold' : 'ph:whatsapp-logo'}
+              class="size-5"
+              aria-hidden="true"
+            />
+            {isOrder ? 'Next' : 'Get quotation'}
           </button>
         </div>
       </div>
     </form>
   </div>
 
-  <script type="application/json" id="pkg-data" set:html={JSON.stringify({ ...pkg, unitLabel, priceLabel: priceLabel(pkg) })} />
+  <script
+    type="application/json"
+    id="pkg-data"
+    set:html={JSON.stringify({ ...pkg, unitLabel, priceLabel: priceLabel(pkg) })}
+  />
 </Layout>
 
 <script>
-  import { find, byId, dataValue } from '../../scripts/dom';
   import type { Package } from '../../data/packages';
-  import { money, readDraft, writeDraft, isoDate, prettyDate, waUrl, base } from '../../scripts/cart';
+  import {
+    money,
+    readDraft,
+    writeDraft,
+    isoDate,
+    prettyDate,
+    waUrl,
+    base,
+  } from '../../scripts/cart';
+  import { find, byId, dataValue } from '../../scripts/dom';
 
   const pkg = JSON.parse(byId('pkg-data').textContent ?? '') as Package & { unitLabel: string };
   const isOrder = pkg.mode === 'order';
@@ -174,15 +312,23 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
   const choices = () => {
     const out: Record<string, Array<string>> = {};
     for (const g of groups) {
-      if (!g.dataset.choose) { continue; }
-      out[dataValue(g, 'label')] = [...g.querySelectorAll<HTMLInputElement>('input:checked')].map((i) => i.value);
+      if (!g.dataset.choose) {
+        continue;
+      }
+      out[dataValue(g, 'label')] = [...g.querySelectorAll<HTMLInputElement>('input:checked')].map(
+        (i) => i.value,
+      );
     }
     return out;
   };
 
   function priceCents(n: number): number | null {
-    if (isOrder) { return (pkg.setPriceCents ?? 0) * n; }
-    if (pkg.perPaxCents === null) { return null; }
+    if (isOrder) {
+      return (pkg.setPriceCents ?? 0) * n;
+    }
+    if (pkg.perPaxCents === null) {
+      return null;
+    }
     const per = pkg.promo && n >= pkg.promo.fromPax ? pkg.promo.perPaxCents : pkg.perPaxCents;
     return per * n;
   }
@@ -192,51 +338,99 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
     const total = priceCents(n);
     const line = isOrder
       ? `${money(pkg.setPriceCents ?? 0)} x ${n} set${n > 1 ? 's' : ''} (${n * (pkg.paxPerSet ?? 20)} pax)`
-      : total === null ? `${n} guests, price on request` : `${n} guests x ${money(total / n)} per pax`;
+      : total === null
+        ? `${n} guests, price on request`
+        : `${n} guests x ${money(total / n)} per pax`;
     find('[data-summary-line]', form).textContent = line;
-    form.querySelectorAll('[data-summary-total]').forEach((el) => (el.textContent = total === null ? 'On request' : money(total)));
-    if (isOrder) { find('[data-qty-help]', form).textContent = n > 1 ? `${n} sets serve ${n * (pkg.paxPerSet ?? 20)} pax.` : `Each set serves ${pkg.paxPerSet} pax.`; }
+    form
+      .querySelectorAll('[data-summary-total]')
+      .forEach((el) => (el.textContent = total === null ? 'On request' : money(total)));
+    if (isOrder) {
+      find('[data-qty-help]', form).textContent =
+        n > 1
+          ? `${n} sets serve ${n * (pkg.paxPerSet ?? 20)} pax.`
+          : `Each set serves ${pkg.paxPerSet} pax.`;
+    }
 
     for (const g of groups) {
       const need = Number(g.dataset.choose);
-      if (!need) { continue; }
+      if (!need) {
+        continue;
+      }
       const boxes = [...g.querySelectorAll<HTMLInputElement>('input')];
       const picked = boxes.filter((b) => b.checked).length;
-      find('[data-status]', g).textContent = `${picked} of ${need} selected${picked < need ? ' (required)' : ''}`;
-      if (need > 1) { boxes.forEach((b) => (b.disabled = !b.checked && picked >= need)); }
-      if (picked === need) { hideError(g.querySelector('[data-group-error]')); }
+      find('[data-status]', g).textContent =
+        `${picked} of ${need} selected${picked < need ? ' (required)' : ''}`;
+      if (need > 1) {
+        boxes.forEach((b) => (b.disabled = !b.checked && picked >= need));
+      }
+      if (picked === need) {
+        hideError(g.querySelector('[data-group-error]'));
+      }
     }
   }
 
   function showError(el: Element | null, msg: string, field?: HTMLElement) {
-    if (!el) { return; }
+    if (!el) {
+      return;
+    }
     el.textContent = msg;
     (el as HTMLElement).hidden = false;
     field?.setAttribute('aria-invalid', 'true');
   }
   function hideError(el: Element | null, field?: HTMLElement) {
-    if (!el) { return; }
+    if (!el) {
+      return;
+    }
     (el as HTMLElement).hidden = true;
     field?.removeAttribute('aria-invalid');
   }
 
   function validate(): HTMLElement | null {
     let first: HTMLElement | null = null;
-    const flag = (el: HTMLElement) => { first ??= el; };
-    if (!date.value || date.value < date.min) { showError(document.getElementById('date-error'), date.value ? 'Choose a date from tomorrow onwards.' : 'Choose a date.', date); flag(date); }
-    else { hideError(document.getElementById('date-error'), date); }
-    if (!time.value) { showError(document.getElementById('time-error'), 'Choose a time.', time); flag(time); }
-    else { hideError(document.getElementById('time-error'), time); }
+    const flag = (el: HTMLElement) => {
+      first ??= el;
+    };
+    if (!date.value || date.value < date.min) {
+      showError(
+        document.getElementById('date-error'),
+        date.value ? 'Choose a date from tomorrow onwards.' : 'Choose a date.',
+        date,
+      );
+      flag(date);
+    } else {
+      hideError(document.getElementById('date-error'), date);
+    }
+    if (!time.value) {
+      showError(document.getElementById('time-error'), 'Choose a time.', time);
+      flag(time);
+    } else {
+      hideError(document.getElementById('time-error'), time);
+    }
     const n = Number(qty.value);
-    if (!Number.isInteger(n) || n < min) { showError(document.getElementById('qty-error'), isOrder ? 'Order at least 1 set.' : `Minimum ${min} guests.`, qty); flag(qty); }
-    else { hideError(document.getElementById('qty-error'), qty); }
+    if (!Number.isInteger(n) || n < min) {
+      showError(
+        document.getElementById('qty-error'),
+        isOrder ? 'Order at least 1 set.' : `Minimum ${min} guests.`,
+        qty,
+      );
+      flag(qty);
+    } else {
+      hideError(document.getElementById('qty-error'), qty);
+    }
     for (const g of groups) {
       const need = Number(g.dataset.choose);
-      if (!need) { continue; }
+      if (!need) {
+        continue;
+      }
       const picked = g.querySelectorAll('input:checked').length;
       const err = g.querySelector('[data-group-error]');
-      if (picked !== need) { showError(err, `Choose ${need} from ${g.dataset.label}.`); flag(find('input', g)); }
-      else { hideError(err); }
+      if (picked !== need) {
+        showError(err, `Choose ${need} from ${g.dataset.label}.`);
+        flag(find('input', g));
+      } else {
+        hideError(err);
+      }
     }
     return first;
   }
@@ -244,12 +438,20 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
   // Restore an in-progress selection when coming back from add-ons.
   const draft = readDraft();
   if (draft && draft.slug === pkg.slug) {
-    if (draft.date) { date.value = draft.date; }
-    if (draft.time) { time.value = draft.time; }
-    if (draft.qty) { qty.value = String(draft.qty); }
+    if (draft.date) {
+      date.value = draft.date;
+    }
+    if (draft.time) {
+      time.value = draft.time;
+    }
+    if (draft.qty) {
+      qty.value = String(draft.qty);
+    }
     for (const g of groups) {
       const saved = draft.choices?.[dataValue(g, 'label')] ?? [];
-      g.querySelectorAll<HTMLInputElement>('input').forEach((i) => (i.checked = saved.includes(i.value)));
+      g.querySelectorAll<HTMLInputElement>('input').forEach(
+        (i) => (i.checked = saved.includes(i.value)),
+      );
     }
   }
 
@@ -262,13 +464,24 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
   );
   form.addEventListener('input', render);
   form.addEventListener('change', render);
-  [date, time, qty].forEach((el) => el.addEventListener('input', () => el.getAttribute('aria-invalid') && validate()));
+  [date, time, qty].forEach((el) =>
+    el.addEventListener('input', () => el.getAttribute('aria-invalid') && validate()),
+  );
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const bad = validate();
-    if (bad) { bad.focus(); return; }
-    const state = { slug: pkg.slug, date: date.value, time: time.value, qty: Number(qty.value), choices: choices() };
+    if (bad) {
+      bad.focus();
+      return;
+    }
+    const state = {
+      slug: pkg.slug,
+      date: date.value,
+      time: time.value,
+      qty: Number(qty.value),
+      choices: choices(),
+    };
     if (isOrder) {
       writeDraft({ ...state, setup: readDraft()?.slug === pkg.slug ? readDraft()?.setup : false });
       window.location.href = base('add-ons/');
@@ -283,7 +496,9 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
       `Guests: ${state.qty}`,
       ...picks,
       total !== null ? `Estimate shown on site: ${money(total)}` : '',
-    ].filter(Boolean).join('\n');
+    ]
+      .filter(Boolean)
+      .join('\n');
     window.open(waUrl(msg), '_blank', 'noopener');
   });
 
