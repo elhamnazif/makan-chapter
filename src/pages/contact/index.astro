@@ -3,6 +3,7 @@ import { Icon } from 'astro-icon/components';
 import PageHero from '../../components/PageHero.astro';
 import { business } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
+import { phonePattern } from '../../lib/fields';
 const services = ['Mini buffet', 'Buffet catering', 'Individual meals', 'Kuih and desserts'];
 const events = [
   'Corporate event',
@@ -98,13 +99,28 @@ const events = [
       </dl>
     </div>
 
-    <form class="card space-y-4 self-start p-5 md:p-6" novalidate data-contact>
-      <h2 class="text-lg font-bold">Contact Us</h2>
+    <form
+      class="card space-y-4 self-start p-5 md:p-6"
+      novalidate
+      aria-labelledby="contact-form-title"
+      data-contact
+    >
+      <h2 id="contact-form-title" class="text-lg font-bold">
+        Contact Us
+      </h2>
       <div>
         <label for="c-name" class="field-label">
           Your name
         </label>
-        <input id="c-name" class="field" autocomplete="name" aria-describedby="c-name-error" />
+        <input
+          id="c-name"
+          name="name"
+          class="field"
+          autocomplete="name"
+          required
+          aria-describedby="c-name-error"
+          data-missing="Enter your name."
+        />
         <p id="c-name-error" class="field-error" hidden></p>
       </div>
       <div>
@@ -113,18 +129,23 @@ const events = [
         </label>
         <input
           id="c-phone"
+          name="phone"
           type="tel"
           class="field"
           autocomplete="tel"
+          required
+          pattern={phonePattern}
           aria-describedby="c-phone-error"
+          data-missing="Enter a contact number."
+          data-invalid="Enter a Singapore phone number, e.g. 9123 4567."
         />
         <p id="c-phone-error" class="field-error" hidden></p>
       </div>
       <div>
         <label for="c-event" class="field-label">
-          Event type
+          Event type (optional)
         </label>
-        <select id="c-event" class="field">
+        <select id="c-event" name="event" class="field">
           <option value="">Select event type</option>
           {events.map((e) => (
             <option>{e}</option>
@@ -132,16 +153,11 @@ const events = [
         </select>
       </div>
       <fieldset>
-        <legend class="field-label">Services required</legend>
+        <legend class="field-label">Services required (optional)</legend>
         <div class="grid grid-cols-2 gap-x-4">
           {services.map((s) => (
             <label class="flex min-h-10 cursor-pointer items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                value={s}
-                class="size-4 accent-[var(--mc-accent)]"
-                data-service
-              />
+              <input type="checkbox" name="services" value={s} class="size-4" />
               {s}
             </label>
           ))}
@@ -150,22 +166,43 @@ const events = [
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label for="c-date" class="field-label">
-            Event date
+            Event date (optional)
           </label>
-          <input id="c-date" type="date" class="field" />
+          <input
+            id="c-date"
+            name="date"
+            type="date"
+            class="field"
+            aria-describedby="c-date-error"
+            data-under="Choose a date from today onwards."
+            data-invalid="Enter a valid date."
+          />
+          <p id="c-date-error" class="field-error" hidden></p>
         </div>
         <div>
           <label for="c-pax" class="field-label">
-            Guests
+            Guests (optional)
           </label>
-          <input id="c-pax" type="number" min="1" inputmode="numeric" class="field" />
+          <input
+            id="c-pax"
+            name="pax"
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            class="field"
+            aria-describedby="c-pax-error"
+            data-invalid="Enter the number of guests as a whole number."
+            data-under="Enter at least 1 guest."
+          />
+          <p id="c-pax-error" class="field-error" hidden></p>
         </div>
       </div>
       <div>
         <label for="c-msg" class="field-label">
-          Your message
+          Your message (optional)
         </label>
-        <textarea id="c-msg" rows="4" class="field"></textarea>
+        <textarea id="c-msg" name="message" rows="4" class="field"></textarea>
       </div>
       <button type="submit" class="btn btn-block">
         <Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />
@@ -176,48 +213,36 @@ const events = [
 </Layout>
 
 <script>
-  import { waUrl, isoDate, prettyDate } from '../../scripts/cart';
-  import { find, byId } from '../../scripts/dom';
+  import { waLink } from '../../data/site';
+  import { isoDate, prettyDate } from '../../lib/format';
+  import { find, findAll } from '../../scripts/dom';
+  import { validator } from '../../scripts/validate';
+  import type { Control } from '../../scripts/validate';
+
   const form = find<HTMLFormElement>('[data-contact]');
-  const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => find<T>(`#${id}`, form);
-  const v = (id: string) => ($(id) as HTMLInputElement).value.trim();
-  $('c-date').setAttribute('min', isoDate(new Date()));
-  const req = (id: string, msg: string) => {
-    const input = $(id);
-    const err = byId(`${id}-error`);
-    const bad = !(input as HTMLInputElement).value.trim();
-    err.textContent = bad ? msg : '';
-    err.hidden = !bad;
-    if (bad) {
-      input.setAttribute('aria-invalid', 'true');
-    } else {
-      input.removeAttribute('aria-invalid');
-    }
-    return bad ? input : null;
-  };
+  find<HTMLInputElement>('#c-date', form).min = isoDate(new Date());
+  const check = validator(form);
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const bad = [
-      req('c-name', 'Enter your name.'),
-      req('c-phone', 'Enter a contact number.'),
-    ].filter(Boolean)[0];
+    const bad = check(findAll<Control>('#c-name, #c-phone, #c-date, #c-pax', form));
     if (bad) {
       bad.focus();
       return;
     }
-    const services = [...form.querySelectorAll<HTMLInputElement>('[data-service]:checked')].map(
-      (s) => s.value,
-    );
+    const data = new FormData(form);
+    const v = (name: string) => String(data.get(name) ?? '').trim();
+    const services = data.getAll('services').map(String);
     const lines = [
       'Hi Makan Chapter, I would like to enquire about catering.',
-      `Name: ${v('c-name')}`,
-      `Contact: ${v('c-phone')}`,
-      v('c-event') && `Event: ${v('c-event')}`,
-      services.length && `Services: ${services.join(', ')}`,
-      v('c-date') && `Date: ${prettyDate(v('c-date'))}`,
-      v('c-pax') && `Guests: ${v('c-pax')}`,
-      v('c-msg') && `Message: ${v('c-msg')}`,
+      `Name: ${v('name')}`,
+      `Contact: ${v('phone')}`,
+      v('event') && `Event: ${v('event')}`,
+      services.length > 0 && `Services: ${services.join(', ')}`,
+      v('date') && `Date: ${prettyDate(v('date'))}`,
+      v('pax') && `Guests: ${v('pax')}`,
+      v('message') && `Message: ${v('message')}`,
     ].filter(Boolean);
-    window.open(waUrl(lines.join('\n')), '_blank', 'noopener');
+    window.open(waLink(lines.join('\n')), '_blank', 'noopener');
   });
 </script>

@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import MoeBadge from '../../components/MoeBadge.astro';
 import PageHero from '../../components/PageHero.astro';
+import Photo from '../../components/Photo.astro';
 import { url, business } from '../../data/site';
 import { stories } from '../../data/stories';
 import Layout from '../../layouts/Layout.astro';
@@ -9,15 +10,15 @@ import Layout from '../../layouts/Layout.astro';
 const offerings = [
   {
     icon: 'ph:bowl-food',
-    title: 'Mini Buffet',
-    text: 'Complete 20-pax sets in disposable trays, delivered islandwide.',
-    href: 'catering/mini-buffet/',
+    title: 'Mini and Classic Catering',
+    text: 'Five menus in ready-to-enjoy trays from 20 pax, or a full buffet in warmers from 50 pax.',
+    href: 'catering/',
   },
   {
     icon: 'ph:users-three',
-    title: 'Buffet Catering',
+    title: 'Wedding and Event Buffets',
     text: 'Full buffets with setup and collection for weddings and large events.',
-    href: 'catering/buffet/',
+    href: 'catering/#buffets',
   },
   {
     icon: 'ph:fire',
@@ -58,10 +59,10 @@ const offerings = [
       {stories.map((s, i) => (
         <article class:list={['grid items-center gap-8', s.image && 'md:grid-cols-2']}>
           {s.image && (
-            <img
-              src={url(`images/${s.image}.webp`)}
+            <Photo
+              name={s.image}
               alt={s.imageAlt ?? ''}
-              loading="lazy"
+              sizes="(min-width: 1200px) 568px, (min-width: 768px) 45vw, 100vw"
               class:list={[
                 'aspect-[4/3] w-full rounded-card object-cover shadow-card',
                 i % 2 === 1 && 'md:order-2',
@@ -111,7 +112,7 @@ const offerings = [
       Recognition
     </h2>
     <div class="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
-      <MoeBadge class="size-32 sm:size-36" />
+      <MoeBadge px={144} class="size-32 sm:size-36" />
       <div>
         <p class="text-xl font-bold">Muslim-Owned Enterprise</p>
         <p class="mt-2 leading-relaxed text-muted">
@@ -135,17 +136,15 @@ const offerings = [
           <a href={url('contact/')} class="btn">
             Contact Us
           </a>
-          <a href={url('catering/mini-buffet/')} class="btn btn-outline">
+          <a href={url('catering/')} class="btn btn-outline">
             Explore Our Catering Menu
           </a>
         </div>
       </div>
-      <img
-        src={url('images/buffet-setup.webp')}
+      <Photo
+        name="buffet-setup"
         alt="A Makan Chapter buffet set up with warmers at an event"
-        loading="lazy"
-        width="857"
-        height="1400"
+        sizes="(min-width: 1200px) 568px, (min-width: 1024px) 45vw, 100vw"
         class="aspect-[4/3] w-full rounded-card object-cover shadow-card"
       />
     </div>

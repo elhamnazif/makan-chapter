@@ -27,7 +27,7 @@ export default defineConfig({
     {
       // The ordering flows again on a phone, where most customers order.
       name: 'phone',
-      testMatch: ['buffet.spec.ts', 'catering-order.spec.ts', 'order-online.spec.ts'],
+      testMatch: ['buffets.spec.ts', 'catering-order.spec.ts', 'order-online.spec.ts'],
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 390, height: 844 },

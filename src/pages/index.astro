@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import MoeBadge from '../components/MoeBadge.astro';
+import Photo from '../components/Photo.astro';
 import { url, reviews, menuPdfs } from '../data/site';
 import Layout from '../layouts/Layout.astro';
 
@@ -46,9 +47,11 @@ const services = [
     data-hero
   >
     {slides.map((s, i) => (
-      <img
-        src={url(`images/${s.image}.webp`)}
+      <Photo
+        name={s.image}
         alt={i === 0 ? s.alt : ''}
+        sizes="100vw"
+        widths={[640, 960, 1280, 1600]}
         class="hero-slide absolute inset-0 -z-20 size-full object-cover opacity-0 transition-opacity duration-1000 data-[active=true]:opacity-100"
         data-active={i === 0 ? 'true' : 'false'}
         loading={i === 0 ? 'eager' : 'lazy'}
@@ -68,10 +71,20 @@ const services = [
       </a>
     </div>
     <div
-      class="absolute inset-x-0 bottom-6 flex justify-center gap-2"
+      class="absolute inset-x-0 bottom-6 flex items-center justify-center gap-2"
       role="group"
       aria-label="Choose photo"
     >
+      <button
+        type="button"
+        class="grid size-8 place-items-center rounded-full text-white hover:bg-white/15"
+        aria-label="Pause slideshow"
+        data-hero-pause
+        hidden
+      >
+        <Icon name="ph:pause-fill" class="size-4" aria-hidden="true" data-pause-icon />
+        <Icon name="ph:play-fill" class="hidden size-4" aria-hidden="true" data-play-icon />
+      </button>
       {slides.map((_, i) => (
         <button
           type="button"
@@ -124,12 +137,9 @@ const services = [
             class="card group flex h-full flex-col overflow-hidden transition-transform duration-300 hover:-translate-y-1"
           >
             <span class="block aspect-[16/10] overflow-hidden bg-surface-2">
-              <img
-                src={url(`images/${s.image}.webp`)}
-                alt=""
-                loading="lazy"
-                width="640"
-                height="400"
+              <Photo
+                name={s.image}
+                sizes="(min-width: 480px) min(50vw, 584px), 100vw"
                 class="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               />
             </span>
@@ -156,7 +166,7 @@ const services = [
           customers come back for.
         </p>
         <div class="mt-6 flex items-center gap-4">
-          <MoeBadge class="size-20" />
+          <MoeBadge px={80} class="size-20" />
           <p class="text-sm leading-relaxed text-muted">
             <span class="block font-semibold text-ink">Muslim-Owned Enterprise</span>Singapore Malay
             Chamber of Commerce and Industry
@@ -186,12 +196,10 @@ const services = [
         </a>
       </div>
       <div class="overflow-hidden rounded-card shadow-card">
-        <img
-          src={url('images/dessert-table.webp')}
+        <Photo
+          name="dessert-table"
           alt="A Makan Chapter kuih and dessert table at an event"
-          loading="lazy"
-          width="1236"
-          height="1400"
+          sizes="(min-width: 1200px) 568px, (min-width: 1024px) 45vw, 100vw"
           class="aspect-[4/3] size-full object-cover"
         />
       </div>
@@ -222,34 +230,48 @@ const services = [
 </Layout>
 
 <script>
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  if (hero) {
-    const slides = [...hero.querySelectorAll<HTMLImageElement>('.hero-slide')];
-    const dots = [...hero.querySelectorAll<HTMLButtonElement>('[data-dot]')];
-    let index = 0;
-    const show = (i: number) => {
-      index = i;
-      slides.forEach((s, n) => (s.dataset.active = String(n === i)));
-      dots.forEach((d, n) => {
-        d.setAttribute('aria-pressed', String(n === i));
-        d.firstElementChild?.classList.toggle('!bg-white', n === i);
-      });
-    };
-    show(0);
-    dots.forEach((d, n) =>
-      d.addEventListener('click', () => {
-        show(n);
-        restart();
-      }),
-    );
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let timer = 0;
-    const restart = () => {
-      window.clearInterval(timer);
-      if (!reduce) {
-        timer = window.setInterval(() => show((index + 1) % slides.length), 6000);
-      }
-    };
+  import { find, findAll } from '../scripts/dom';
+
+  // Rotating hero photos. Auto-rotation has a pause button (WCAG 2.2.2) and is off entirely
+  // for visitors who ask for reduced motion.
+  const hero = find('[data-hero]');
+  const slides = findAll('.hero-slide', hero);
+  const dots = findAll<HTMLButtonElement>('[data-dot]', hero);
+  const pause = find<HTMLButtonElement>('[data-hero-pause]', hero);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let index = 0;
+  let timer = 0;
+  let paused = false;
+
+  const show = (i: number) => {
+    index = i;
+    slides.forEach((s, n) => (s.dataset.active = String(n === i)));
+    dots.forEach((d, n) => {
+      d.setAttribute('aria-pressed', String(n === i));
+      d.firstElementChild?.classList.toggle('!bg-white', n === i);
+    });
+  };
+  const restart = () => {
+    window.clearInterval(timer);
+    pause.hidden = reduce.matches;
+    if (!reduce.matches && !paused) {
+      timer = window.setInterval(() => show((index + 1) % slides.length), 6000);
+    }
+  };
+  show(0);
+  restart();
+  reduce.addEventListener('change', restart);
+  dots.forEach((d, n) =>
+    d.addEventListener('click', () => {
+      show(n);
+      restart();
+    }),
+  );
+  pause.addEventListener('click', () => {
+    paused = !paused;
+    pause.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
+    find('[data-pause-icon]', pause).classList.toggle('hidden', paused);
+    find('[data-play-icon]', pause).classList.toggle('hidden', !paused);
     restart();
-  }
+  });
 </script>

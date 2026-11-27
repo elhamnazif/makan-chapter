@@ -1,35 +1,46 @@
 ---
 import { Icon } from 'astro-icon/components';
+import RowTemplate from '../../components/RowTemplate.astro';
 import { url } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
+import { emailPattern, phonePattern } from '../../lib/fields';
 
 const fields = [
   {
     id: 'name',
     label: 'Full name',
     icon: 'ph:user',
-    type: 'text' as const,
-    autocomplete: 'name',
-    placeholder: 'Your full name',
-    required: true,
+    attrs: { type: 'text', autocomplete: 'name', placeholder: 'Your full name' } as const,
+    missing: 'Enter your full name.',
   },
   {
     id: 'email',
     label: 'Email address',
     icon: 'ph:envelope-simple',
-    type: 'email' as const,
-    autocomplete: 'email',
-    placeholder: 'you@example.com',
-    required: true,
+    attrs: {
+      type: 'email',
+      autocomplete: 'email',
+      placeholder: 'you@example.com',
+      pattern: emailPattern,
+      autocorrect: 'off',
+      autocapitalize: 'none',
+      spellcheck: 'false',
+    } as const,
+    missing: 'Enter your email address.',
+    invalid: 'Enter a valid email address.',
   },
   {
     id: 'phone',
     label: 'Phone number',
     icon: 'ph:phone',
-    type: 'tel' as const,
-    autocomplete: 'tel',
-    placeholder: '9123 4567',
-    required: true,
+    attrs: {
+      type: 'tel',
+      autocomplete: 'tel',
+      placeholder: '9123 4567',
+      pattern: phonePattern,
+    } as const,
+    missing: 'Enter your phone number.',
+    invalid: 'Enter a Singapore phone number, e.g. 9123 4567.',
   },
 ];
 ---
@@ -53,11 +64,18 @@ const fields = [
         <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />
         Back to Cart
       </a>
-      <h1 class="mt-2 text-2xl font-bold tracking-tight md:text-3xl">Delivery Details</h1>
+      <h1 id="delivery-title" class="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
+        Delivery Details
+      </h1>
       <p class="mt-1 text-muted">Enter your delivery information to complete your order.</p>
 
       <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_22rem]">
-        <form class="card space-y-5 p-5 md:p-6" novalidate data-delivery>
+        <form
+          class="card space-y-5 p-5 md:p-6"
+          novalidate
+          aria-labelledby="delivery-title"
+          data-delivery
+        >
           {fields.map((f) => (
             <div>
               <label for={f.id} class="field-label flex items-center gap-2">
@@ -67,12 +85,12 @@ const fields = [
               <input
                 id={f.id}
                 name={f.id}
-                type={f.type}
                 class="field"
-                autocomplete={f.autocomplete}
-                placeholder={f.placeholder}
-                required={f.required}
+                required
                 aria-describedby={`${f.id}-error`}
+                data-missing={f.missing}
+                data-invalid={f.invalid}
+                {...f.attrs}
               />
               <p id={`${f.id}-error`} class="field-error" hidden></p>
             </div>
@@ -91,6 +109,7 @@ const fields = [
               placeholder="Block, street, unit number and postal code"
               required
               aria-describedby="address-error"
+              data-missing="Enter your delivery address."
             ></textarea>
             <p id="address-error" class="field-error" hidden></p>
           </div>
@@ -108,7 +127,7 @@ const fields = [
             ></textarea>
           </div>
           <label class="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
-            <input type="checkbox" name="marketing" class="size-4 accent-[var(--mc-accent)]" />
+            <input type="checkbox" name="marketing" class="size-4" />
             Send me news and promotions from Makan Chapter.
           </label>
           <button type="submit" class="btn btn-block">
@@ -123,7 +142,7 @@ const fields = [
 
         <aside class="card self-start p-5 lg:sticky lg:top-20" aria-label="Order summary">
           <h2 class="font-bold">Order Summary</h2>
-          <ul class="mt-4 space-y-3 text-sm" data-lines></ul>
+          <dl class="mt-4 space-y-3 text-sm" data-lines></dl>
           <dl class="mt-4 space-y-2 border-t border-line pt-4 text-sm" data-totals></dl>
           <div class="mt-4 flex items-baseline justify-between border-t border-line pt-4">
             <span class="font-semibold">Total</span>
@@ -151,147 +170,79 @@ const fields = [
       </div>
     </div>
   </div>
+  <RowTemplate />
 </Layout>
 
 <script>
-  import {
-    readCart,
-    writeCart,
-    groups,
-    totals,
-    money,
-    DELIVERY_LABEL,
-    KIND_LABEL,
-    waUrl,
-    toast,
-  } from '../../scripts/cart';
-  import { find, byId } from '../../scripts/dom';
+  import { waLink } from '../../data/site';
+  import { money } from '../../lib/format';
+  import { readCart, writeCart, totals, DELIVERY_CENTS } from '../../scripts/cart';
+  import { fillRows, find, findAll } from '../../scripts/dom';
+  import { toast } from '../../scripts/toast';
+  import { validator } from '../../scripts/validate';
+  import type { Control } from '../../scripts/validate';
 
   const items = readCart();
-  const show = (sel: string, on: boolean) => (find<HTMLElement>(sel).hidden = !on);
+  const t = totals(items);
+  const show = (sel: string, on: boolean) => (find(sel).hidden = !on);
   show('[data-empty]', items.length === 0);
   show('[data-filled]', items.length > 0);
 
-  const lines = find('[data-lines]');
-  for (const i of items) {
-    const li = document.createElement('li');
-    li.className = 'flex justify-between gap-4';
-    const a = document.createElement('span');
-    a.textContent = `${i.qty} x ${i.name}`;
-    const b = document.createElement('span');
-    b.className = 'font-medium';
-    b.textContent = money(i.unitCents * i.qty);
-    li.append(a, b);
-    lines.append(li);
-  }
-  const t = totals(items);
-  const dl = find('[data-totals]');
-  const row = (k: string, v: string) => {
-    const d = document.createElement('div');
-    d.className = 'flex justify-between';
-    const dt = document.createElement('dt');
-    dt.className = 'text-muted';
-    dt.textContent = k;
-    const dd = document.createElement('dd');
-    dd.className = 'font-medium';
-    dd.textContent = v;
-    d.append(dt, dd);
-    dl.append(d);
-  };
-  row('Subtotal', money(t.subtotal));
-  groups(items)
-    .filter((g) => g.delivery)
-    .forEach((g) => row(DELIVERY_LABEL[g.kind], money(g.delivery)));
+  fillRows(
+    find('[data-lines]'),
+    items.map((i) => [`${i.qty} x ${i.name}`, money(i.unitCents * i.qty)]),
+  );
+  fillRows(find('[data-totals]'), [
+    ['Subtotal', money(t.subtotal)],
+    ['Meal delivery', money(DELIVERY_CENTS)],
+  ]);
   find('[data-total]').textContent = money(t.total);
 
   const form = find<HTMLFormElement>('[data-delivery]');
-  type Rule = (v: string) => string;
-  const rules = Object.entries({
-    name: (v) => (v ? '' : 'Enter your full name.'),
-    email: (v) =>
-      !v
-        ? 'Enter your email address.'
-        : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
-          ? ''
-          : 'Enter a valid email address.',
-    phone: (v) =>
-      !v
-        ? 'Enter your phone number.'
-        : /^\+?[\d\s-]{8,15}$/.test(v)
-          ? ''
-          : 'Enter a valid phone number.',
-    address: (v) => (v ? '' : 'Enter your delivery address.'),
-  } satisfies Record<string, Rule>);
-  const check = ([id, rule]: [string, Rule]) => {
-    const input = find<HTMLInputElement>(`#${id}`, form);
-    const msg = rule(input.value.trim());
-    const err = byId(`${id}-error`);
-    err.textContent = msg;
-    err.hidden = !msg;
-    if (msg) {
-      input.setAttribute('aria-invalid', 'true');
-    } else {
-      input.removeAttribute('aria-invalid');
-    }
-    return msg ? input : null;
-  };
-  // Re-check a flagged field while typing so its error clears before the customer reaches the button.
-  rules.forEach(([id, rule]) => {
-    const input = find<HTMLInputElement>(`#${id}`, form);
-    input.addEventListener('input', () => {
-      if (input.getAttribute('aria-invalid')) {
-        check([id, rule]);
-      }
-    });
-  });
+  const check = validator(form);
+  const value = (name: string) => String(new FormData(form).get(name) ?? '').trim();
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const bad = rules.map(check).filter(Boolean)[0];
+    const bad = check(findAll<Control>('[required]', form));
     if (bad) {
       bad.focus();
       return;
     }
-    const v = (id: string) => find<HTMLInputElement>(`#${id}`, form).value.trim();
     const out: Array<string> = ['Hi Makan Chapter, I would like to place an order.', ''];
-    for (const g of groups(items)) {
-      out.push(`*${KIND_LABEL[g.kind]}*`);
-      for (const i of g.list) {
-        out.push(`${i.qty} x ${i.name} (${money(i.unitCents * i.qty)})`);
-        i.details.forEach((d) => out.push(`  ${d}`));
-        if (i.note) {
-          out.push(`  Note: ${i.note}`);
-        }
+    for (const i of items) {
+      out.push(`${i.qty} x ${i.name} (${money(i.unitCents * i.qty)})`);
+      if (i.note) {
+        out.push(`  Note: ${i.note}`);
       }
-      if (g.delivery) {
-        out.push(`${DELIVERY_LABEL[g.kind]}: ${money(g.delivery)}`);
-      }
-      out.push('');
     }
     out.push(
+      '',
+      `Meal delivery: ${money(DELIVERY_CENTS)}`,
       `Total: ${money(t.total)}`,
       '',
-      `Name: ${v('name')}`,
-      `Email: ${v('email')}`,
-      `Phone: ${v('phone')}`,
-      `Address: ${v('address')}`,
+      `Name: ${value('name')}`,
+      `Email: ${value('email')}`,
+      `Phone: ${value('phone')}`,
+      `Address: ${value('address')}`,
     );
-    if (v('notes')) {
-      out.push(`Instructions: ${v('notes')}`);
+    if (value('notes')) {
+      out.push(`Instructions: ${value('notes')}`);
     }
-    if (find<HTMLInputElement>('[name=marketing]', form).checked) {
+    if (value('marketing')) {
       out.push('Happy to receive news and promotions.');
     }
-    const link = waUrl(out.join('\n'));
+    const link = waLink(out.join('\n'));
     window.open(link, '_blank', 'noopener');
     find<HTMLAnchorElement>('[data-reopen]').href = link;
     show('[data-filled]', false);
     show('[data-sent]', true);
-    find<HTMLElement>('[data-sent]').focus();
+    find('[data-sent]').focus();
   });
 
   find('[data-clear]').addEventListener('click', () => {
-    writeCart([]);
-    toast('Cart cleared');
+    if (writeCart([])) {
+      toast('Cart cleared');
+    }
   });
 </script>

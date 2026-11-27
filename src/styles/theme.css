@@ -1,54 +1,74 @@
 /*
-  THEME TOKENS. This is the only file a visual theme should need to change.
-  Light is the default; dark applies only when the visitor picks it with the header
-  toggle (stored in localStorage as mc-theme), never from the OS setting.
+  THEME TOKENS. This is the only file a visual retheme should need to change.
+  The site follows the visitor's system light or dark setting (color-scheme: light dark).
+  Raw values per scheme are kept apart from the light-dark() pairs so tests and
+  other combinations can read them.
   Colour is reserved for actions, selection and a few structural details; photography stays primary.
   Shape rule: cards and panels 12px, inputs and buttons 8px, nav pills full-round.
 */
-:root,
-:root[data-theme='light'] {
-  color-scheme: light;
-  --mc-bg: #fbfaf8;
-  --mc-surface: #ffffff;
-  --mc-surface-2: #f3f0eb;
-  --mc-ink: #29231f;
-  --mc-muted: #62584f;
-  --mc-line: #ddd6cc;
-  --mc-accent: #98442e;
-  --mc-accent-hover: #7d3524;
-  --mc-accent-ink: #ffffff;
-  --mc-price: #7d3524;
-  --mc-note-bg: #f6f0e9;
-  --mc-note-line: #d6c3af;
-  --mc-error: #b42318;
-  --mc-footer-bg: #27231f;
-  --mc-footer-ink: #f6f1ea;
-  --mc-footer-muted: #c7bdb2;
-  --mc-scrim: #1e1713a6;
+:root {
+  color-scheme: light dark;
+
+  --mc-bg-light: #fbfaf8;
+  --mc-bg-dark: #191817;
+  --mc-surface-light: #ffffff;
+  --mc-surface-dark: #242220;
+  --mc-surface-2-light: #f3f0eb;
+  --mc-surface-2-dark: #1e1c1a;
+  --mc-ink-light: #29231f;
+  --mc-ink-dark: #f7f3ed;
+  --mc-muted-light: #62584f;
+  --mc-muted-dark: #c4bbb0;
+  --mc-line-light: #ddd6cc;
+  --mc-line-dark: #49413a;
+  --mc-accent-light: #98442e;
+  --mc-accent-dark: #edb09a;
+  --mc-accent-hover-light: #7d3524;
+  --mc-accent-hover-dark: #f6c5b2;
+  --mc-accent-ink-light: #ffffff;
+  --mc-accent-ink-dark: #30190f;
+  --mc-price-light: #7d3524;
+  --mc-price-dark: #edb09a;
+  --mc-note-bg-light: #f6f0e9;
+  --mc-note-bg-dark: #302923;
+  --mc-note-line-light: #d6c3af;
+  --mc-note-line-dark: #655041;
+  --mc-error-light: #b42318;
+  --mc-error-dark: #ffb0a8;
+  --mc-footer-bg-light: #27231f;
+  --mc-footer-bg-dark: #131211;
+  --mc-footer-ink-light: #f6f1ea;
+  --mc-footer-ink-dark: #f6f1ea;
+  --mc-footer-muted-light: #c7bdb2;
+  --mc-footer-muted-dark: #c7bdb2;
+  --mc-scrim-light: #1e1713a6;
+  --mc-scrim-dark: #080706b8;
+
+  --mc-bg: light-dark(var(--mc-bg-light), var(--mc-bg-dark));
+  --mc-surface: light-dark(var(--mc-surface-light), var(--mc-surface-dark));
+  --mc-surface-2: light-dark(var(--mc-surface-2-light), var(--mc-surface-2-dark));
+  --mc-ink: light-dark(var(--mc-ink-light), var(--mc-ink-dark));
+  --mc-muted: light-dark(var(--mc-muted-light), var(--mc-muted-dark));
+  --mc-line: light-dark(var(--mc-line-light), var(--mc-line-dark));
+  --mc-accent: light-dark(var(--mc-accent-light), var(--mc-accent-dark));
+  --mc-accent-hover: light-dark(var(--mc-accent-hover-light), var(--mc-accent-hover-dark));
+  --mc-accent-ink: light-dark(var(--mc-accent-ink-light), var(--mc-accent-ink-dark));
+  --mc-price: light-dark(var(--mc-price-light), var(--mc-price-dark));
+  --mc-note-bg: light-dark(var(--mc-note-bg-light), var(--mc-note-bg-dark));
+  --mc-note-line: light-dark(var(--mc-note-line-light), var(--mc-note-line-dark));
+  --mc-error: light-dark(var(--mc-error-light), var(--mc-error-dark));
+  --mc-footer-bg: light-dark(var(--mc-footer-bg-light), var(--mc-footer-bg-dark));
+  --mc-footer-ink: light-dark(var(--mc-footer-ink-light), var(--mc-footer-ink-dark));
+  --mc-footer-muted: light-dark(var(--mc-footer-muted-light), var(--mc-footer-muted-dark));
+  --mc-scrim: light-dark(var(--mc-scrim-light), var(--mc-scrim-dark));
+
   --mc-shadow: 0 1px 3px #33221108, 0 4px 16px #33221106;
   --mc-font: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   --mc-radius-card: 12px;
   --mc-radius-control: 8px;
-}
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --mc-bg: #191817;
-  --mc-surface: #242220;
-  --mc-surface-2: #1e1c1a;
-  --mc-ink: #f7f3ed;
-  --mc-muted: #c4bbb0;
-  --mc-line: #49413a;
-  --mc-accent: #edb09a;
-  --mc-accent-hover: #f6c5b2;
-  --mc-accent-ink: #30190f;
-  --mc-price: #edb09a;
-  --mc-note-bg: #302923;
-  --mc-note-line: #655041;
-  --mc-error: #ffb0a8;
-  --mc-footer-bg: #131211;
-  --mc-footer-ink: #f6f1ea;
-  --mc-footer-muted: #c7bdb2;
-  --mc-scrim: #080706b8;
-  --mc-shadow: 0 1px 3px #0003, 0 4px 16px #0002;
+  @media (prefers-color-scheme: dark) {
+    /* Shadows are not colours, so light-dark() cannot pick them. */
+    --mc-shadow: 0 1px 3px #0003, 0 4px 16px #0002;
+  }
 }

@@ -3,9 +3,12 @@ import { Icon } from 'astro-icon/components';
 import DemoBanner from '../../components/DemoBanner.astro';
 import MenuImage from '../../components/MenuImage.astro';
 import PageHero from '../../components/PageHero.astro';
+import Photo from '../../components/Photo.astro';
+import { buffets, occasions, priceLabel } from '../../data/buffets';
 import { eventMenus, eventPackages, fromPriceCents } from '../../data/eventCatering';
-import { url, money } from '../../data/site';
+import { url, waLink } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
+import { money } from '../../lib/format';
 ---
 
 <Layout
@@ -31,7 +34,11 @@ import Layout from '../../layouts/Layout.astro';
     <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-menu-list>
       {eventMenus.map((m, i) => (
         <li class="card flex flex-col overflow-hidden" data-menu-card={m.slug}>
-          <MenuImage image={m.image} class="aspect-[4/3] w-full" />
+          <MenuImage
+            image={m.image}
+            sizes="(min-width: 1200px) 368px, (min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+            class="aspect-[4/3] w-full"
+          />
           <div class="flex flex-1 flex-col items-center p-5 text-center">
             <p class="text-xs font-semibold tracking-[.14em] text-accent">
               MENU {String(i + 1).padStart(2, '0')}
@@ -87,6 +94,49 @@ import Layout from '../../layouts/Layout.astro';
       <p class="mt-6 text-center text-sm text-muted">
         Book at least 3 days ahead. Full payment is taken when you order.
       </p>
+    </div>
+  </section>
+
+  <section id="buffets" class="container-page scroll-mt-20 py-14" aria-labelledby="buffets-title">
+    <h2 id="buffets-title" class="text-center text-3xl font-bold tracking-tight">
+      Buffets for Weddings and Large Events
+    </h2>
+    <p class="mx-auto mt-3 max-w-[55ch] text-center text-muted">
+      Full buffets with setup, staff and collection. Tell us your date and guest count on WhatsApp
+      and we will send a quotation.
+    </p>
+    <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {buffets.map((b) => (
+        <li class="card flex flex-col overflow-hidden" data-buffet-card={b.slug}>
+          <Photo
+            name={b.image}
+            sizes="(min-width: 1200px) 368px, (min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+            class="aspect-[4/3] w-full object-cover"
+          />
+          <div class="flex flex-1 flex-col items-center p-5 text-center">
+            <h3 class="text-xl font-bold">{b.name}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{b.blurb}</p>
+            <p class="mt-auto pt-4 text-lg font-bold text-price">{priceLabel(b)}</p>
+            <p class="text-xs text-muted">Min. {b.minPax} pax</p>
+            <a href={url(`catering/buffets/${b.slug}/`)} class="btn btn-block mt-4">
+              View Menu and Get a Quote
+            </a>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <div class="mt-10 text-center">
+      <h3 class="font-bold">Planning something else?</h3>
+      <ul class="mt-3 flex flex-wrap justify-center gap-2">
+        {occasions.map((o) => (
+          <li>
+            <a href={waLink(o.message)} target="_blank" rel="noopener" class="btn btn-outline">
+              <Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />
+              {o.title}
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 </Layout>

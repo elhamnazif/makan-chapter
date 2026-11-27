@@ -1,5 +1,5 @@
 ---
-import { url } from '../data/site';
+import Photo from './Photo.astro';
 interface Props {
   title: string;
   intro?: string;
@@ -15,11 +15,13 @@ const { title, intro, image, compact = false } = Astro.props;
     compact ? 'min-h-56 md:min-h-64' : 'min-h-72 md:min-h-96',
   ]}
 >
-  <img
-    src={url(`images/${image}.webp`)}
-    alt=""
-    class="absolute inset-0 -z-10 size-full object-cover"
+  <Photo
+    name={image}
+    sizes="100vw"
+    widths={[640, 960, 1280, 1600]}
+    loading="eager"
     fetchpriority="high"
+    class="absolute inset-0 -z-10 size-full object-cover"
   />
   <div class="absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/45 to-black/10"></div>
   <div class="container-page py-10 md:py-16">

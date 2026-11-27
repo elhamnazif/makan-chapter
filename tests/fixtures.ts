@@ -1,5 +1,4 @@
 import { test as base, expect } from '@playwright/test';
-import type { Page } from '@playwright/test';
 
 declare global {
   interface Window {
@@ -50,5 +49,3 @@ export function daysFromToday(n: number): string {
   d.setDate(d.getDate() + n);
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
-
-export const theme = (page: Page) => page.locator('html');

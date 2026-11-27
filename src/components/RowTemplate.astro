@@ -1,0 +1,10 @@
+---
+// One label and value row for the <dl> summaries that scripts fill (fillRows in scripts/dom.ts).
+---
+
+<template id="tpl-row">
+  <div class="flex justify-between gap-4">
+    <dt class="text-muted" data-slot="label"></dt>
+    <dd class="text-right font-medium" data-slot="value"></dd>
+  </div>
+</template>

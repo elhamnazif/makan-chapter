@@ -1,29 +1,31 @@
 ---
-// SMCCI Muslim-Owned Enterprise mark. The dark variant has a light registered mark.
-// Both are rendered and the site theme shows one; the hidden lazy image is not fetched.
-import { url } from '../data/site';
+// SMCCI Muslim-Owned Enterprise mark. The dark variant has a light registered mark, so the
+// picture switches to it when the visitor's system is in dark mode. Only one file is fetched.
+import { getImage } from 'astro:assets';
+import dark from '../assets/brand/moe-badge-v2-dark.webp';
+import light from '../assets/brand/moe-badge-v2.webp';
 interface Props {
+  /** Largest rendered width in CSS pixels; 1x and 2x copies are made at this size. */
+  px: number;
   class?: string;
 }
-const { class: cls = 'size-24' } = Astro.props;
+const { px, class: cls = '' } = Astro.props;
 const alt = 'Muslim-Owned Enterprise, Singapore Malay Chamber of Commerce and Industry';
+const [l, d] = await Promise.all(
+  [light, dark].map((src) => getImage({ src, width: px, densities: [1, 2] })),
+);
 ---
 
-<span class="block shrink-0" data-moe-badge>
+<picture class="block shrink-0" data-moe-badge>
+  <source media="(prefers-color-scheme: dark)" srcset={d.srcSet.attribute} />
   <img
-    src={url('brand/moe-badge-v2.webp')}
+    src={l.src}
+    srcset={l.srcSet.attribute}
     alt={alt}
-    width="640"
-    height="640"
+    width={px}
+    height={px}
     loading="lazy"
-    class={`${cls} aspect-square max-w-none object-contain dark:hidden`}
+    decoding="async"
+    class={`${cls} aspect-square max-w-none object-contain`}
   />
-  <img
-    src={url('brand/moe-badge-v2-dark.webp')}
-    alt={alt}
-    width="640"
-    height="640"
-    loading="lazy"
-    class={`${cls} hidden aspect-square max-w-none object-contain dark:block`}
-  />
-</span>
+</picture>

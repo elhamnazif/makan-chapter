@@ -1,3 +1,5 @@
+import { money } from '../lib/format';
+
 // Event catering flow from the client's "Customer journey: Event Catering" brief (v4, Nov 2026).
 // DEMO DATA: menu names, package rules and fees come from the brief. The dish options and
 // per-pax prices below are samples until Makan Chapter sends the final menu and prices.
@@ -216,6 +218,46 @@ export function categoriesFor(menu: EventMenu, pkg: PackageKey): Array<MenuCateg
 
 export function fromPriceCents(menu: EventMenu): number {
   return Math.min(menu.priceCents.mini, menu.priceCents.classic);
+}
+
+export interface QuoteLine {
+  label: string;
+  cents: number;
+  /** A surcharge on top of the package price and delivery. */
+  extra?: boolean;
+}
+
+export interface Quote {
+  lines: Array<QuoteLine>;
+  totalCents: number;
+}
+
+export function menuBySlug(slug: string): EventMenu {
+  const menu = eventMenus.find((m) => m.slug === slug);
+  if (!menu) {
+    throw new Error(`No catering menu ${slug}`);
+  }
+  return menu;
+}
+
+/** Every charge for an order, in display order, and the total. */
+export function quote(
+  menu: EventMenu,
+  pkg: EventPackage,
+  order: { pax: number; postal: string; teardownTime: string },
+): Quote {
+  const per = menu.priceCents[pkg.key];
+  const lines: Array<QuoteLine> = [
+    { label: `${order.pax} pax × ${money(per)}`, cents: per * order.pax },
+    { label: pkg.deliveryLabel, cents: pkg.deliveryCents },
+  ];
+  if (isCbdOrSentosa(order.postal)) {
+    lines.push({ label: 'CBD or Sentosa', cents: fees.cbdSentosaCents, extra: true });
+  }
+  if (pkg.key === 'classic' && order.teardownTime > fees.lateTeardownAfter) {
+    lines.push({ label: 'Teardown after 9pm', cents: fees.lateTeardownCents, extra: true });
+  }
+  return { lines, totalCents: lines.reduce((sum, l) => sum + l.cents, 0) };
 }
 
 /** Assumed CBD (postal sectors 01 to 08) or Sentosa (098, 099). Still to be confirmed with the client. */

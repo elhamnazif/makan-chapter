@@ -1,20 +1,19 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo.png';
 import { nav, url, business } from '../data/site';
-import ThemeToggle from './ThemeToggle.astro';
+import type { NavItem } from '../data/site';
 
 const path = Astro.url.pathname;
 const home = url('');
-const isActive = (item: { href: string; match?: Array<string> }) => {
-  if (item.href === '') {
-    return path === home;
-  }
-  const prefixes = item.match ?? [item.href];
-  return prefixes.some((p) => path.startsWith(url(p)));
-};
+const isActive = (item: NavItem) =>
+  item.href === ''
+    ? path === home
+    : (item.match ?? [item.href]).some((p) => path.startsWith(url(p)));
 ---
 
-<header class="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
+<header class="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur">
   <div class="container-page flex h-16 items-center justify-between gap-4">
     <a
       href={home}
@@ -22,7 +21,7 @@ const isActive = (item: { href: string; match?: Array<string> }) => {
       aria-label={`${business.name} home`}
     >
       <span class="grid size-11 place-items-center overflow-hidden rounded-full bg-white ring-1 ring-line">
-        <img src={url('brand/logo.png')} alt="" width="44" height="44" class="size-11" />
+        <Image src={logo} alt="" width={44} densities={[1, 2]} loading="eager" class="size-11" />
       </span>
       <span class="text-lg font-bold tracking-tight">{business.name}</span>
     </a>
@@ -30,60 +29,23 @@ const isActive = (item: { href: string; match?: Array<string> }) => {
     <nav aria-label="Main" class="hidden lg:block">
       <ul class="flex items-center gap-1">
         {nav.map((item) => (
-          <li class="relative">
-            {item.children ? (
-              <>
-                <button
-                  type="button"
-                  class:list={[
-                    'flex min-h-11 items-center gap-1 rounded-full px-4 text-sm font-medium transition-colors',
-                    isActive(item) ? 'bg-accent text-accent-ink' : 'hover:bg-surface-2',
-                  ]}
-                  aria-expanded="false"
-                  aria-controls="catering-menu"
-                  data-dropdown-toggle
-                >
-                  {item.label}
-                  <Icon name="ph:caret-down-bold" class="size-3.5" aria-hidden="true" />
-                </button>
-                <ul
-                  id="catering-menu"
-                  class="card absolute left-0 top-full z-40 mt-2 min-w-52 p-1.5"
-                  hidden
-                  data-dropdown
-                >
-                  {item.children.map((c) => (
-                    <li>
-                      <a
-                        href={url(c.href)}
-                        class="flex min-h-11 items-center rounded-control px-3 text-sm hover:bg-surface-2"
-                        aria-current={path.startsWith(url(c.href)) ? 'page' : undefined}
-                      >
-                        {c.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <a
-                href={url(item.href)}
-                class:list={[
-                  'flex min-h-11 items-center rounded-full px-4 text-sm font-medium transition-colors',
-                  isActive(item) ? 'bg-accent text-accent-ink' : 'hover:bg-surface-2',
-                ]}
-                aria-current={isActive(item) ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            )}
+          <li>
+            <a
+              href={url(item.href)}
+              class:list={[
+                'flex min-h-11 items-center rounded-full px-4 text-sm font-medium transition-colors',
+                isActive(item) ? 'bg-accent text-accent-ink' : 'hover:bg-surface-2',
+              ]}
+              aria-current={isActive(item) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
           </li>
         ))}
       </ul>
     </nav>
 
     <div class="flex items-center gap-1">
-      <ThemeToggle />
       <a
         href={url('cart/')}
         class="relative grid size-11 place-items-center rounded-full hover:bg-surface-2"
@@ -113,125 +75,121 @@ const isActive = (item: { href: string; match?: Array<string> }) => {
   </div>
 </header>
 
-<div id="mobile-nav" class="fixed inset-0 z-50 lg:hidden" hidden data-drawer>
-  <div class="absolute inset-0 bg-[var(--mc-scrim)]" data-drawer-close></div>
-  <nav
-    aria-label="Mobile"
-    class="absolute inset-y-0 right-0 flex w-[min(20rem,85vw)] flex-col bg-surface p-4 shadow-card"
-  >
-    <div class="mb-4 flex items-center justify-between">
-      <span class="font-bold">Menu</span>
-      <button
-        type="button"
-        class="grid size-11 place-items-center rounded-full hover:bg-surface-2"
-        aria-label="Close menu"
-        data-drawer-close
-      >
-        <Icon name="ph:x" class="size-6" aria-hidden="true" />
-      </button>
-    </div>
-    <ul class="flex flex-col gap-1">
-      {nav.map((item) => (
-        <li>
-          {item.children ? (
-            <>
-              <span class="block px-3 pb-1 pt-3 text-xs font-semibold text-muted">
-                {item.label}
-              </span>
-              <ul>
-                {item.children.map((c) => (
-                  <li>
-                    <a
-                      href={url(c.href)}
-                      class="flex min-h-11 items-center rounded-control px-3 hover:bg-surface-2"
-                    >
-                      {c.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : (
+<dialog id="mobile-nav" class="drawer" aria-labelledby="mobile-nav-title" data-drawer>
+  <div class="drawer-scroller" data-drawer-scroller>
+    <nav aria-label="Mobile" class="drawer-sheet bg-surface p-4 shadow-card" data-drawer-sheet>
+      <div class="mb-4 flex items-center justify-between">
+        <span id="mobile-nav-title" class="font-bold">
+          Menu
+        </span>
+        <button
+          type="button"
+          class="grid size-11 place-items-center rounded-full hover:bg-surface-2"
+          aria-label="Close menu"
+          autofocus
+          data-drawer-close
+        >
+          <Icon name="ph:x" class="size-6" aria-hidden="true" />
+        </button>
+      </div>
+      <ul class="flex flex-col gap-1">
+        {nav.map((item) => (
+          <li>
             <a
               href={url(item.href)}
               class:list={[
                 'flex min-h-11 items-center rounded-control px-3',
                 isActive(item) ? 'bg-accent text-accent-ink' : 'hover:bg-surface-2',
               ]}
+              aria-current={isActive(item) ? 'page' : undefined}
             >
               {item.label}
             </a>
-          )}
-        </li>
-      ))}
-    </ul>
-  </nav>
-</div>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</dialog>
 
 <script>
-  import { cartCount } from '../scripts/cart';
+  import { plural } from '../lib/format';
+  import { readCart, totals } from '../scripts/cart';
+  import { find } from '../scripts/dom';
 
-  const badge = document.querySelector<HTMLElement>('[data-cart-count]');
-  const cartLink = document.querySelector<HTMLElement>('[data-cart-link]');
+  const badge = find('[data-cart-count]');
+  const cartLink = find('[data-cart-link]');
   const syncCount = () => {
-    const n = cartCount();
-    if (!badge || !cartLink) {
-      return;
-    }
+    const n = totals(readCart()).count;
     badge.textContent = String(n);
     badge.hidden = n === 0;
-    cartLink.setAttribute('aria-label', n ? `Cart, ${n} item${n > 1 ? 's' : ''}` : 'Cart');
+    cartLink.setAttribute('aria-label', n ? `Cart, ${plural(n, 'item')}` : 'Cart');
   };
   syncCount();
   document.addEventListener('cart:change', syncCount);
   window.addEventListener('storage', syncCount);
 
-  // Catering dropdown
-  const toggle = document.querySelector<HTMLButtonElement>('[data-dropdown-toggle]');
-  const menu = document.querySelector<HTMLElement>('[data-dropdown]');
-  const setOpen = (open: boolean) => {
-    if (!toggle || !menu) {
-      return;
-    }
-    toggle.setAttribute('aria-expanded', String(open));
-    menu.hidden = !open;
-  };
-  toggle?.addEventListener('click', () => setOpen(Boolean(menu?.hidden)));
-  document.addEventListener('click', (e) => {
-    if (toggle && menu && !toggle.contains(e.target as Node) && !menu.contains(e.target as Node)) {
-      setOpen(false);
-    }
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && menu && !menu.hidden) {
-      setOpen(false);
-      toggle?.focus();
-    }
-  });
+  // Mobile drawer. Opening shows the modal dialog, then scrolls the sheet in; closing scrolls
+  // it out, and the observer closes the dialog once the sheet has left, so a swipe, a tap on
+  // the backdrop, the close button and Escape all end in the same place.
+  const drawer = find<HTMLDialogElement>('[data-drawer]');
+  const scroller = find('[data-drawer-scroller]', drawer);
+  const sheet = find('[data-drawer-sheet]', drawer);
+  const opener = find<HTMLButtonElement>('[data-drawer-open]');
 
-  // Mobile drawer
-  const drawer = document.querySelector<HTMLElement>('[data-drawer]');
-  const opener = document.querySelector<HTMLButtonElement>('[data-drawer-open]');
-  const openDrawer = (open: boolean) => {
-    if (!drawer || !opener) {
-      return;
-    }
-    drawer.hidden = !open;
-    opener.setAttribute('aria-expanded', String(open));
-    document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (open) {
-      drawer.querySelector<HTMLElement>('[data-drawer-close].grid')?.focus();
-    } else {
-      opener.focus();
-    }
+  const openDrawer = () => {
+    drawer.showModal();
+    scroller.scrollTo({ left: scroller.scrollWidth, behavior: 'auto' });
   };
-  opener?.addEventListener('click', () => openDrawer(true));
-  drawer
-    ?.querySelectorAll('[data-drawer-close]')
-    .forEach((el) => el.addEventListener('click', () => openDrawer(false)));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && drawer && !drawer.hidden) {
-      openDrawer(false);
+  const closeDrawer = () => scroller.scrollTo({ left: 0, behavior: 'auto' });
+
+  const visibleThreshold = 1 / window.innerWidth;
+  new IntersectionObserver(
+    (entries) => {
+      const entry = entries.at(-1);
+      if (!entry) {
+        return;
+      }
+      if (entry.intersectionRatio < visibleThreshold) {
+        drawer.close();
+        opener.setAttribute('aria-expanded', 'false');
+      }
+      if (entry.intersectionRatio === 1) {
+        opener.setAttribute('aria-expanded', 'true');
+      }
+    },
+    { root: drawer, threshold: [visibleThreshold, 1] },
+  ).observe(sheet);
+
+  opener.addEventListener('click', openDrawer);
+  find('[data-drawer-close]', drawer).addEventListener('click', closeDrawer);
+  // A tap on the dimmed area: the dialog fills the viewport, so taps land on it, not ::backdrop.
+  drawer.addEventListener('click', (e) => {
+    if (!sheet.contains(e.target as Node | null)) {
+      closeDrawer();
     }
   });
+  // Escape slides the sheet out instead of closing at once. Browsers may not let a repeated
+  // Escape be cancelled, in which case the dialog simply closes.
+  drawer.addEventListener('cancel', (e) => {
+    if (e.cancelable) {
+      e.preventDefault();
+      closeDrawer();
+    }
+  });
+  // The drawer is for narrow screens only.
+  window.matchMedia('(min-width: 64rem)').addEventListener('change', (e) => {
+    if (e.matches) {
+      drawer.close();
+    }
+  });
+  // Without scroll-driven animations, drive the backdrop fade from the scroll position.
+  if (!CSS.supports('animation-timeline: scroll()')) {
+    scroller.addEventListener('scroll', () => {
+      drawer.style.setProperty(
+        '--drawer-backdrop',
+        String(scroller.scrollLeft / sheet.offsetWidth),
+      );
+    });
+  }
 </script>

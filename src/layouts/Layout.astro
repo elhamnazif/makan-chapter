@@ -1,8 +1,10 @@
 ---
 import '../styles/global.css';
+import { Icon } from 'astro-icon/components';
+import { getImage } from 'astro:assets';
+import logo from '../assets/brand/logo.png';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { url } from '../data/site';
 interface Props {
   title?: string;
   description?: string;
@@ -14,28 +16,19 @@ const {
 const fullTitle = title
   ? `${title} | Makan Chapter`
   : 'Makan Chapter | Malay Catering in Singapore';
+const favicon = await getImage({ src: logo, width: 64, format: 'png' });
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
   <head>
-    <script is:inline>
-      // Apply the stored choice before styles paint. Light is the default, independent of the OS.
-      try {
-        if (localStorage.getItem('mc-theme') === 'dark') {
-          document.documentElement.dataset.theme = 'dark';
-        }
-      } catch {
-        /* Storage blocked: keep the light default. */
-      }
-    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="robots" content="noindex, nofollow" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href={url('brand/logo.png')} type="image/png" />
-    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href={favicon.src} type="image/png" />
   </head>
   <body class="antialiased">
     <a
@@ -49,12 +42,33 @@ const fullTitle = title
       <slot />
     </main>
     <Footer />
-    <div
-      id="toast"
-      role="status"
-      aria-live="polite"
-      data-show="false"
-      class="pointer-events-none fixed inset-x-0 bottom-6 z-60 mx-auto w-fit max-w-[90vw] rounded-full bg-accent px-5 py-3 text-sm font-medium text-accent-ink opacity-0 shadow-card transition-[opacity,transform] duration-200 data-[show=true]:opacity-100 translate-y-2 data-[show=true]:translate-y-0"
-    ></div>
+    <div role="region" aria-label="Notifications">
+      <div
+        id="toast"
+        popover="manual"
+        class="toast max-w-[90vw] rounded-full border-0 bg-accent p-0 text-accent-ink shadow-card"
+      >
+        <div class="flex items-center gap-1 py-1.5 pl-5 pr-1.5">
+          <p class="text-sm font-medium" data-toast-text></p>
+          <button
+            type="button"
+            popovertarget="toast"
+            popovertargetaction="hide"
+            class="grid size-9 shrink-0 place-items-center rounded-full hover:bg-black/10"
+            aria-label="Dismiss"
+          >
+            <Icon name="ph:x-bold" class="size-4" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+      <p class="sr-only" aria-live="polite" data-toast-live></p>
+    </div>
   </body>
 </html>
+
+<script>
+  // Popover is not yet Baseline Widely available: load the polyfill only where it is missing.
+  if (!Object.hasOwn(HTMLElement.prototype, 'popover')) {
+    void import('@oddbird/popover-polyfill');
+  }
+</script>

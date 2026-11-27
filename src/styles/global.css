@@ -2,9 +2,6 @@
 @import '@fontsource-variable/geist';
 @import './theme.css';
 
-/* dark: follows the site's chosen theme (html[data-theme]), not the OS setting. */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
-
 @theme inline {
   --color-bg: var(--mc-bg);
   --color-surface: var(--mc-surface);
@@ -33,13 +30,14 @@
   --text-sm: 0.9375rem;
 }
 
-/* z-index scale: header 30, dropdown 40, mobile drawer 50, toast 60 */
+/* z-index scale: header 30. Dialogs, the mobile drawer and the toast use the top layer. */
 
 @layer base {
   html {
     background: var(--color-bg);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    accent-color: var(--color-accent);
     -webkit-text-size-adjust: 100%;
   }
   body {
@@ -169,6 +167,138 @@
     padding: 0.75rem;
     font-size: 0.8125rem;
     color: var(--color-muted);
+  }
+}
+
+/* Modal dialogs: scrolling over the backdrop or inside the dialog must not scroll the page. */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/*
+  Mobile navigation drawer (Header.astro): a modal <dialog> holding a horizontal scroller
+  with two snap stops, an empty spacer (closed) and the sheet on the right (open), so a
+  swipe moves the sheet natively. The backdrop opacity follows the scroll position.
+*/
+.drawer {
+  --drawer-width: min(20rem, 85dvw, 100dvw - 24px);
+  --drawer-backdrop: 0;
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  overflow: visible;
+}
+.drawer::backdrop {
+  background: var(--mc-scrim);
+  opacity: var(--drawer-backdrop);
+}
+.drawer-scroller {
+  display: grid;
+  grid-template-columns: 100% var(--drawer-width);
+  overflow-x: scroll;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .drawer-scroller {
+    scroll-behavior: smooth;
+  }
+}
+/* The closed stop. Scroll position 0, where a newly shown dialog starts. */
+.drawer-scroller::before {
+  content: '';
+  scroll-snap-align: start;
+}
+.drawer-sheet {
+  /* svh, not dvh: the sheet must not jump while the iOS address bar resizes mid-swipe. */
+  height: 100svh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-align: end;
+}
+@property --drawer-backdrop {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@supports (animation-timeline: scroll()) {
+  .drawer {
+    timeline-scope: --drawer-fade;
+    animation: drawer-fade linear both;
+  }
+  /* A separate rule: the minifier would otherwise fold the timeline into the animation
+     shorthand, which cannot set it, and the browser would drop the whole declaration. */
+  dialog.drawer {
+    animation-timeline: --drawer-fade;
+  }
+  .drawer-scroller {
+    scroll-timeline: --drawer-fade x;
+  }
+  @keyframes drawer-fade {
+    0% {
+      --drawer-backdrop: 0;
+    }
+    100% {
+      --drawer-backdrop: 1;
+    }
+  }
+}
+
+/* Order Online category tabs. :target-current marks the tab whose section is in view;
+   .target-current is set by script where the pseudo-class is not supported. */
+.menu-tabs {
+  scroll-target-group: auto;
+}
+.menu-tab {
+  border-color: transparent;
+  color: var(--color-muted);
+}
+.menu-tab:hover {
+  color: var(--color-ink);
+}
+.menu-tab:is(:target-current, .target-current) {
+  border-color: var(--color-accent);
+  color: var(--color-price);
+  font-weight: 600;
+}
+
+/* Toast (Layout.astro, scripts/toast.ts): a manual popover in the top layer, bottom centre. */
+.toast {
+  inset: auto 0 1.5rem;
+  margin-inline: auto;
+  opacity: 0;
+  translate: 0 0.5rem;
+  transition:
+    opacity 0.2s,
+    translate 0.2s,
+    display 0.2s,
+    overlay 0.2s;
+  transition-behavior: allow-discrete;
+}
+.toast:is(:popover-open, .\:popover-open) {
+  opacity: 1;
+  translate: 0 0;
+}
+@starting-style {
+  .toast:is(:popover-open, .\:popover-open) {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+@supports not selector(:popover-open) {
+  [popover]:not(.\:popover-open) {
+    display: none;
   }
 }
 

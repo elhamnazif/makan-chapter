@@ -1,57 +1,28 @@
-import { expect, test, theme } from './fixtures';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
 
-const toggle = '[data-theme-toggle]';
+const rootStyle = (page: Page, property: 'backgroundColor' | 'colorScheme') =>
+  page.evaluate((p) => getComputedStyle(document.documentElement)[p], property);
 
-test('is light by default, even when the OS prefers dark', async ({ page }) => {
+test('follows the system light or dark setting', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('');
+  expect(await rootStyle(page, 'colorScheme')).toBe('light dark');
+  await expect(page.locator('meta[name="color-scheme"]')).toHaveAttribute('content', 'light dark');
+  const light = await rootStyle(page, 'backgroundColor');
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.goto('');
-  await expect(theme(page)).toHaveAttribute('data-theme', 'light');
-  await expect(page.locator(toggle)).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(async () => rootStyle(page, 'backgroundColor')).not.toBe(light);
 });
 
-test('remembers the choice across reloads and pages', async ({ page }) => {
+test('shows the badge variant for the system setting', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('');
-  await page.locator(toggle).click();
-  await expect(theme(page)).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator(toggle)).toHaveAttribute('aria-pressed', 'true');
-  await page.reload();
-  await expect(theme(page)).toHaveAttribute('data-theme', 'dark');
-  await page.goto('package/indian-cuisine/');
-  await expect(theme(page)).toHaveAttribute('data-theme', 'dark');
-  await page.locator(toggle).click();
-  await page.reload();
-  await expect(theme(page)).toHaveAttribute('data-theme', 'light');
-});
-
-test('follows a change made in another tab', async ({ context, page }) => {
-  await page.goto('');
-  const other = await context.newPage();
-  await other.goto('order/');
-  await page.locator(toggle).click();
-  await expect(theme(other)).toHaveAttribute('data-theme', 'dark');
-});
-
-test('still switches when storage is blocked', async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(window, 'localStorage', {
-      get() {
-        throw new DOMException('Denied', 'SecurityError');
-      },
-    });
-  });
-  await page.goto('');
-  await expect(theme(page)).toHaveAttribute('data-theme', 'light');
-  await page.locator(toggle).click();
-  await expect(theme(page)).toHaveAttribute('data-theme', 'dark');
-});
-
-test('shows the badge variant for the current theme', async ({ page }) => {
-  await page.goto('');
-  const badge = page.locator('[data-moe-badge] img:visible');
-  await expect(badge).toHaveCount(1);
-  await expect(badge).not.toHaveAttribute('src', /dark/);
-  await page.locator(toggle).click();
-  await expect(badge).toHaveAttribute('src', /dark/);
+  const badge = page.locator('[data-moe-badge] img');
+  await badge.scrollIntoViewIfNeeded();
+  const src = async () => badge.evaluate((i: HTMLImageElement) => i.currentSrc);
+  await expect.poll(src).toMatch(/moe-badge-v2\./);
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect.poll(src).toMatch(/moe-badge-v2-dark\./);
 });
 
 // WCAG AA for body text: every text colour against the backgrounds it sits on.
@@ -80,17 +51,14 @@ function luminance(hex: string): number {
 for (const mode of ['light', 'dark'] as const) {
   test(`text colours meet 4.5:1 contrast in ${mode} mode`, async ({ page }) => {
     await page.goto('');
-    if (mode === 'dark') {
-      await page.locator(toggle).click();
-    }
     const tokens = await page.evaluate(
-      (names) => {
+      ([names, m]) => {
         const style = getComputedStyle(document.documentElement);
         return Object.fromEntries(
-          names.map((n) => [n, style.getPropertyValue(`--mc-${n}`).trim()]),
+          names.map((n) => [n, style.getPropertyValue(`--mc-${n}-${m}`).trim()]),
         );
       },
-      [...new Set(pairs.flat())],
+      [[...new Set(pairs.flat())], mode] as const,
     );
     for (const [fg, bg] of pairs) {
       const [dark, light] = [luminance(tokens[fg]), luminance(tokens[bg])].sort((a, b) => a - b);

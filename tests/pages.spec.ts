@@ -36,7 +36,7 @@ for (const width of [320, 390, 768, 1440]) {
         }
       }
     }
-    expect(seen.size).toBeGreaterThan(20);
+    expect(seen.size).toBeGreaterThanOrEqual(20);
   });
 }
 

@@ -1,22 +1,23 @@
 ---
+// A menu or package photo, or a placeholder tile while the photo is still to come.
 import { Icon } from 'astro-icon/components';
-import { url } from '../data/site';
+import Photo from './Photo.astro';
 interface Props {
   image: string | null;
+  sizes: string;
   class?: string;
   eager?: boolean;
 }
-const { image, class: cls = '', eager = false } = Astro.props;
+const { image, sizes, class: cls = '', eager = false } = Astro.props;
 ---
 
 {image ? (
-  <img
-    src={url(`images/${image}.webp`)}
-    alt=""
-    loading={eager ? 'eager' : 'lazy'}
-    width="640"
-    height="480"
+  <Photo
+    name={image}
+    sizes={sizes}
     class:list={['object-cover', cls]}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : undefined}
   />
 ) : (
   <span

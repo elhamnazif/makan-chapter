@@ -2,10 +2,15 @@
 // Order Online, modelled on the Pick n Go store menu layout: store header,
 // sticky category tabs with scroll-spy, photo dish cards and a dish dialog.
 import { Icon } from 'astro-icon/components';
+import { getImage, Image } from 'astro:assets';
+import logo from '../../assets/brand/logo.png';
 import MoeBadge from '../../components/MoeBadge.astro';
+import Photo from '../../components/Photo.astro';
 import catalogue from '../../data/catalogue.json';
-import { url, money, business } from '../../data/site';
+import { url, business } from '../../data/site';
 import Layout from '../../layouts/Layout.astro';
+import { money } from '../../lib/format';
+import { photo } from '../../lib/photos';
 
 // No per-dish photos exist yet. Each section uses the closest real category photo.
 const photos = new Map([
@@ -17,56 +22,46 @@ const photos = new Map([
   ['cat-6', 'kuih-tray'],
   ['cat-7', 'lauk'],
 ]);
-const photo = (categoryId: string) => {
-  const image = photos.get(categoryId);
-  if (!image) {
-    throw new Error(`No photo for catalogue category ${categoryId}`);
-  }
-  return image;
-};
-// Light tidy-up of source text: spacing around punctuation and a capital first letter.
-const tidy = (s = '') => {
-  const t = s
-    .replaceAll(/\s+,/g, ',')
-    .replaceAll(/\(\s+/g, '(')
-    .replaceAll(/\s+\)/g, ')')
-    .replaceAll(/\s{2,}/g, ' ')
-    .trim();
-  return t.charAt(0).toUpperCase() + t.slice(1);
-};
-const sections = catalogue.categories.map((c) => ({
-  ...c,
-  name: tidy(c.name),
-  items: catalogue.items
-    .filter((i) => i.categoryId === c.id)
-    .map((i) => ({
-      ...i,
-      name: tidy(i.name),
-      description: tidy(i.description),
-      image: photo(c.id),
-    })),
-}));
+const sections = await Promise.all(
+  catalogue.categories.map(async (c) => {
+    const image = photos.get(c.id);
+    if (!image) {
+      throw new Error(`No photo for catalogue category ${c.id}`);
+    }
+    // The dish dialog swaps its photo in from script, so it needs a ready-made URL.
+    const dialogImage = await getImage({ src: photo(image), width: 960, format: 'webp' });
+    return {
+      ...c,
+      image,
+      dialogImage: dialogImage.src,
+      items: catalogue.items.filter((i) => i.categoryId === c.id),
+    };
+  }),
+);
 ---
 
 <Layout title="Order Online" description="Order meals, nasi ambeng and kuih online for delivery.">
   <!-- Store header -->
   <section class="bg-surface">
     <div class="relative h-44 overflow-hidden bg-surface-2 md:h-72">
-      <img
-        src={url('images/nasi-ambeng.webp')}
-        alt=""
-        class="size-full object-cover"
+      <Photo
+        name="nasi-ambeng"
+        sizes="100vw"
+        widths={[640, 960, 1280, 1600]}
+        loading="eager"
         fetchpriority="high"
+        class="size-full object-cover"
       />
     </div>
     <div class="container-page pb-6">
       <div class="flex items-end gap-4">
         <span class="relative z-10 -mt-10 grid size-24 shrink-0 place-items-center overflow-hidden rounded-card border border-line bg-white shadow-card md:-mt-12 md:size-32">
-          <img
-            src={url('brand/logo.png')}
+          <Image
+            src={logo}
             alt=""
-            width="128"
-            height="128"
+            width={128}
+            densities={[1, 2]}
+            loading="eager"
             class="size-full object-contain p-1"
           />
         </span>
@@ -76,7 +71,7 @@ const sections = catalogue.categories.map((c) => ({
         </div>
       </div>
       <p class="mt-4 text-sm font-semibold">
-        S$15 delivery
+        {money(catalogue.deliveryFeeCents)} delivery
         <span class="mx-2 text-muted" aria-hidden="true">
           •
         </span>
@@ -87,7 +82,7 @@ const sections = catalogue.categories.map((c) => ({
         Bakar-bakar, penyet, nasi ambeng, nasi lemak and kuih, cooked to order in our kitchen.
       </p>
       <p class="mt-2 flex items-center gap-2 text-sm font-semibold">
-        <MoeBadge class="size-6" />
+        <MoeBadge px={24} class="size-6" />
         Muslim-Owned Enterprise
       </p>
     </div>
@@ -97,24 +92,31 @@ const sections = catalogue.categories.map((c) => ({
   <div class="sticky top-16 z-20 border-b border-line bg-surface/95 backdrop-blur" data-menu-bar>
     <div class="container-page">
       <div class="flex items-center gap-3 pt-3">
-        <form class="relative flex-1" role="search" data-search-form>
-          <label for="menu-search" class="sr-only">
-            Search the menu
-          </label>
-          <input
-            id="menu-search"
-            type="search"
-            class="field !min-h-10 !bg-surface-2 pr-10"
-            placeholder="Search dishes"
-            autocomplete="off"
-            data-search
-          />
-          <Icon
-            name="ph:magnifying-glass"
-            class="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted"
-            aria-hidden="true"
-          />
-        </form>
+        <search class="flex-1">
+          <form class="relative" aria-label="Search the menu" data-search-form>
+            <label for="menu-search" class="sr-only">
+              Search the menu
+            </label>
+            <input
+              id="menu-search"
+              name="q"
+              type="search"
+              class="field !min-h-10 !bg-surface-2 pr-10"
+              placeholder="Search dishes"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="none"
+              spellcheck="false"
+              enterkeyhint="search"
+              data-search
+            />
+            <Icon
+              name="ph:magnifying-glass"
+              class="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted"
+              aria-hidden="true"
+            />
+          </form>
+        </search>
         <a
           href={url('cart/')}
           class="btn btn-outline !min-h-10 hidden sm:inline-flex"
@@ -125,19 +127,13 @@ const sections = catalogue.categories.map((c) => ({
         </a>
       </div>
       <nav aria-label="Menu categories" class="-mb-px mt-1 overflow-x-auto [scrollbar-width:none]">
-        <ul class="flex gap-1 whitespace-nowrap" data-tabs>
-          {sections.map((s, i) => (
+        <ul class="menu-tabs flex gap-1 whitespace-nowrap" data-tabs>
+          {sections.map((s) => (
             <li>
               <a
                 href={`#${s.id}`}
-                class:list={[
-                  'inline-flex min-h-11 items-center border-b-2 px-3 text-[15px] transition-colors',
-                  i === 0
-                    ? 'border-accent font-semibold text-price'
-                    : 'border-transparent text-muted hover:text-ink',
-                ]}
+                class="menu-tab inline-flex min-h-11 items-center border-b-2 px-3 text-[15px] transition-colors"
                 data-tab={s.id}
-                aria-current={i === 0 ? 'true' : undefined}
               >
                 {s.name}
               </a>
@@ -154,7 +150,8 @@ const sections = catalogue.categories.map((c) => ({
       <section
         id={s.id}
         aria-labelledby={`${s.id}-title`}
-        class="scroll-mt-44 pb-10"
+        class="scroll-mt-44 pb-10 focus:outline-none"
+        tabindex="-1"
         data-section={s.id}
       >
         <h2 id={`${s.id}-title`} class="mb-4 text-xl font-bold">
@@ -175,7 +172,7 @@ const sections = catalogue.categories.map((c) => ({
                   name: i.name,
                   description: i.description,
                   priceCents: i.priceCents,
-                  image: i.image,
+                  image: s.dialogImage,
                   category: s.name,
                 })}
               >
@@ -191,12 +188,10 @@ const sections = catalogue.categories.map((c) => ({
                   </span>
                 </span>
                 <span class="relative block h-full min-h-44 w-28 bg-surface-2 md:w-36">
-                  <img
-                    src={url(`images/${i.image}.webp`)}
-                    alt=""
-                    loading="lazy"
-                    width="176"
-                    height="176"
+                  <Photo
+                    name={s.image}
+                    sizes="(min-width: 768px) 240px, 200px"
+                    widths={[200, 240, 400, 480]}
                     class="size-full object-cover"
                   />
                 </span>
@@ -246,11 +241,13 @@ const sections = catalogue.categories.map((c) => ({
   <dialog
     class="m-0 h-dvh leading-[1.6] max-h-none w-full max-w-none bg-surface p-0 text-ink backdrop:bg-[var(--mc-scrim)] md:m-auto md:h-auto md:max-h-[85dvh] md:w-[min(64rem,92vw)] md:rounded-card"
     aria-labelledby="dish-name"
+    closedby="any"
     data-dish
   >
     <form
       method="dialog"
       class="flex h-full flex-col md:grid md:max-h-[85dvh] md:grid-cols-2"
+      aria-labelledby="dish-name"
       data-dish-form
     >
       <div class="relative shrink-0">
@@ -279,7 +276,7 @@ const sections = catalogue.categories.map((c) => ({
             <Icon name="ph:x-bold" class="size-5" aria-hidden="true" />
           </button>
           <p class="text-sm text-muted" data-dish-category></p>
-          <h2 id="dish-name" class="pr-12 text-2xl font-bold tracking-tight" data-dish-name></h2>
+          <h1 id="dish-name" class="pr-12 text-2xl font-bold tracking-tight" data-dish-name></h1>
           <p class="mt-1 text-lg font-semibold" data-dish-price></p>
           <p class="mt-3 leading-relaxed text-muted" data-dish-desc></p>
           <div class="mt-6 border-t border-line pt-5">
@@ -288,6 +285,7 @@ const sections = catalogue.categories.map((c) => ({
             </label>
             <textarea
               id="dish-note"
+              name="note"
               rows="2"
               maxlength="200"
               class="field"
@@ -328,8 +326,11 @@ const sections = catalogue.categories.map((c) => ({
 </Layout>
 
 <script>
-  import { addItem, readCart, totals, money, toast, base } from '../../scripts/cart';
-  import { find, dataValue } from '../../scripts/dom';
+  import { money, plural } from '../../lib/format';
+  import { addItem, readCart, totals } from '../../scripts/cart';
+  import type { CartItem } from '../../scripts/cart';
+  import { find, findAll, dataValue } from '../../scripts/dom';
+  import { toast } from '../../scripts/toast';
 
   type Dish = {
     id: string;
@@ -341,42 +342,35 @@ const sections = catalogue.categories.map((c) => ({
   };
 
   // Cart summary in the bar and on mobile
-  const cartSummary = find<HTMLElement>('[data-cart-summary]');
-  const cartBar = find<HTMLElement>('[data-cart-bar]');
-  const cartBarSummary = find<HTMLElement>('[data-cart-bar-summary]');
+  const cartSummary = find('[data-cart-summary]');
+  const cartBar = find('[data-cart-bar]');
+  const cartBarSummary = find('[data-cart-bar-summary]');
   function syncCart() {
-    const items = readCart();
-    const n = items.reduce((s, i) => s + i.qty, 0);
-    const t = totals(items).subtotal;
-    cartSummary.textContent = n ? ` · ${n} · ${money(t)}` : '';
-    cartBar.hidden = n === 0;
-    cartBarSummary.textContent = `${n} item${n === 1 ? '' : 's'} · ${money(t)}`;
+    const { count, subtotal } = totals(readCart());
+    cartSummary.textContent = count ? ` · ${count} · ${money(subtotal)}` : '';
+    cartBar.hidden = count === 0;
+    cartBarSummary.textContent = `${plural(count, 'item')} · ${money(subtotal)}`;
   }
   syncCart();
   document.addEventListener('cart:change', syncCart);
 
   const add = (d: { id: string; name: string; priceCents: number }, qty: number, note = '') => {
-    addItem({
-      kind: 'meal',
-      id: d.id,
-      name: d.name,
-      unitCents: d.priceCents,
-      unitLabel: 'each',
-      qty,
-      details: [],
-      note,
-      key: note ? `${d.id}:${note}` : d.id,
-    });
-    toast(`${qty > 1 ? `${qty} x ` : ''}${d.name} added to cart`);
+    const item: Omit<CartItem, 'key'> = { id: d.id, name: d.name, unitCents: d.priceCents, qty };
+    if (note) {
+      item.note = note;
+    }
+    const saved = addItem(item);
+    if (saved) {
+      toast(`${qty > 1 ? `${qty} x ` : ''}${d.name} added to cart`);
+    }
   };
 
-  document
-    .querySelectorAll<HTMLButtonElement>('[data-quick-add]')
-    .forEach((b) =>
-      b.addEventListener('click', () => add(JSON.parse(dataValue(b, 'quickAdd')), 1)),
-    );
+  findAll<HTMLButtonElement>('[data-quick-add]').forEach((b) =>
+    b.addEventListener('click', () => add(JSON.parse(dataValue(b, 'quickAdd')), 1)),
+  );
 
-  // Dish dialog
+  // Dish dialog. It is modal, so Escape and the back gesture close it; closedby="any" adds
+  // a click outside. Scrolling is contained by the dialog:modal rules in global.css.
   const dialog = find<HTMLDialogElement>('[data-dish]');
   const qtyOut = find<HTMLOutputElement>('[data-dish-qty]', dialog);
   const note = find<HTMLTextAreaElement>('#dish-note', dialog);
@@ -386,51 +380,62 @@ const sections = catalogue.categories.map((c) => ({
     qtyOut.textContent = String(qty);
     find('[data-dish-total]', dialog).textContent = current ? money(current.priceCents * qty) : '';
   };
-  document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((b) =>
+  findAll<HTMLButtonElement>('[data-open]').forEach((b) =>
     b.addEventListener('click', () => {
       current = JSON.parse(dataValue(b, 'open')) as Dish;
       qty = 1;
       note.value = '';
-      find<HTMLImageElement>('[data-dish-img]', dialog).src = base(`images/${current.image}.webp`);
+      find<HTMLImageElement>('[data-dish-img]', dialog).src = current.image;
       find('[data-dish-category]', dialog).textContent = current.category;
       find('[data-dish-name]', dialog).textContent = current.name;
       find('[data-dish-price]', dialog).textContent = money(current.priceCents);
       find('[data-dish-desc]', dialog).textContent = current.description;
       renderQty();
       dialog.showModal();
-      document.documentElement.style.overflow = 'hidden';
     }),
   );
-  dialog.querySelectorAll<HTMLButtonElement>('[data-dish-step]').forEach((b) =>
+  findAll<HTMLButtonElement>('[data-dish-step]', dialog).forEach((b) =>
     b.addEventListener('click', () => {
       qty = Math.max(1, Math.min(99, qty + Number(b.dataset.dishStep)));
       renderQty();
     }),
   );
   dialog.addEventListener('close', () => {
-    document.documentElement.style.overflow = '';
     if (dialog.returnValue === 'add' && current) {
       add(current, qty, note.value.trim());
     }
     dialog.returnValue = '';
   });
-  dialog.addEventListener('click', (e) => {
-    if (e.target === dialog) {
-      dialog.close('cancel');
-    }
-  });
+  // closedby is not yet in every browser: there, close on a press and release outside the
+  // dialog box. The pointer position is tested, not the target, which is also the dialog
+  // for clicks on its own padding.
+  if (!('closedBy' in HTMLDialogElement.prototype)) {
+    const outside = (e: PointerEvent) => {
+      const r = dialog.getBoundingClientRect();
+      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    };
+    let pressedOutside = false;
+    dialog.addEventListener('pointerdown', (e) => {
+      pressedOutside = outside(e);
+    });
+    dialog.addEventListener('pointerup', (e) => {
+      if (pressedOutside && outside(e)) {
+        dialog.close();
+      }
+    });
+  }
 
   // Search
   const search = find<HTMLInputElement>('[data-search]');
-  const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
-  const tabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-tab]')];
-  const empty = find<HTMLElement>('[data-empty]');
+  const sections = findAll('[data-section]');
+  const tabs = findAll<HTMLAnchorElement>('[data-tab]');
+  const empty = find('[data-empty]');
   function apply() {
     const q = search.value.trim().toLowerCase();
     let total = 0;
     for (const s of sections) {
       let n = 0;
-      s.querySelectorAll<HTMLElement>('[data-item]').forEach((it) => {
+      findAll('[data-item]', s).forEach((it) => {
         const ok = !q || dataValue(it, 'search').includes(q);
         it.hidden = !ok;
         if (ok) {
@@ -457,40 +462,36 @@ const sections = catalogue.categories.map((c) => ({
     search.focus();
   });
 
-  // Scroll-spy: highlight the tab of the section nearest the top of the viewport.
-  const setActive = (id: string) => {
+  // Scroll-spy. Where supported, scroll-target-group marks the tab of the section in view
+  // as :target-current; otherwise an observer sets .target-current. Either way aria-current
+  // follows, and the tab strip scrolls to keep the current tab in sight.
+  const setCurrent = (current: Element | null, withClass: boolean) => {
     for (const t of tabs) {
-      const on = t.dataset.tab === id;
-      t.classList.toggle('border-accent', on);
-      t.classList.toggle('font-semibold', on);
-      t.classList.toggle('text-price', on);
-      t.classList.toggle('border-transparent', !on);
-      t.classList.toggle('text-muted', !on);
+      const on = t === current;
+      if (withClass) {
+        t.classList.toggle('target-current', on);
+      }
+      t.setAttribute('aria-current', String(on));
       if (on) {
-        t.setAttribute('aria-current', 'true');
         t.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-      } else {
-        t.removeAttribute('aria-current');
       }
     }
   };
-  const visible = new Map<string, number>();
-  const io = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          visible.set(e.target.id, e.boundingClientRect.top);
-        } else {
-          visible.delete(e.target.id);
+  if (CSS.supports('scroll-target-group: auto')) {
+    const sync = () => setCurrent(document.querySelector('[data-tabs] a:target-current'), false);
+    sync();
+    document.addEventListener('scrollend', sync);
+  } else {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setCurrent(tabs.find((t) => t.dataset.tab === entry.target.id) ?? null, true);
+          }
         }
-      }
-      const first = sections.find((s) => visible.has(s.id));
-      if (first) {
-        setActive(first.id);
-      }
-    },
-    { rootMargin: '-180px 0px -55% 0px' },
-  );
-  sections.forEach((s) => io.observe(s));
-  tabs.forEach((t) => t.addEventListener('click', () => setActive(dataValue(t, 'tab'))));
+      },
+      { rootMargin: '-50% 0px -50% 0px', threshold: 0 },
+    );
+    sections.forEach((s) => observer.observe(s));
+  }
 </script>

@@ -1,0 +1,117 @@
+---
+import type { InferGetStaticPropsType } from 'astro';
+import { Icon } from 'astro-icon/components';
+import Photo from '../../../components/Photo.astro';
+import { buffets, priceLabel, quoteMessage } from '../../../data/buffets';
+import { url, waLink } from '../../../data/site';
+import Layout from '../../../layouts/Layout.astro';
+import { money } from '../../../lib/format';
+
+export function getStaticPaths() {
+  return buffets.map((buffet) => ({ params: { slug: buffet.slug }, props: { buffet } }));
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { buffet } = Astro.props;
+---
+
+<Layout title={`${buffet.name} Buffet`} description={buffet.blurb}>
+  <div class="container-page pb-16 pt-6">
+    <a
+      href={url('catering/#buffets')}
+      class="inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline"
+    >
+      <Icon name="ph:arrow-left" class="size-4" aria-hidden="true" />
+      Back to Catering
+    </a>
+
+    <div class="mt-4 grid gap-8 lg:grid-cols-[1fr_22rem]">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight md:text-4xl">{buffet.name}</h1>
+        <p class="mt-2 text-lg text-muted">{buffet.blurb}</p>
+        <Photo
+          name={buffet.image}
+          sizes="(min-width: 1200px) 780px, (min-width: 1024px) 60vw, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="mt-6 aspect-[16/9] w-full rounded-card object-cover"
+        />
+
+        <h2 class="mt-10 text-2xl font-bold">The menu</h2>
+        <div class="mt-5 grid gap-4 md:grid-cols-2" data-full-menu>
+          {buffet.groups.map((g) => (
+            <section
+              class:list={[
+                'rounded-card border border-line bg-surface p-5',
+                g.items.length > 6 && !g.choose && 'md:col-span-2',
+              ]}
+            >
+              <h3 class="text-lg font-bold text-price">{g.label}</h3>
+              <p class="text-sm text-muted">
+                {g.choose ? `Choose ${g.choose} of ${g.items.length}` : 'Included'}
+              </p>
+              <ul
+                class:list={[
+                  'mt-3 grid gap-2 border-t border-line pt-3',
+                  g.items.length > 6 && !g.choose && 'sm:grid-cols-2',
+                ]}
+              >
+                {g.items.map((item) => (
+                  <li class="flex items-center gap-2">
+                    <Icon
+                      name="ph:dot-outline-fill"
+                      class="size-4 shrink-0 text-muted"
+                      aria-hidden="true"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </div>
+
+      <aside class="space-y-4 self-start lg:sticky lg:top-20" aria-label="Price and terms">
+        <div class="card p-5">
+          <p class="text-2xl font-bold text-price">{priceLabel(buffet)}</p>
+          <p class="text-sm text-muted">Min. {buffet.minPax} pax</p>
+          {buffet.promo && (
+            <p class="mt-2 text-sm">
+              {money(buffet.promo.perPaxCents)}/pax from {buffet.promo.fromPax} guests.
+            </p>
+          )}
+          <p class="note mt-4 flex gap-2">
+            <Icon name="ph:clock" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            {buffet.notice}
+          </p>
+          <h2 class="mt-4 font-semibold">Included</h2>
+          <ul class="mt-2 space-y-1.5 text-sm">
+            {buffet.includes.map((i) => (
+              <li class="flex gap-2">
+                <Icon name="ph:check" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                {i}
+              </li>
+            ))}
+          </ul>
+          <h2 class="mt-4 font-semibold">Terms</h2>
+          <ul class="mt-2 list-disc space-y-1.5 pl-5 text-sm text-muted">
+            {buffet.terms.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        </div>
+        <a
+          href={waLink(quoteMessage(buffet))}
+          target="_blank"
+          rel="noopener"
+          class="btn btn-block"
+          data-quote
+        >
+          <Icon name="ph:whatsapp-logo" class="size-5" aria-hidden="true" />
+          Get a Quotation on WhatsApp
+        </a>
+      </aside>
+    </div>
+  </div>
+</Layout>

@@ -37,49 +37,49 @@
       "id": "item-1",
       "categoryId": "cat-1",
       "name": "Ayam bakar (grilled chicken)",
-      "description": "Ayam bakar serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "description": "Ayam bakar serve with rice wrapped in banana leaf, raw cabbage, long bean, cucmber and tomato followed by sambal belachan and chili kicap",
       "priceCents": 990
     },
     {
       "id": "item-2",
       "categoryId": "cat-1",
       "name": "Siakap bakar (grilled seabass)",
-      "description": "Siakap bakar (Grilled seabass) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "description": "Siakap bakar (Grilled seabass) serve with rice wrapped in banana leaf, raw cabbage, long bean, cucmber and tomato followed by sambal belachan and chili kicap",
       "priceCents": 1790
     },
     {
       "id": "item-3",
       "categoryId": "cat-1",
-      "name": "Tilapia bakar ( grilled Tilapia ) (Fish)",
-      "description": "Tilapia grilled(Fish) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "name": "Tilapia bakar (grilled Tilapia) (Fish)",
+      "description": "Tilapia grilled(Fish) serve with rice wrapped in banana leaf, raw cabbage, long bean, cucmber and tomato followed by sambal belachan and chili kicap",
       "priceCents": 1290
     },
     {
       "id": "item-4",
       "categoryId": "cat-1",
-      "name": "sotong bakar ( Grilled Squid)",
-      "description": "Sotong bakar (Grilled Squid) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "name": "Sotong bakar (Grilled Squid)",
+      "description": "Sotong bakar (Grilled Squid) serve with rice wrapped in banana leaf, raw cabbage, long bean, cucmber and tomato followed by sambal belachan and chili kicap",
       "priceCents": 1690
     },
     {
       "id": "item-5",
       "categoryId": "cat-1",
       "name": "Daging bakar (Grilled beef sliced)",
-      "description": "Daging bakar ( Grilled beef sliced) serve with rice wrapped in banana leaf , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "description": "Daging bakar (Grilled beef sliced) serve with rice wrapped in banana leaf, raw cabbage, long bean, cucmber and tomato followed by sambal belachan and chili kicap",
       "priceCents": 1590
     },
     {
       "id": "item-6",
       "categoryId": "cat-1",
       "name": "Siakap platter",
-      "description": "Consist of 5pcs x prawn , 1 x quarterleg chicken, 1 x squid , 1 x seabass . serve with rice wrapped in banana leaf x2 , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "description": "Consist of 5pcs x prawn, 1 x quarterleg chicken, 1 x squid, 1 x seabass . serve with rice wrapped in banana leaf x2, raw cabbage, long bean, cucmber and tomato followed by sambal belachan and chili kicap",
       "priceCents": 5500
     },
     {
       "id": "item-7",
       "categoryId": "cat-1",
       "name": "Tilapia platter",
-      "description": "Consist of 5pcs x prawn , 1 x quarterleg chicken, 1 x squid , 1 x tilapia . serve with rice wrapped in banana leaf x2 , raw cabbage , long bean , cucmber and tomato followed by sambal belachan and chili kicap",
+      "description": "Consist of 5pcs x prawn, 1 x quarterleg chicken, 1 x squid, 1 x tilapia . serve with rice wrapped in banana leaf x2, raw cabbage, long bean, cucmber and tomato followed by sambal belachan and chili kicap",
       "priceCents": 5000
     },
     {
@@ -239,7 +239,7 @@
     {
       "id": "item-30",
       "categoryId": "cat-6",
-      "name": "kaswi pandan",
+      "name": "Kaswi pandan",
       "description": "3 pcs of kaswi pandan",
       "priceCents": 210
     },
@@ -281,42 +281,42 @@
     {
       "id": "item-36",
       "categoryId": "cat-6",
-      "name": "epok epok kentang ( potato)",
+      "name": "Epok epok kentang (potato)",
       "description": "3pcs epok epok",
       "priceCents": 300
     },
     {
       "id": "item-37",
       "categoryId": "cat-7",
-      "name": "tahu fritters",
+      "name": "Tahu fritters",
       "description": "",
       "priceCents": 400
     },
     {
       "id": "item-38",
       "categoryId": "cat-7",
-      "name": "tempe fritters",
+      "name": "Tempe fritters",
       "description": "",
       "priceCents": 400
     },
     {
       "id": "item-39",
       "categoryId": "cat-7",
-      "name": "soup ekor / oxtail soup",
-      "description": "serving for 1 pax",
+      "name": "Soup ekor / oxtail soup",
+      "description": "Serving for 1 pax",
       "priceCents": 800
     },
     {
       "id": "item-40",
       "categoryId": "cat-7",
-      "name": "soup sayur asem",
-      "description": "serving for 1 pax",
+      "name": "Soup sayur asem",
+      "description": "Serving for 1 pax",
       "priceCents": 450
     },
     {
       "id": "item-41",
       "categoryId": "cat-7",
-      "name": "bakwan / vegetable fritters",
+      "name": "Bakwan / vegetable fritters",
       "description": "3 pcs serving",
       "priceCents": 250
     }

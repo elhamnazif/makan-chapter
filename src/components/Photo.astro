@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { Picture } from 'astro:assets';
+import { photo } from '../lib/photos';
+
+// A photo from src/assets/images by name, served as AVIF with a WebP fallback in the widths
+// below. sizes must describe the rendered width, so phones download small files. Lazy by
+// default; pass loading="eager" and fetchpriority="high" for the page's largest image.
+
+type Props = Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'width' | 'height' | 'sizes'> & {
+  name: string;
+  sizes: string;
+  alt?: string;
+  widths?: Array<number>;
+};
+const { name, sizes, alt = '', widths = [320, 480, 640, 960, 1280, 1600], ...attrs } = Astro.props;
+const src = photo(name);
+const fitting = widths.filter((w) => w <= src.width);
+---
+
+<Picture
+  src={src}
+  alt={alt}
+  sizes={sizes}
+  widths={fitting.length ? fitting : [src.width]}
+  formats={['avif']}
+  fallbackFormat="webp"
+  {...attrs}
+/>

@@ -4,8 +4,9 @@ import { Icon } from 'astro-icon/components';
 import DemoBanner from '../../../components/DemoBanner.astro';
 import MenuImage from '../../../components/MenuImage.astro';
 import { eventMenus, eventPackages } from '../../../data/eventCatering';
-import { url, money } from '../../../data/site';
+import { url } from '../../../data/site';
 import Layout from '../../../layouts/Layout.astro';
+import { money } from '../../../lib/format';
 
 export function getStaticPaths() {
   return eventMenus.map((menu) => ({ params: { menu: menu.slug }, props: { menu } }));
@@ -31,7 +32,12 @@ const orderHref = url(`catering/order/${menu.slug}/`);
       <div>
         <h1 class="text-3xl font-bold tracking-tight md:text-4xl">{menu.name}</h1>
         <p class="mt-2 text-lg text-muted">{menu.blurb}</p>
-        <MenuImage image={menu.image} class="mt-6 aspect-[16/9] w-full rounded-card" eager />
+        <MenuImage
+          image={menu.image}
+          sizes="(min-width: 1200px) 780px, (min-width: 1024px) 60vw, 100vw"
+          class="mt-6 aspect-[16/9] w-full rounded-card"
+          eager
+        />
 
         <h2 class="mt-10 text-2xl font-bold">The menu</h2>
         <p class="mt-1 text-muted">When you order, you choose one dish from each category.</p>

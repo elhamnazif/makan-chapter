@@ -51,23 +51,17 @@ export function waLink(text: string): string {
   return `https://wa.me/${business.whatsapp}?text=${encodeURIComponent(text)}`;
 }
 
-export function money(cents: number): string {
-  const v = cents / 100;
-  return `S$${Number.isInteger(v) ? v.toFixed(0) : v.toFixed(2)}`;
-}
-
 export interface NavItem {
   label: string;
   href: string;
+  /** Path prefixes that also mark this item as the current page. */
   match?: Array<string>;
-  children?: Array<{ label: string; href: string }>;
 }
 
 export const nav: Array<NavItem> = [
   { label: 'Home', href: '' },
   { label: 'Our Story', href: 'our-story/' },
-  // No dropdown: Catering opens the Catering page directly (client brief v4, Nov 2026).
-  { label: 'Catering', href: 'catering/', match: ['catering/', 'package/'] },
+  { label: 'Catering', href: 'catering/' },
   { label: 'Order Online', href: 'order/' },
   { label: 'Contact', href: 'contact/' },
 ];

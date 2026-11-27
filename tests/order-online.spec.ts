@@ -5,7 +5,7 @@ type StoredItem = { qty: number; note?: string };
 
 const cart = async (page: Page): Promise<Array<StoredItem>> =>
   page.evaluate(() => {
-    const items: Array<StoredItem> = JSON.parse(localStorage.getItem('mc-cart-v1') ?? '[]');
+    const items: Array<StoredItem> = JSON.parse(localStorage.getItem('mc-cart-v2') ?? '[]');
     return items;
   });
 
@@ -28,7 +28,7 @@ test('a dish with a note and quantity goes into the cart, and the cart edits it'
   await expect.poll(async () => cart(page)).toMatchObject([{ qty: 2, note: 'Less spicy' }]);
 
   await page.goto('cart/');
-  await expect(page.locator('[data-groups] input')).toHaveValue('Less spicy');
+  await expect(page.locator('[data-items] input')).toHaveValue('Less spicy');
   await page
     .getByRole('button', { name: 'Increase Ayam bakar (grilled chicken)', exact: true })
     .click();
@@ -37,5 +37,16 @@ test('a dish with a note and quantity goes into the cart, and the cart edits it'
     .getByRole('button', { name: 'Remove Ayam bakar (grilled chicken)', exact: true })
     .click();
   await expect(page.locator('[data-empty]')).toBeVisible();
+  expect(await cart(page)).toEqual([]);
+});
+
+test('the dish dialog closes on a click outside it', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'On phones the dialog fills the screen.');
+  await page.goto('order/');
+  await page.locator('[data-open]').first().click();
+  const dialog = page.locator('[data-dish]');
+  await expect(dialog).toBeVisible();
+  await page.mouse.click(8, 8);
+  await expect(dialog).toBeHidden();
   expect(await cart(page)).toEqual([]);
 });

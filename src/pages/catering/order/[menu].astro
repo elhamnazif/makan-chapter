@@ -3,9 +3,12 @@ import type { InferGetStaticPropsType } from 'astro';
 import { Icon } from 'astro-icon/components';
 import DemoBanner from '../../../components/DemoBanner.astro';
 import MenuImage from '../../../components/MenuImage.astro';
+import RowTemplate from '../../../components/RowTemplate.astro';
 import { eventMenus, eventPackages, fees } from '../../../data/eventCatering';
-import { url, money, waLink } from '../../../data/site';
+import { url, waLink } from '../../../data/site';
 import Layout from '../../../layouts/Layout.astro';
+import { emailPattern, phonePattern, postalPattern } from '../../../lib/fields';
+import { money } from '../../../lib/format';
 
 export function getStaticPaths() {
   return eventMenus.map((menu) => ({ params: { menu: menu.slug }, props: { menu } }));
@@ -55,7 +58,7 @@ const pkgs = Object.values(eventPackages);
     </nav>
 
     <div class="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem]" data-layout>
-      <form novalidate data-order>
+      <form novalidate aria-label={`Order ${menu.name}`} data-menu={menu.slug} data-order>
         <!-- Step 1: package -->
         <section data-step="1" aria-labelledby="s1-title">
           <h2 id="s1-title" class="text-2xl font-bold" tabindex="-1">
@@ -70,7 +73,11 @@ const pkgs = Object.values(eventPackages);
                   class="card flex cursor-pointer flex-col overflow-hidden outline-accent has-[:checked]:border-accent has-[:checked]:outline-3 has-[:focus-visible]:outline-3"
                   data-package-card={p.key}
                 >
-                  <MenuImage image={p.image} class="aspect-[16/9] w-full" />
+                  <MenuImage
+                    image={p.image}
+                    sizes="(min-width: 1200px) 420px, (min-width: 768px) 45vw, 100vw"
+                    class="aspect-[16/9] w-full"
+                  />
                   <span class="flex flex-1 flex-col p-5">
                     <span class="flex items-start justify-between gap-3">
                       <span class="text-xl font-bold">{p.name}</span>
@@ -78,7 +85,7 @@ const pkgs = Object.values(eventPackages);
                         type="radio"
                         name="package"
                         value={p.key}
-                        class="mt-1.5 size-5 shrink-0 accent-[var(--mc-accent)]"
+                        class="mt-1.5 size-5 shrink-0"
                       />
                     </span>
                     <span class="mt-2 leading-relaxed text-muted">{p.description}</span>
@@ -128,12 +135,7 @@ const pkgs = Object.values(eventPackages);
                     <div class="grid gap-2 sm:grid-cols-2">
                       {s.options.map((o) => (
                         <label class="flex min-h-12 cursor-pointer items-center gap-3 rounded-control border border-line px-3 hover:bg-surface-2 has-[:checked]:border-accent has-[:checked]:bg-surface-2">
-                          <input
-                            type="radio"
-                            name={`c${ci}`}
-                            value={o}
-                            class="size-5 shrink-0 accent-[var(--mc-accent)]"
-                          />
+                          <input type="radio" name={`c${ci}`} value={o} class="size-5 shrink-0" />
                           <span>{o}</span>
                         </label>
                       ))}
@@ -165,7 +167,9 @@ const pkgs = Object.values(eventPackages);
                 inputmode="numeric"
                 class="field text-center text-lg font-semibold"
                 step="1"
+                required
                 aria-describedby="pax-help pax-error"
+                data-invalid="Enter the number of pax as a whole number."
               />
               <button
                 type="button"
@@ -210,7 +214,10 @@ const pkgs = Object.values(eventPackages);
                 name="date"
                 type="date"
                 class="field max-w-xs"
+                required
                 aria-describedby="date-help date-error"
+                data-missing="Choose your event date."
+                data-invalid="Enter a valid date."
               />
               <p id="date-help" class="field-help" data-date-help></p>
               <p id="date-error" class="field-error" hidden></p>
@@ -224,7 +231,9 @@ const pkgs = Object.values(eventPackages);
                 name="deliveryTime"
                 type="time"
                 class="field max-w-xs"
+                required
                 aria-describedby="delivery-time-help delivery-time-error"
+                data-missing="Choose a delivery time."
               />
               <p id="delivery-time-help" class="field-help">
                 We deliver at this time.
@@ -241,7 +250,9 @@ const pkgs = Object.values(eventPackages);
                   name="readyTime"
                   type="time"
                   class="field"
+                  required
                   aria-describedby="ready-time-help ready-time-error"
+                  data-missing="Choose when the food should be ready."
                 />
                 <p id="ready-time-help" class="field-help">
                   Our team arrives 1 hour earlier to set up.
@@ -257,7 +268,9 @@ const pkgs = Object.values(eventPackages);
                   name="teardownTime"
                   type="time"
                   class="field"
+                  required
                   aria-describedby="teardown-time-help teardown-time-error"
+                  data-missing="Choose a teardown time."
                 />
                 <p id="teardown-time-help" class="field-help">
                   Teardown after 9pm adds {money(fees.lateTeardownCents)}.
@@ -283,7 +296,10 @@ const pkgs = Object.values(eventPackages);
                 name="name"
                 class="field"
                 autocomplete="name"
+                enterkeyhint="next"
+                required
                 aria-describedby="name-error"
+                data-missing="Enter your name."
               />
               <p id="name-error" class="field-error" hidden></p>
             </div>
@@ -298,8 +314,13 @@ const pkgs = Object.values(eventPackages);
                 class="field"
                 autocomplete="tel"
                 inputmode="tel"
+                enterkeyhint="next"
                 placeholder="e.g. 9123 4567"
+                required
+                pattern={phonePattern}
                 aria-describedby="phone-error"
+                data-missing="Enter your mobile number."
+                data-invalid="Enter a Singapore phone number, e.g. 9123 4567."
               />
               <p id="phone-error" class="field-error" hidden></p>
             </div>
@@ -313,8 +334,16 @@ const pkgs = Object.values(eventPackages);
                 type="email"
                 class="field"
                 autocomplete="email"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
+                enterkeyhint="next"
                 placeholder="name@email.com"
+                required
+                pattern={emailPattern}
                 aria-describedby="email-help email-error"
+                data-missing="Enter your email address."
+                data-invalid="Enter an email address, e.g. name@email.com."
               />
               <p id="email-help" class="field-help">
                 Your receipt is sent here.
@@ -330,8 +359,11 @@ const pkgs = Object.values(eventPackages);
                 name="address"
                 class="field"
                 autocomplete="street-address"
+                enterkeyhint="next"
                 placeholder="Street, block and unit"
+                required
                 aria-describedby="address-error"
+                data-missing="Enter the delivery address."
               />
               <p id="address-error" class="field-error" hidden></p>
             </div>
@@ -345,9 +377,14 @@ const pkgs = Object.values(eventPackages);
                 class="field"
                 autocomplete="postal-code"
                 inputmode="numeric"
+                enterkeyhint="next"
                 maxlength="6"
                 placeholder="e.g. 328180"
+                required
+                pattern={postalPattern}
                 aria-describedby="postal-help postal-error"
+                data-missing="Enter your postal code."
+                data-invalid="Enter a 6-digit postal code."
               />
               <p id="postal-help" class="field-help" data-postal-help>
                 Delivery to the CBD or Sentosa adds {money(fees.cbdSentosaCents)}.
@@ -386,8 +423,10 @@ const pkgs = Object.values(eventPackages);
                 type="checkbox"
                 id="terms"
                 name="terms"
-                class="mt-0.5 size-5 shrink-0 accent-[var(--mc-accent)]"
+                class="mt-0.5 size-5 shrink-0"
+                required
                 aria-describedby="terms-error"
+                data-missing="Please agree to the Terms and Conditions to continue."
               />
               <span>
                 I agree to the{' '}
@@ -483,105 +522,114 @@ const pkgs = Object.values(eventPackages);
     </section>
   </div>
 
-  <script
-    type="application/json"
-    id="order-data"
-    set:html={JSON.stringify({ menu, packages: eventPackages, fees })}
-  />
+  <RowTemplate />
+  <template id="tpl-total-row">
+    <div class="flex items-baseline justify-between gap-4 border-t border-line pt-3">
+      <dt class="font-bold" data-slot="label"></dt>
+      <dd class="text-2xl font-bold" data-slot="value"></dd>
+    </div>
+  </template>
+  <template id="tpl-review-card">
+    <div class="rounded-card border border-line bg-surface p-4">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="font-bold" data-slot="title"></h3>
+        <button
+          type="button"
+          class="min-h-11 px-2 text-sm font-semibold underline underline-offset-2"
+          data-edit
+        >
+          Change
+        </button>
+      </div>
+      <dl class="mt-1 space-y-1.5 text-sm" data-rows></dl>
+    </div>
+  </template>
+  <template id="tpl-review-row">
+    <div>
+      <dt class="text-muted" data-slot="label"></dt>
+      <dd class="font-medium" data-slot="value"></dd>
+    </div>
+  </template>
 </Layout>
 
 <script>
-  import type { EventMenu, EventPackage, PackageKey } from '../../../data/eventCatering';
-  import { isCbdOrSentosa } from '../../../data/eventCatering';
-  import { isoDate, prettyDate } from '../../../scripts/cart';
-  import { find, byId, dataValue } from '../../../scripts/dom';
+  import {
+    eventPackages,
+    fees,
+    isCbdOrSentosa,
+    menuBySlug,
+    quote,
+  } from '../../../data/eventCatering';
+  import type { PackageKey } from '../../../data/eventCatering';
+  import { daysFromToday, money, prettyDate, prettyTime } from '../../../lib/format';
+  import { dataValue, fillRows, find, findAll, stamp } from '../../../scripts/dom';
+  import { showMessage, validator } from '../../../scripts/validate';
+  import type { Control } from '../../../scripts/validate';
 
-  const money = (cents: number) =>
-    'S$' +
-    (cents / 100).toLocaleString('en-SG', {
-      minimumFractionDigits: cents % 100 ? 2 : 0,
-      maximumFractionDigits: 2,
-    });
-
-  const data = JSON.parse(byId('order-data').textContent ?? '') as {
-    menu: EventMenu;
-    packages: Record<PackageKey, EventPackage>;
-    fees: {
-      cbdSentosaCents: number;
-      lateTeardownCents: number;
-      lateTeardownAfter: string;
-      leadDays: number;
-    };
-  };
-  const { menu, packages, fees } = data;
-  const $ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) =>
-    find<T>(sel, root);
-  const $$ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => [
-    ...root.querySelectorAll<T>(sel),
-  ];
-
-  const form = $<HTMLFormElement>('[data-order]');
-  const sections = $$<HTMLElement>('[data-step]', form);
-  const progress = $$<HTMLButtonElement>('[data-goto]');
-  const back = $<HTMLButtonElement>('[data-back]');
-  const next = $<HTMLButtonElement>('[data-next]');
-  const pax = $<HTMLInputElement>('#pax');
-  const date = $<HTMLInputElement>('#date');
-  const deliveryTime = $<HTMLInputElement>('#delivery-time');
-  const readyTime = $<HTMLInputElement>('#ready-time');
-  const teardownTime = $<HTMLInputElement>('#teardown-time');
-  const field = (id: string) => $<HTMLInputElement>('#' + id);
+  const form = find<HTMLFormElement>('[data-order]');
+  const menu = menuBySlug(dataValue(form, 'menu'));
+  const sections = findAll('[data-step]', form);
+  const progress = findAll<HTMLButtonElement>('[data-goto]');
+  const back = find<HTMLButtonElement>('[data-back]');
+  const next = find<HTMLButtonElement>('[data-next]');
+  const field = (id: string) => find<HTMLInputElement>(`#${id}`, form);
+  const value = (id: string) => find<Control>(`#${id}`, form).value.trim();
+  const pax = field('pax');
+  const date = field('date');
+  const deliveryTime = field('delivery-time');
+  const readyTime = field('ready-time');
+  const teardownTime = field('teardown-time');
+  const postal = field('postal');
   const LAST = sections.length;
   let step = 1;
   let reached = 1;
 
   // Earliest bookable date: today plus the lead time, in calendar days.
-  const earliest = new Date();
-  earliest.setDate(earliest.getDate() + fees.leadDays);
-  date.min = isoDate(earliest);
-  $('[data-date-help]').textContent =
+  date.min = daysFromToday(fees.leadDays);
+  date.dataset.under = `Please book at least ${fees.leadDays} days ahead. The earliest date is ${prettyDate(date.min)}.`;
+  find('[data-date-help]').textContent =
     `Book at least ${fees.leadDays} days ahead. Earliest date: ${prettyDate(date.min)}.`;
 
-  const pkgKey = () =>
-    (form.querySelector<HTMLInputElement>('input[name="package"]:checked')?.value ??
-      null) as PackageKey | null;
+  const check = validator(form, {
+    'teardown-time': (el) =>
+      readyTime.value && el.value <= readyTime.value
+        ? 'Teardown must be after the food is ready.'
+        : '',
+  });
+
   const pkg = () => {
-    const k = pkgKey();
-    return k ? packages[k] : null;
+    const key = form.querySelector<HTMLInputElement>('input[name="package"]:checked')?.value;
+    return key === 'mini' || key === 'classic' ? eventPackages[key] : null;
   };
   const visibleCategories = () =>
-    $$<HTMLFieldSetElement>('[data-category]', form).filter((f) => !f.hidden);
+    findAll<HTMLFieldSetElement>('[data-category]', form).filter((f) => !f.hidden);
+  // The step's required controls, leaving out fields for the other package.
+  const stepControls = (n: number) =>
+    findAll<Control>('[required]', sections[n - 1]).filter(
+      (c) => !c.closest('[data-only][hidden]'),
+    );
 
-  function fmtTime(t: string): string {
-    if (!t) {
-      return '';
-    }
-    const [h, m] = t.split(':').map(Number);
-    return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
-  }
+  const paxMessages: Record<PackageKey, { under: string; over: string }> = {
+    mini: {
+      under: `${eventPackages.mini.name} starts from ${eventPackages.mini.minPax} pax.`,
+      over: `${eventPackages.mini.name} is for up to ${eventPackages.mini.maxPax} pax. For more guests, choose ${eventPackages.classic.name}.`,
+    },
+    classic: {
+      under: `${eventPackages.classic.name} starts from ${eventPackages.classic.minPax} pax. For fewer guests, choose ${eventPackages.mini.name}.`,
+      over: `Online orders are for up to ${eventPackages.classic.maxPax} pax. For more, WhatsApp us for bulk terms.`,
+    },
+  };
 
-  function showError(id: string, msg: string, input?: HTMLElement | null) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.textContent = msg;
-      el.hidden = false;
-    }
-    input?.setAttribute('aria-invalid', 'true');
-  }
-  function clearError(id: string, input?: HTMLElement | null) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.hidden = true;
-    }
-    input?.removeAttribute('aria-invalid');
+  function groupError(el: HTMLElement, message: string) {
+    el.textContent = message;
+    el.hidden = !message;
   }
 
   // Package switch: show the matching dishes and event fields, keep pax inside the package's range.
   function applyPackage() {
     const p = pkg();
-    $$('[data-only]', form).forEach((el) => {
-      const only = el.dataset.only;
-      el.hidden = Boolean(only && only !== p?.key);
+    findAll('[data-only]', form).forEach((el) => {
+      el.hidden = Boolean(el.dataset.only && el.dataset.only !== p?.key);
     });
     if (!p) {
       return;
@@ -598,73 +646,36 @@ const pkgs = Object.values(eventPackages);
     } else if (p.maxPax && n > p.maxPax) {
       pax.value = String(p.maxPax);
     }
-    $('[data-pax-help]').textContent = p.maxPax
+    Object.assign(pax.dataset, { ...paxMessages[p.key], missing: paxMessages[p.key].under });
+    find('[data-pax-help]').textContent = p.maxPax
       ? `${p.name}: ${p.minPax} to ${p.maxPax} pax.`
       : `${p.name}: minimum ${p.minPax} pax.`;
-    clearError('pax-error', pax);
+    showMessage(pax, '');
   }
 
-  function lines(): Array<[string, string, boolean?]> {
+  const currentQuote = () => {
     const p = pkg();
-    const out: Array<[string, string, boolean?]> = [['Menu', menu.name]];
-    if (!p) {
-      return out;
-    }
-    const n = Number(pax.value) || 0;
-    const per = menu.priceCents[p.key];
-    out.push(
-      ['Package', p.name],
-      [`${n} pax × ${money(per)}`, money(per * n)],
-      [p.deliveryLabel, money(p.deliveryCents)],
-    );
-    if (isCbdOrSentosa(field('postal').value.trim())) {
-      out.push(['CBD or Sentosa', '+' + money(fees.cbdSentosaCents)]);
-    }
-    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) {
-      out.push(['Teardown after 9pm', '+' + money(fees.lateTeardownCents)]);
-    }
-    return out;
-  }
+    return p
+      ? quote(menu, p, {
+          pax: Number(pax.value) || 0,
+          postal: postal.value.trim(),
+          teardownTime: teardownTime.value,
+        })
+      : null;
+  };
 
-  function totalCents(): number {
+  function fillLines(dl: HTMLElement, totalLabel: string) {
     const p = pkg();
-    if (!p) {
-      return 0;
+    const q = currentQuote();
+    const rows: Array<[string, string]> = [['Menu', menu.name]];
+    if (p && q) {
+      rows.push(
+        ['Package', p.name],
+        ...q.lines.map((l): [string, string] => [l.label, (l.extra ? '+' : '') + money(l.cents)]),
+      );
     }
-    let t = menu.priceCents[p.key] * (Number(pax.value) || 0) + p.deliveryCents;
-    if (isCbdOrSentosa(field('postal').value.trim())) {
-      t += fees.cbdSentosaCents;
-    }
-    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) {
-      t += fees.lateTeardownCents;
-    }
-    return t;
-  }
-
-  function fillLines(dl: HTMLElement, label = 'Total') {
-    dl.replaceChildren();
-    for (const [k, v] of lines()) {
-      const row = document.createElement('div');
-      row.className = 'flex justify-between gap-4';
-      const dt = document.createElement('dt');
-      dt.className = 'text-muted';
-      dt.textContent = k;
-      const dd = document.createElement('dd');
-      dd.className = 'text-right font-medium';
-      dd.textContent = v;
-      row.append(dt, dd);
-      dl.append(row);
-    }
-    const row = document.createElement('div');
-    row.className = 'flex items-baseline justify-between gap-4 border-t border-line pt-3';
-    const dt = document.createElement('dt');
-    dt.className = 'font-bold';
-    dt.textContent = label;
-    const dd = document.createElement('dd');
-    dd.className = 'text-2xl font-bold';
-    dd.textContent = money(totalCents());
-    row.append(dt, dd);
-    dl.append(row);
+    fillRows(dl, rows);
+    dl.append(stamp('tpl-total-row', { label: totalLabel, value: money(q?.totalCents ?? 0) }));
   }
 
   function render() {
@@ -674,179 +685,56 @@ const pkgs = Object.values(eventPackages);
         ? `Chosen: ${picked.value}`
         : `Choose 1 of ${f.querySelectorAll('input').length}`;
       if (picked) {
-        find<HTMLElement>('[data-cat-error]', f).hidden = true;
+        groupError(find('[data-cat-error]', f), '');
       }
     }
-    const postal = field('postal').value.trim();
-    $('[data-postal-help]').textContent = isCbdOrSentosa(postal)
+    find('[data-postal-help]').textContent = isCbdOrSentosa(postal.value.trim())
       ? `CBD or Sentosa delivery: ${money(fees.cbdSentosaCents)} added to your total.`
       : `Delivery to the CBD or Sentosa adds ${money(fees.cbdSentosaCents)}.`;
-    fillLines($('[data-summary-lines]'), 'Total due now');
-    $('[data-total]').textContent = money(totalCents());
+    fillLines(find('[data-summary-lines]'), 'Total due now');
+    find('[data-total]').textContent = money(currentQuote()?.totalCents ?? 0);
   }
 
-  // Returns the first invalid control in a step, after showing its messages.
+  // Shows every message in a step and returns its first invalid control.
   function validate(n: number): HTMLElement | null {
     let first: HTMLElement | null = null;
-    const flag = (el: HTMLElement) => {
-      first ??= el;
-    };
-    const p = pkg();
     if (n === 1) {
-      if (!p) {
-        showError('package-error', 'Choose Mini Catering or Classic Catering.');
-        flag($('input[name="package"]', form));
-      } else {
-        clearError('package-error');
+      const missing = !pkg();
+      groupError(
+        find('#package-error'),
+        missing ? 'Choose Mini Catering or Classic Catering.' : '',
+      );
+      if (missing) {
+        first = find('input[name="package"]', form);
       }
     }
-    if (n === 2 && p) {
+    if (n === 2) {
       for (const f of visibleCategories()) {
-        const err = find<HTMLElement>('[data-cat-error]', f);
-        if (!f.querySelector('input:checked')) {
-          err.textContent = `Choose 1 ${dataValue(f, 'category').toLowerCase()} dish.`;
-          err.hidden = false;
-          flag(find('input', f));
-        } else {
-          err.hidden = true;
-        }
-      }
-      const v = Number(pax.value);
-      const tooMany = p.maxPax !== null && v > p.maxPax;
-      if (!Number.isInteger(v) || v < p.minPax || tooMany) {
-        const msg =
-          p.key === 'mini'
-            ? tooMany
-              ? 'Mini Catering is for up to 50 pax. For more guests, choose Classic Catering.'
-              : 'Mini Catering starts from 20 pax.'
-            : tooMany
-              ? 'Online orders are for up to 100 pax. For more, WhatsApp us for bulk terms.'
-              : 'Classic Catering starts from 50 pax. For fewer guests, choose Mini Catering.';
-        showError('pax-error', msg, pax);
-        flag(pax);
-      } else {
-        clearError('pax-error', pax);
-      }
-    }
-    if (n === 3 && p) {
-      if (!date.value) {
-        showError('date-error', 'Choose your event date.', date);
-        flag(date);
-      } else if (date.value < date.min) {
-        showError(
-          'date-error',
-          `Please book at least ${fees.leadDays} days ahead. The earliest date is ${prettyDate(date.min)}.`,
-          date,
+        const missing = !f.querySelector('input:checked');
+        groupError(
+          find('[data-cat-error]', f),
+          missing ? `Choose 1 ${dataValue(f, 'category').toLowerCase()} dish.` : '',
         );
-        flag(date);
-      } else {
-        clearError('date-error', date);
-      }
-      if (p.key === 'mini') {
-        if (!deliveryTime.value) {
-          showError('delivery-time-error', 'Choose a delivery time.', deliveryTime);
-          flag(deliveryTime);
-        } else {
-          clearError('delivery-time-error', deliveryTime);
-        }
-      } else {
-        if (!readyTime.value) {
-          showError('ready-time-error', 'Choose when the food should be ready.', readyTime);
-          flag(readyTime);
-        } else {
-          clearError('ready-time-error', readyTime);
-        }
-        if (!teardownTime.value) {
-          showError('teardown-time-error', 'Choose a teardown time.', teardownTime);
-          flag(teardownTime);
-        } else if (readyTime.value && teardownTime.value <= readyTime.value) {
-          showError(
-            'teardown-time-error',
-            'Teardown must be after the food is ready.',
-            teardownTime,
-          );
-          flag(teardownTime);
-        } else {
-          clearError('teardown-time-error', teardownTime);
+        if (missing) {
+          first ??= find('input', f);
         }
       }
     }
-    if (n === 4) {
-      const checks: Array<[string, (v: string) => string | null]> = [
-        ['name', (v) => (v ? null : 'Enter your name.')],
-        [
-          'phone',
-          (v) =>
-            /^(\+?65)?[3689]\d{7}$/.test(v.replaceAll(/[\s-]/g, ''))
-              ? null
-              : 'Enter a Singapore mobile number, e.g. 9123 4567.',
-        ],
-        [
-          'email',
-          (v) =>
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
-              ? null
-              : 'Enter an email address, e.g. name@email.com.',
-        ],
-        ['address', (v) => (v ? null : 'Enter the delivery address.')],
-        ['postal', (v) => (/^\d{6}$/.test(v) ? null : 'Enter a 6-digit postal code.')],
-      ];
-      for (const [id, check] of checks) {
-        const el = field(id);
-        const msg = check(el.value.trim());
-        if (msg) {
-          showError(`${id}-error`, msg, el);
-          flag(el);
-        } else {
-          clearError(`${id}-error`, el);
-        }
-      }
-    }
-    if (n === 5) {
-      const terms = field('terms');
-      if (!terms.checked) {
-        showError('terms-error', 'Please agree to the Terms and Conditions to continue.', terms);
-        flag(terms);
-      } else {
-        clearError('terms-error', terms);
-      }
-    }
-    return first;
+    const badField = check(stepControls(n));
+    return first ?? badField;
   }
 
-  function card(title: string, rows: Array<[string, string]>, editStep: number) {
-    const box = document.createElement('div');
-    box.className = 'rounded-card border border-line bg-surface p-4';
-    const head = document.createElement('div');
-    head.className = 'flex items-center justify-between gap-3';
-    const h = document.createElement('h3');
-    h.className = 'font-bold';
-    h.textContent = title;
-    const edit = document.createElement('button');
-    edit.type = 'button';
-    edit.className = 'min-h-11 px-2 text-sm font-semibold underline underline-offset-2';
-    edit.textContent = 'Change';
+  function reviewCard(title: string, rows: Array<[string, string]>, editStep: number) {
+    const card = stamp('tpl-review-card', { title });
+    const edit = find('[data-edit]', card);
     edit.setAttribute('aria-label', `Change ${title.toLowerCase()}`);
     edit.addEventListener('click', () => go(editStep));
-    head.append(h, edit);
-    const dl = document.createElement('dl');
-    dl.className = 'mt-1 space-y-1.5 text-sm';
-    for (const [k, v] of rows) {
-      if (!v) {
-        continue;
-      }
-      const row = document.createElement('div');
-      const dt = document.createElement('dt');
-      dt.className = 'text-muted';
-      dt.textContent = k;
-      const dd = document.createElement('dd');
-      dd.className = 'font-medium';
-      dd.textContent = v;
-      row.append(dt, dd);
-      dl.append(row);
-    }
-    box.append(head, dl);
-    return box;
+    find('[data-rows]', card).append(
+      ...rows.flatMap(([label, text]) =>
+        text ? [stamp('tpl-review-row', { label, value: text })] : [],
+      ),
+    );
+    return card;
   }
 
   function when(): string {
@@ -855,8 +743,8 @@ const pkgs = Object.values(eventPackages);
       return '';
     }
     return p.key === 'mini'
-      ? `${prettyDate(date.value)}, delivery at ${fmtTime(deliveryTime.value)}`
-      : `${prettyDate(date.value)}, food ready by ${fmtTime(readyTime.value)}, teardown at ${fmtTime(teardownTime.value)}`;
+      ? `${prettyDate(date.value)}, delivery at ${prettyTime(deliveryTime.value)}`
+      : `${prettyDate(date.value)}, food ready by ${prettyTime(readyTime.value)}, teardown at ${prettyTime(teardownTime.value)}`;
   }
 
   function renderReview() {
@@ -864,15 +752,12 @@ const pkgs = Object.values(eventPackages);
     if (!p) {
       return;
     }
-    const dishes = visibleCategories().map(
-      (f) =>
-        [
-          dataValue(f, 'category'),
-          f.querySelector<HTMLInputElement>('input:checked')?.value ?? '',
-        ] as [string, string],
-    );
-    $('[data-review]').replaceChildren(
-      card(
+    const dishes = visibleCategories().map((f): [string, string] => [
+      dataValue(f, 'category'),
+      f.querySelector<HTMLInputElement>('input:checked')?.value ?? '',
+    ]);
+    find('[data-review]').replaceChildren(
+      reviewCard(
         'Package and pax',
         [
           ['Menu', menu.name],
@@ -881,24 +766,21 @@ const pkgs = Object.values(eventPackages);
         ],
         1,
       ),
-      card('Dishes', dishes, 2),
-      card('Event', [['Date and time', when()]], 3),
-      card(
+      reviewCard('Dishes', dishes, 2),
+      reviewCard('Event', [['Date and time', when()]], 3),
+      reviewCard(
         'Contact and delivery',
         [
-          ['Name', field('name').value.trim()],
-          ['Mobile', field('phone').value.trim()],
-          ['Email', field('email').value.trim()],
-          [
-            'Address',
-            `${field('address').value.trim()}, Singapore ${field('postal').value.trim()}`,
-          ],
-          ['Remarks', field('remarks').value.trim()],
+          ['Name', value('name')],
+          ['Mobile', value('phone')],
+          ['Email', value('email')],
+          ['Address', `${value('address')}, Singapore ${value('postal')}`],
+          ['Remarks', value('remarks')],
         ],
         4,
       ),
     );
-    fillLines($('[data-review-lines]'), 'Total due now');
+    fillLines(find('[data-review-lines]'), 'Total due now');
   }
 
   function go(n: number, initial = false) {
@@ -916,8 +798,8 @@ const pkgs = Object.values(eventPackages);
       }
     });
     back.hidden = n === 1;
-    $('[data-next-label]').textContent = n === LAST ? 'Pay now: full payment' : 'Next';
-    $('[data-next-icon]').classList.toggle('hidden', n === LAST);
+    find('[data-next-label]').textContent = n === LAST ? 'Pay now: full payment' : 'Next';
+    find('[data-next-icon]').classList.toggle('hidden', n === LAST);
     if (n === LAST) {
       renderReview();
     }
@@ -925,8 +807,8 @@ const pkgs = Object.values(eventPackages);
     if (initial) {
       return;
     }
-    $('[data-progress]').scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
-    find<HTMLElement>('h2', sections[n - 1]).focus({ preventScroll: true });
+    find('[data-progress]').scrollIntoView({ block: 'start', behavior: 'instant' });
+    find('h2', sections[n - 1]).focus({ preventScroll: true });
   }
 
   function pay() {
@@ -942,24 +824,20 @@ const pkgs = Object.values(eventPackages);
       }
     }
     next.disabled = true;
-    $('[data-next-label]').textContent = 'Processing payment...';
+    find('[data-next-label]').textContent = 'Processing payment...';
     window.setTimeout(() => {
-      $('[data-ref]').textContent = 'MC-' + String(Date.now()).slice(-6);
-      $('[data-done-name]').textContent = field('name').value.trim().split(' ')[0];
-      $('[data-done-email]').textContent = field('email').value.trim();
-      const done = $('[data-done-lines]');
+      find('[data-ref]').textContent = `MC-${String(Date.now()).slice(-6)}`;
+      find('[data-done-name]').textContent = field('name').value.trim().split(' ')[0];
+      find('[data-done-email]').textContent = field('email').value.trim();
+      const done = find('[data-done-lines]');
       fillLines(done, 'Amount paid');
-      const extra = document.createElement('div');
-      extra.className = 'flex justify-between gap-4';
-      extra.innerHTML = '<dt class="text-muted">When</dt><dd class="text-right font-medium"></dd>';
-      find('dd', extra).textContent = when();
-      done.prepend(extra);
-      $('[data-layout]').hidden = true;
-      $('[data-progress]').hidden = true;
-      $('[data-title]').textContent = `${menu.name}: order placed`;
-      $('[data-confirmation]').hidden = false;
-      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-      $('#done-title').focus({ preventScroll: true });
+      done.prepend(stamp('tpl-row', { label: 'When', value: when() }));
+      find('[data-layout]').hidden = true;
+      find('[data-progress]').hidden = true;
+      find('[data-title]').textContent = `${menu.name}: order placed`;
+      find('[data-confirmation]').hidden = false;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      find('#done-title').focus({ preventScroll: true });
     }, 1200);
   }
 
@@ -978,35 +856,28 @@ const pkgs = Object.values(eventPackages);
   });
   back.addEventListener('click', () => go(step - 1));
   progress.forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.goto))));
-  $$<HTMLButtonElement>('[data-pax-step]').forEach((b) =>
+  findAll<HTMLButtonElement>('[data-pax-step]').forEach((b) =>
     b.addEventListener('click', () => {
       const p = pkg();
       if (!p) {
         return;
       }
-      let v = (Number(pax.value) || p.minPax) + Number(b.dataset.paxStep);
-      v = Math.max(p.minPax, p.maxPax ? Math.min(p.maxPax, v) : v);
-      pax.value = String(v);
-      clearError('pax-error', pax);
+      const v = (Number(pax.value) || p.minPax) + Number(b.dataset.paxStep);
+      pax.value = String(Math.max(p.minPax, p.maxPax ? Math.min(p.maxPax, v) : v));
+      showMessage(pax, '');
       render();
     }),
   );
   form.addEventListener('change', (e) => {
-    if ((e.target as HTMLInputElement).name === 'package') {
+    if ((e.target as HTMLInputElement | null)?.name === 'package') {
       applyPackage();
-      clearError('package-error');
+      groupError(find('#package-error'), '');
     }
     render();
   });
-  form.addEventListener('input', (e) => {
-    const t = e.target as HTMLElement;
-    if (t.getAttribute('aria-invalid')) {
-      validate(step);
-    }
-    render();
-  });
-  $('[data-terms-link]').addEventListener('click', () => {
-    ($('#terms-text') as HTMLDetailsElement).open = true;
+  form.addEventListener('input', render);
+  find('[data-terms-link]').addEventListener('click', () => {
+    find<HTMLDetailsElement>('#terms-text').open = true;
   });
 
   applyPackage();

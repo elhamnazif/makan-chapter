@@ -10,16 +10,10 @@ test.describe('with items in the cart', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('');
     await page.evaluate(() => {
-      const item = {
-        kind: 'meal',
-        id: 'test-dish',
-        name: 'Test dish',
-        unitCents: 1000,
-        unitLabel: 'each',
-      };
+      const item = { id: 'test-dish', name: 'Test dish', unitCents: 1000 };
       localStorage.setItem(
-        'mc-cart-v1',
-        JSON.stringify([{ ...item, key: 'test-dish', qty: 2, details: [], note: 'No onions' }]),
+        'mc-cart-v2',
+        JSON.stringify([{ ...item, key: 'test-dish', qty: 2, note: 'No onions' }]),
       );
     });
     await page.goto('delivery/');
@@ -31,8 +25,15 @@ test.describe('with items in the cart', () => {
       await expect(page.locator(`#${id}`)).toHaveAttribute('aria-invalid', 'true');
     }
     await expect(page.locator('#name')).toBeFocused();
+    // A flagged field is checked again when the customer leaves it, not on each keystroke.
     await page.locator('#email').fill('not-an-email');
+    await expect(page.locator('#email-error')).toHaveText('Enter your email address.');
+    await page.locator('#email').blur();
     await expect(page.locator('#email-error')).toHaveText('Enter a valid email address.');
+    // Fixing a field clears its message straight away.
+    await page.locator('#email').fill('siti@example.com');
+    await expect(page.locator('#email-error')).toBeHidden();
+    await expect(page.locator('#email')).not.toHaveAttribute('aria-invalid');
   });
 
   test('the order, fees and details go to WhatsApp', async ({ page, whatsapp }) => {
