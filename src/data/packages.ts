@@ -71,7 +71,7 @@ export const packages: Array<Package> = [
     image: 'nasi-ambeng',
     blurb: 'Eleven dishes around nasi putih, built for sharing.',
     perPaxCents: 1590,
-    setPriceCents: 31800,
+    setPriceCents: 31_800,
     groups: [{ label: 'Included dishes', items: ['Nasi Putih', 'Ayam Lemak Cili Api', 'Sambal Goreng Tahu Tempe', 'Sambal Sotong', 'Daging Rendang', 'Urap', 'Acar', 'Sambal Belachan', 'Bergedil', 'Terong Belado', 'Paru Goreng Berempah'] }],
   }),
   mini({
@@ -80,7 +80,7 @@ export const packages: Array<Package> = [
     image: 'nasi-lemak-plate',
     blurb: 'Nasi lemak with ayam goreng, rendang and sambal sotong.',
     perPaxCents: 1490,
-    setPriceCents: 29800,
+    setPriceCents: 29_800,
     groups: [{ label: 'Included dishes', items: ['Nasi Lemak', 'Ayam Goreng', 'Sambal Sotong', 'Daging Rendang', 'Kacang & Ikan Bilis Goreng', 'Telur Goreng', 'Timun'] }],
   }),
   mini({
@@ -89,7 +89,7 @@ export const packages: Array<Package> = [
     image: 'nasi-plate',
     blurb: 'Ayam goreng and paru with sambal goreng and bergedil.',
     perPaxCents: 1390,
-    setPriceCents: 27800,
+    setPriceCents: 27_800,
     groups: [{ label: 'Included dishes', items: ['Nasi Putih', 'Ayam Goreng', 'Paru Goreng Berempah', 'Sambal Goreng Tahu Tempeh', 'Sambal Tumis', 'Bergedil'] }],
   }),
   mini({
@@ -98,7 +98,7 @@ export const packages: Array<Package> = [
     image: 'lauk',
     blurb: 'Ayam masak merah and black pepper beef with your choice of rice.',
     perPaxCents: null,
-    setPriceCents: 29800,
+    setPriceCents: 29_800,
     groups: [
       { label: 'Rice', items: ['Nasi Jagung', 'Nasi Tomato'], choose: 1 },
       { label: 'Included dishes', items: ['Ayam Masak Merah', 'Daging Black Pepper', 'Sayur Chap Chai'] },
@@ -110,7 +110,7 @@ export const packages: Array<Package> = [
     image: 'ambeng-hamper',
     blurb: 'Nasi minyak with ayam masak merah, daging masala and dhalcar.',
     perPaxCents: 1490,
-    setPriceCents: 29800,
+    setPriceCents: 29_800,
     groups: [{ label: 'Included dishes', items: ['Nasi Minyak', 'Ayam Masak Merah', 'Daging Masala', 'Dhalcar', 'Acar'] }],
   }),
   {

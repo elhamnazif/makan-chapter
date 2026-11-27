@@ -15,7 +15,6 @@ export default defineConfig({
     'typescript/no-non-null-assertion': 'off',
     'typescript/no-unsafe-return': 'off',
     'unicorn/consistent-function-scoping': 'off',
-    'unicorn/numeric-separators-style': 'off',
     'unicorn/prefer-single-call': 'off',
     'unicorn/prefer-string-replace-all': 'off',
   },
