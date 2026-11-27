@@ -35,10 +35,11 @@ export const eventPackages: Record<PackageKey, EventPackage> = {
     description: 'The full buffet experience, served in warmers to keep your food hot throughout your event. From 50 pax, with cutlery and drinks included.',
     image: 'buffet-setup',
     minPax: 50,
-    maxPax: null,
+    /** Larger orders are routed to WhatsApp for bulk terms, as on makanchapter.com. */
+    maxPax: 100,
     deliveryCents: 8000,
     deliveryLabel: 'Delivery and collection',
-    includes: ['Buffet setup with warmers', 'Cutlery and drinks included', 'From 50 pax', 'Our team sets up 1 hour before'],
+    includes: ['Buffet setup with warmers', 'Cutlery and drinks included', '50 to 100 pax online', 'Our team sets up 1 hour before'],
   },
 };
 
