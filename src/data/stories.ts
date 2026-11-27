@@ -11,9 +11,9 @@
 // },
 export interface Story {
   title: string;
-  paragraphs: string[];
+  paragraphs: Array<string>;
   image?: string;
   imageAlt?: string;
 }
 
-export const stories: Story[] = [];
+export const stories: Array<Story> = [];

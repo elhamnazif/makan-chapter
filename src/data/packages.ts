@@ -3,7 +3,7 @@ export type CategorySlug = 'mini-buffet' | 'buffet';
 
 export interface DishGroup {
   label: string;
-  items: string[];
+  items: Array<string>;
   /** When set, the customer picks exactly this many items from the group. */
   choose?: number;
 }
@@ -22,10 +22,10 @@ export interface Package {
   minPax: number;
   /** Lower per-pax price from a guest count, e.g. S$30 from 300 guests. */
   promo?: { fromPax: number; perPaxCents: number };
-  groups: DishGroup[];
-  includes?: string[];
+  groups: Array<DishGroup>;
+  includes?: Array<string>;
   notice?: string;
-  terms: string[];
+  terms: Array<string>;
 }
 
 export const categories: Record<CategorySlug, { title: string; intro: string; image: string }> = {
@@ -64,7 +64,7 @@ const buffetIncludes = [
   'Delivery and collection of items',
 ];
 
-export const packages: Package[] = [
+export const packages: Array<Package> = [
   mini({
     slug: 'nasi-ambeng-set',
     name: 'Nasi Ambeng Set',

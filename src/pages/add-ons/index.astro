@@ -79,7 +79,7 @@ const orderable = packages.filter((p) => p.mode === 'order');
   import type { Package } from '../../data/packages';
   import { readDraft, writeDraft, clearDraft, addItem, money, prettyDate, base } from '../../scripts/cart';
 
-  const all = JSON.parse(document.getElementById('packages-data')!.textContent!) as Package[];
+  const all = JSON.parse(document.getElementById('packages-data')!.textContent!) as Array<Package>;
   const draft = readDraft();
   const pkg = draft && all.find((p) => p.slug === draft.slug);
 

@@ -10,7 +10,7 @@ export interface CartItem {
   unitCents: number;
   unitLabel: string;
   qty: number;
-  details: string[];
+  details: Array<string>;
   note?: string;
 }
 
@@ -21,11 +21,11 @@ export const DELIVERY_CENTS: Record<CartKind, number> = { buffet: 3000, meal: 15
 export const KIND_LABEL: Record<CartKind, string> = { buffet: 'Mini buffet', meal: 'Meals and kuih', gift: 'Gift cards' };
 export const DELIVERY_LABEL: Record<CartKind, string> = { buffet: 'Mini buffet delivery', meal: 'Meal delivery', gift: '' };
 
-export function readCart(): CartItem[] {
+export function readCart(): Array<CartItem> {
   try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
 }
 
-export function writeCart(items: CartItem[]): void {
+export function writeCart(items: Array<CartItem>): void {
   localStorage.setItem(KEY, JSON.stringify(items));
   document.dispatchEvent(new CustomEvent('cart:change'));
 }
@@ -43,8 +43,8 @@ export function cartCount(): number {
   return readCart().reduce((n, i) => n + i.qty, 0);
 }
 
-export function groups(items: CartItem[]) {
-  const kinds: CartKind[] = ['buffet', 'meal', 'gift'];
+export function groups(items: Array<CartItem>) {
+  const kinds: Array<CartKind> = ['buffet', 'meal', 'gift'];
   return kinds
     .map((kind) => {
       const list = items.filter((i) => i.kind === kind);
@@ -54,7 +54,7 @@ export function groups(items: CartItem[]) {
     .filter((g) => g.list.length);
 }
 
-export function totals(items: CartItem[]) {
+export function totals(items: Array<CartItem>) {
   const gs = groups(items);
   const subtotal = gs.reduce((s, g) => s + g.subtotal, 0);
   const delivery = gs.reduce((s, g) => s + g.delivery, 0);
@@ -71,7 +71,7 @@ export interface Draft {
   date?: string;
   time?: string;
   qty?: number;
-  choices?: Record<string, string[]>;
+  choices?: Record<string, Array<string>>;
   setup?: boolean;
 }
 

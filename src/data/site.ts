@@ -38,9 +38,9 @@ export function money(cents: number): string {
   return `S$${Number.isInteger(v) ? v.toFixed(0) : v.toFixed(2)}`;
 }
 
-export interface NavItem { label: string; href: string; match?: string[]; children?: { label: string; href: string }[] }
+export interface NavItem { label: string; href: string; match?: Array<string>; children?: Array<{ label: string; href: string }> }
 
-export const nav: NavItem[] = [
+export const nav: Array<NavItem> = [
   { label: 'Home', href: '' },
   { label: 'Our Story', href: 'our-story/' },
   // No dropdown: Catering opens the Catering page directly (client brief v4, Nov 2026).

@@ -43,7 +43,7 @@ import { url } from '../../data/site';
   }
 
   function update(key: string, fn: (i: CartItem) => CartItem | null) {
-    const next = readCart().map((i) => (i.key === key ? fn(i) : i)).filter(Boolean) as CartItem[];
+    const next = readCart().map((i) => (i.key === key ? fn(i) : i)).filter(Boolean) as Array<CartItem>;
     writeCart(next);
     render();
   }

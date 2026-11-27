@@ -5,7 +5,7 @@ import { nav, url, business } from '../data/site';
 
 const path = Astro.url.pathname;
 const home = url('');
-const isActive = (item: { href: string; match?: string[] }) => {
+const isActive = (item: { href: string; match?: Array<string> }) => {
   if (item.href === '') { return path === home; }
   const prefixes = item.match ?? [item.href];
   return prefixes.some((p) => path.startsWith(url(p)));

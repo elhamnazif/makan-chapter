@@ -129,7 +129,7 @@ const fields = [
     const bad = Object.keys(rules).map(check).filter(Boolean)[0];
     if (bad) { bad.focus(); return; }
     const v = (id: string) => form.querySelector<HTMLInputElement>(`#${id}`)!.value.trim();
-    const out: string[] = ['Hi Makan Chapter, I would like to place an order.', ''];
+    const out: Array<string> = ['Hi Makan Chapter, I would like to place an order.', ''];
     for (const g of groups(items)) {
       out.push(`*${KIND_LABEL[g.kind]}*`);
       for (const i of g.list) {

@@ -14,7 +14,7 @@ export interface EventPackage {
   maxPax: number | null;
   deliveryCents: number;
   deliveryLabel: string;
-  includes: string[];
+  includes: Array<string>;
 }
 
 export const eventPackages: Record<PackageKey, EventPackage> = {
@@ -54,9 +54,9 @@ export const fees = {
 
 export interface MenuCategory {
   label: string;
-  options: string[];
+  options: Array<string>;
   /** Optional sub-headings inside one category, e.g. fish and prawn options under Seafood. Still one pick. */
-  sections?: { label: string; options: string[] }[];
+  sections?: Array<{ label: string; options: Array<string> }>;
   /** Shown only for this package, e.g. drinks come with Classic only. */
   only?: PackageKey;
 }
@@ -68,16 +68,16 @@ export interface EventMenu {
   image: string | null;
   blurb: string;
   priceCents: Record<PackageKey, number>;
-  categories: MenuCategory[];
+  categories: Array<MenuCategory>;
 }
 
-function seafood(sections: { label: string; options: string[] }[]): MenuCategory {
+function seafood(sections: Array<{ label: string; options: Array<string> }>): MenuCategory {
   return { label: 'Seafood', options: sections.flatMap((s) => s.options), sections };
 }
 
 const classicDrinks: MenuCategory = { label: 'Drinks', options: ['Teh Tarik Panas', 'Teh O Pandan', 'Honeydew Selasih', 'Bandung'], only: 'classic' };
 
-export const eventMenus: EventMenu[] = [
+export const eventMenus: Array<EventMenu> = [
   {
     slug: 'nasi-ambeng',
     name: 'Nasi Ambeng',
@@ -159,7 +159,7 @@ export const eventMenus: EventMenu[] = [
   },
 ];
 
-export function categoriesFor(menu: EventMenu, pkg: PackageKey): MenuCategory[] {
+export function categoriesFor(menu: EventMenu, pkg: PackageKey): Array<MenuCategory> {
   return menu.categories.filter((c) => !c.only || c.only === pkg);
 }
 

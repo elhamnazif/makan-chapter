@@ -7,7 +7,7 @@ import { packages, categories, occasions, type CategorySlug } from '../../data/p
 import { url, waLink } from '../../data/site';
 
 export function getStaticPaths() {
-  return (Object.keys(categories) as CategorySlug[]).map((slug) => ({ params: { slug } }));
+  return (Object.keys(categories) as Array<CategorySlug>).map((slug) => ({ params: { slug } }));
 }
 
 const slug = Astro.params.slug as CategorySlug;
@@ -18,7 +18,7 @@ const allFilterGroups = [
   {
     key: 'menus',
     title: 'Menus',
-    items: (Object.keys(categories) as CategorySlug[]).map((k) => ({ value: k, label: categories[k].title })),
+    items: (Object.keys(categories) as Array<CategorySlug>).map((k) => ({ value: k, label: categories[k].title })),
   },
   {
     key: 'budget',

@@ -12,7 +12,6 @@ export default defineConfig({
     'no-empty': 'off',
     'quality/no-array-filter-map': 'off',
     'quality/no-known-value-widening': 'off',
-    'typescript/array-type': 'off',
     'typescript/no-non-null-assertion': 'off',
     'typescript/no-unsafe-return': 'off',
     'unicorn/consistent-function-scoping': 'off',

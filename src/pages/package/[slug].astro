@@ -169,7 +169,7 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
   date.min = isoDate(tomorrow);
 
   const choices = () => {
-    const out: Record<string, string[]> = {};
+    const out: Record<string, Array<string>> = {};
     for (const g of groups) {
       if (!g.dataset.choose) { continue; }
       out[g.dataset.label!] = [...g.querySelectorAll<HTMLInputElement>('input:checked')].map((i) => i.value);

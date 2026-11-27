@@ -318,9 +318,9 @@ const pkgs = Object.values(eventPackages);
     clearError('pax-error', pax);
   }
 
-  function lines(): [string, string, boolean?][] {
+  function lines(): Array<[string, string, boolean?]> {
     const p = pkg();
-    const out: [string, string, boolean?][] = [['Menu', menu.name]];
+    const out: Array<[string, string, boolean?]> = [['Menu', menu.name]];
     if (!p) { return out; }
     const n = Number(pax.value) || 0;
     const per = menu.priceCents[p.key];
@@ -410,7 +410,7 @@ const pkgs = Object.values(eventPackages);
       }
     }
     if (n === 4) {
-      const checks: [string, (v: string) => string | null][] = [
+      const checks: Array<[string, (v: string) => string | null]> = [
         ['name', (v) => (v ? null : 'Enter your name.')],
         ['phone', (v) => (/^(\+?65)?[3689]\d{7}$/.test(v.replace(/[\s-]/g, '')) ? null : 'Enter a Singapore mobile number, e.g. 9123 4567.')],
         ['email', (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? null : 'Enter an email address, e.g. name@email.com.')],
@@ -431,7 +431,7 @@ const pkgs = Object.values(eventPackages);
     return first;
   }
 
-  function card(title: string, rows: [string, string][], editStep: number) {
+  function card(title: string, rows: Array<[string, string]>, editStep: number) {
     const box = document.createElement('div');
     box.className = 'rounded-card border border-line bg-surface p-4';
     const head = document.createElement('div');
