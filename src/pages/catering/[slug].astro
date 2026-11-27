@@ -3,7 +3,8 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import PackageCard from '../../components/PackageCard.astro';
-import { packages, categories, occasions, type CategorySlug } from '../../data/packages';
+import { packages, categories, occasions } from '../../data/packages';
+import type { CategorySlug } from '../../data/packages';
 import { url, waLink } from '../../data/site';
 
 export function getStaticPaths() {

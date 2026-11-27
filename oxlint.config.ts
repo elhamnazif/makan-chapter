@@ -8,7 +8,6 @@ export default defineConfig({
   rules: {
     // Temporarily off during the migration to @cloudflare/oxlint-config.
     'eqeqeq': 'off',
-    'import/consistent-type-specifier-style': 'off',
     'no-empty': 'off',
     'quality/no-array-filter-map': 'off',
     'quality/no-known-value-widening': 'off',

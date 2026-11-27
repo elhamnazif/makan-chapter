@@ -31,7 +31,8 @@ import { url } from '../../data/site';
 </Layout>
 
 <script>
-  import { readCart, writeCart, groups, totals, money, KIND_LABEL, DELIVERY_LABEL, type CartItem } from '../../scripts/cart';
+  import { readCart, writeCart, groups, totals, money, KIND_LABEL, DELIVERY_LABEL } from '../../scripts/cart';
+  import type { CartItem } from '../../scripts/cart';
 
   const wrap = document.querySelector<HTMLElement>('[data-groups]')!;
 
