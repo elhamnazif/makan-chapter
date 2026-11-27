@@ -182,8 +182,8 @@ export const occasions = [
 ];
 
 export function priceLabel(p: Package): string {
-  if (p.perPaxCents != null) return `S$${(p.perPaxCents / 100).toFixed(2)}/pax`;
-  if (p.setPriceCents != null) return `S$${p.setPriceCents / 100}/set`;
+  if (p.perPaxCents != null) { return `S$${(p.perPaxCents / 100).toFixed(2)}/pax`; }
+  if (p.setPriceCents != null) { return `S$${p.setPriceCents / 100}/set`; }
   return 'Price on request';
 }
 

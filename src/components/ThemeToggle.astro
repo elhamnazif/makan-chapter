@@ -34,6 +34,6 @@
     try { localStorage.setItem('mc-theme', theme); } catch { /* Session-only when storage is unavailable. */ }
   });
   window.addEventListener('storage', (e) => {
-    if (e.key === 'mc-theme' || e.key === null) apply(e.newValue === 'dark' ? 'dark' : 'light');
+    if (e.key === 'mc-theme' || e.key === null) { apply(e.newValue === 'dark' ? 'dark' : 'light'); }
   });
 </script>

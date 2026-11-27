@@ -288,7 +288,7 @@ const pkgs = Object.values(eventPackages);
   const visibleCategories = () => $$<HTMLFieldSetElement>('[data-category]', form).filter((f) => !f.hidden);
 
   function fmtTime(t: string): string {
-    if (!t) return '';
+    if (!t) { return ''; }
     const [h, m] = t.split(':').map(Number);
     return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
   }
@@ -300,7 +300,7 @@ const pkgs = Object.values(eventPackages);
   }
   function clearError(id: string, input?: HTMLElement | null) {
     const el = document.getElementById(id);
-    if (el) el.hidden = true;
+    if (el) { el.hidden = true; }
     input?.removeAttribute('aria-invalid');
   }
 
@@ -308,12 +308,12 @@ const pkgs = Object.values(eventPackages);
   function applyPackage() {
     const p = pkg();
     $$('[data-only]', form).forEach((el) => { const only = el.dataset.only; el.hidden = Boolean(only && only !== p?.key); });
-    if (!p) return;
+    if (!p) { return; }
     pax.min = String(p.minPax);
-    if (p.maxPax) pax.max = String(p.maxPax); else pax.removeAttribute('max');
+    if (p.maxPax) { pax.max = String(p.maxPax); } else { pax.removeAttribute('max'); }
     const n = Number(pax.value);
-    if (!pax.value || n < p.minPax) pax.value = String(p.minPax);
-    else if (p.maxPax && n > p.maxPax) pax.value = String(p.maxPax);
+    if (!pax.value || n < p.minPax) { pax.value = String(p.minPax); }
+    else if (p.maxPax && n > p.maxPax) { pax.value = String(p.maxPax); }
     $('[data-pax-help]').textContent = p.maxPax ? `${p.name}: ${p.minPax} to ${p.maxPax} pax.` : `${p.name}: minimum ${p.minPax} pax.`;
     clearError('pax-error', pax);
   }
@@ -321,23 +321,23 @@ const pkgs = Object.values(eventPackages);
   function lines(): [string, string, boolean?][] {
     const p = pkg();
     const out: [string, string, boolean?][] = [['Menu', menu.name]];
-    if (!p) return out;
+    if (!p) { return out; }
     const n = Number(pax.value) || 0;
     const per = menu.priceCents[p.key];
     out.push(['Package', p.name]);
     out.push([`${n} pax × ${money(per)}`, money(per * n)]);
     out.push([p.deliveryLabel, money(p.deliveryCents)]);
-    if (isCbdOrSentosa(field('postal').value.trim())) out.push(['CBD or Sentosa', '+' + money(fees.cbdSentosaCents)]);
-    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) out.push(['Teardown after 9pm', '+' + money(fees.lateTeardownCents)]);
+    if (isCbdOrSentosa(field('postal').value.trim())) { out.push(['CBD or Sentosa', '+' + money(fees.cbdSentosaCents)]); }
+    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) { out.push(['Teardown after 9pm', '+' + money(fees.lateTeardownCents)]); }
     return out;
   }
 
   function totalCents(): number {
     const p = pkg();
-    if (!p) return 0;
+    if (!p) { return 0; }
     let t = menu.priceCents[p.key] * (Number(pax.value) || 0) + p.deliveryCents;
-    if (isCbdOrSentosa(field('postal').value.trim())) t += fees.cbdSentosaCents;
-    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) t += fees.lateTeardownCents;
+    if (isCbdOrSentosa(field('postal').value.trim())) { t += fees.cbdSentosaCents; }
+    if (p.key === 'classic' && teardownTime.value > fees.lateTeardownAfter) { t += fees.lateTeardownCents; }
     return t;
   }
 
@@ -361,7 +361,7 @@ const pkgs = Object.values(eventPackages);
     for (const f of visibleCategories()) {
       const picked = f.querySelector<HTMLInputElement>('input:checked');
       f.querySelector('[data-status]')!.textContent = picked ? `Chosen: ${picked.value}` : `Choose 1 of ${f.querySelectorAll('input').length}`;
-      if (picked) f.querySelector<HTMLElement>('[data-cat-error]')!.hidden = true;
+      if (picked) { f.querySelector<HTMLElement>('[data-cat-error]')!.hidden = true; }
     }
     const postal = field('postal').value.trim();
     $('[data-postal-help]').textContent = isCbdOrSentosa(postal)
@@ -378,13 +378,13 @@ const pkgs = Object.values(eventPackages);
     const p = pkg();
     if (n === 1) {
       if (!p) { showError('package-error', 'Choose Mini Catering or Classic Catering.'); flag($('input[name="package"]', form)); }
-      else clearError('package-error');
+      else { clearError('package-error'); }
     }
     if (n === 2 && p) {
       for (const f of visibleCategories()) {
         const err = f.querySelector<HTMLElement>('[data-cat-error]')!;
         if (!f.querySelector('input:checked')) { err.textContent = `Choose 1 ${f.dataset.category!.toLowerCase()} dish.`; err.hidden = false; flag(f.querySelector('input')!); }
-        else err.hidden = true;
+        else { err.hidden = true; }
       }
       const v = Number(pax.value);
       if (!Number.isInteger(v) || v < p.minPax || (p.maxPax != null && v > p.maxPax)) {
@@ -392,21 +392,21 @@ const pkgs = Object.values(eventPackages);
           ? (v > p.maxPax! ? 'Mini Catering is for up to 50 pax. For more guests, choose Classic Catering.' : 'Mini Catering starts from 20 pax.')
           : v > p.maxPax! ? 'Online orders are for up to 100 pax. For more, WhatsApp us for bulk terms.' : 'Classic Catering starts from 50 pax. For fewer guests, choose Mini Catering.';
         showError('pax-error', msg, pax); flag(pax);
-      } else clearError('pax-error', pax);
+      } else { clearError('pax-error', pax); }
     }
     if (n === 3 && p) {
       if (!date.value) { showError('date-error', 'Choose your event date.', date); flag(date); }
       else if (date.value < date.min) { showError('date-error', `Please book at least ${fees.leadDays} days ahead. The earliest date is ${prettyDate(date.min)}.`, date); flag(date); }
-      else clearError('date-error', date);
+      else { clearError('date-error', date); }
       if (p.key === 'mini') {
         if (!deliveryTime.value) { showError('delivery-time-error', 'Choose a delivery time.', deliveryTime); flag(deliveryTime); }
-        else clearError('delivery-time-error', deliveryTime);
+        else { clearError('delivery-time-error', deliveryTime); }
       } else {
         if (!readyTime.value) { showError('ready-time-error', 'Choose when the food should be ready.', readyTime); flag(readyTime); }
-        else clearError('ready-time-error', readyTime);
+        else { clearError('ready-time-error', readyTime); }
         if (!teardownTime.value) { showError('teardown-time-error', 'Choose a teardown time.', teardownTime); flag(teardownTime); }
         else if (readyTime.value && teardownTime.value <= readyTime.value) { showError('teardown-time-error', 'Teardown must be after the food is ready.', teardownTime); flag(teardownTime); }
-        else clearError('teardown-time-error', teardownTime);
+        else { clearError('teardown-time-error', teardownTime); }
       }
     }
     if (n === 4) {
@@ -420,13 +420,13 @@ const pkgs = Object.values(eventPackages);
       for (const [id, check] of checks) {
         const el = field(id);
         const msg = check(el.value.trim());
-        if (msg) { showError(`${id}-error`, msg, el); flag(el); } else clearError(`${id}-error`, el);
+        if (msg) { showError(`${id}-error`, msg, el); flag(el); } else { clearError(`${id}-error`, el); }
       }
     }
     if (n === 5) {
       const terms = field('terms');
       if (!terms.checked) { showError('terms-error', 'Please agree to the Terms and Conditions to continue.', terms); flag(terms); }
-      else clearError('terms-error', terms);
+      else { clearError('terms-error', terms); }
     }
     return first;
   }
@@ -444,7 +444,7 @@ const pkgs = Object.values(eventPackages);
     head.append(h, edit);
     const dl = document.createElement('dl'); dl.className = 'mt-1 space-y-1.5 text-sm';
     for (const [k, v] of rows) {
-      if (!v) continue;
+      if (!v) { continue; }
       const row = document.createElement('div');
       const dt = document.createElement('dt'); dt.className = 'text-muted'; dt.textContent = k;
       const dd = document.createElement('dd'); dd.className = 'font-medium'; dd.textContent = v;
@@ -456,7 +456,7 @@ const pkgs = Object.values(eventPackages);
 
   function when(): string {
     const p = pkg();
-    if (!date.value || !p) return '';
+    if (!date.value || !p) { return ''; }
     return p.key === 'mini'
       ? `${prettyDate(date.value)}, delivery at ${fmtTime(deliveryTime.value)}`
       : `${prettyDate(date.value)}, food ready by ${fmtTime(readyTime.value)}, teardown at ${fmtTime(teardownTime.value)}`;
@@ -488,14 +488,14 @@ const pkgs = Object.values(eventPackages);
       const i = Number(b.dataset.goto);
       b.dataset.state = i === n ? 'current' : i <= reached ? 'done' : 'todo';
       b.disabled = i > reached;
-      if (i === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      if (i === n) { b.setAttribute('aria-current', 'step'); } else { b.removeAttribute('aria-current'); }
     });
     back.hidden = n === 1;
     $('[data-next-label]').textContent = n === LAST ? 'Pay now: full payment' : 'Next';
     $('[data-next-icon]').classList.toggle('hidden', n === LAST);
-    if (n === LAST) renderReview();
+    if (n === LAST) { renderReview(); }
     render();
-    if (initial) return;
+    if (initial) { return; }
     $('[data-progress]').scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
     sections[n - 1].querySelector<HTMLElement>('h2')!.focus({ preventScroll: true });
   }
@@ -504,7 +504,7 @@ const pkgs = Object.values(eventPackages);
     // Re-check every step before taking payment.
     for (let i = 1; i <= LAST; i++) {
       const bad = validate(i);
-      if (bad) { if (i !== step) go(i); bad.focus(); return; }
+      if (bad) { if (i !== step) { go(i); } bad.focus(); return; }
     }
     next.disabled = true;
     $('[data-next-label]').textContent = 'Processing payment...';
@@ -538,7 +538,7 @@ const pkgs = Object.values(eventPackages);
   back.addEventListener('click', () => go(step - 1));
   progress.forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.goto))));
   $$<HTMLButtonElement>('[data-pax-step]').forEach((b) => b.addEventListener('click', () => {
-    const p = pkg(); if (!p) return;
+    const p = pkg(); if (!p) { return; }
     let v = (Number(pax.value) || p.minPax) + Number(b.dataset.paxStep);
     v = Math.max(p.minPax, p.maxPax ? Math.min(p.maxPax, v) : v);
     pax.value = String(v);
@@ -551,7 +551,7 @@ const pkgs = Object.values(eventPackages);
   });
   form.addEventListener('input', (e) => {
     const t = e.target as HTMLElement;
-    if (t.getAttribute('aria-invalid')) validate(step);
+    if (t.getAttribute('aria-invalid')) { validate(step); }
     render();
   });
   $('[data-terms-link]').addEventListener('click', () => { ($('#terms-text') as HTMLDetailsElement).open = true; });

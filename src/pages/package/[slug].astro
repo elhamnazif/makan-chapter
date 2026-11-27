@@ -171,15 +171,15 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
   const choices = () => {
     const out: Record<string, string[]> = {};
     for (const g of groups) {
-      if (!g.dataset.choose) continue;
+      if (!g.dataset.choose) { continue; }
       out[g.dataset.label!] = [...g.querySelectorAll<HTMLInputElement>('input:checked')].map((i) => i.value);
     }
     return out;
   };
 
   function priceCents(n: number): number | null {
-    if (isOrder) return (pkg.setPriceCents ?? 0) * n;
-    if (pkg.perPaxCents == null) return null;
+    if (isOrder) { return (pkg.setPriceCents ?? 0) * n; }
+    if (pkg.perPaxCents == null) { return null; }
     const per = pkg.promo && n >= pkg.promo.fromPax ? pkg.promo.perPaxCents : pkg.perPaxCents;
     return per * n;
   }
@@ -192,27 +192,27 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
       : total == null ? `${n} guests, price on request` : `${n} guests x ${money(total / n)} per pax`;
     form.querySelector('[data-summary-line]')!.textContent = line;
     form.querySelectorAll('[data-summary-total]').forEach((el) => (el.textContent = total == null ? 'On request' : money(total)));
-    if (isOrder) form.querySelector('[data-qty-help]')!.textContent = n > 1 ? `${n} sets serve ${n * (pkg.paxPerSet ?? 20)} pax.` : `Each set serves ${pkg.paxPerSet} pax.`;
+    if (isOrder) { form.querySelector('[data-qty-help]')!.textContent = n > 1 ? `${n} sets serve ${n * (pkg.paxPerSet ?? 20)} pax.` : `Each set serves ${pkg.paxPerSet} pax.`; }
 
     for (const g of groups) {
       const need = Number(g.dataset.choose);
-      if (!need) continue;
+      if (!need) { continue; }
       const boxes = [...g.querySelectorAll<HTMLInputElement>('input')];
       const picked = boxes.filter((b) => b.checked).length;
       g.querySelector('[data-status]')!.textContent = `${picked} of ${need} selected${picked < need ? ' (required)' : ''}`;
-      if (need > 1) boxes.forEach((b) => (b.disabled = !b.checked && picked >= need));
-      if (picked === need) hideError(g.querySelector('[data-group-error]'));
+      if (need > 1) { boxes.forEach((b) => (b.disabled = !b.checked && picked >= need)); }
+      if (picked === need) { hideError(g.querySelector('[data-group-error]')); }
     }
   }
 
   function showError(el: Element | null, msg: string, field?: HTMLElement) {
-    if (!el) return;
+    if (!el) { return; }
     el.textContent = msg;
     (el as HTMLElement).hidden = false;
     field?.setAttribute('aria-invalid', 'true');
   }
   function hideError(el: Element | null, field?: HTMLElement) {
-    if (!el) return;
+    if (!el) { return; }
     (el as HTMLElement).hidden = true;
     field?.removeAttribute('aria-invalid');
   }
@@ -221,19 +221,19 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
     let first: HTMLElement | null = null;
     const flag = (el: HTMLElement) => { first ??= el; };
     if (!date.value || date.value < date.min) { showError(document.getElementById('date-error'), date.value ? 'Choose a date from tomorrow onwards.' : 'Choose a date.', date); flag(date); }
-    else hideError(document.getElementById('date-error'), date);
+    else { hideError(document.getElementById('date-error'), date); }
     if (!time.value) { showError(document.getElementById('time-error'), 'Choose a time.', time); flag(time); }
-    else hideError(document.getElementById('time-error'), time);
+    else { hideError(document.getElementById('time-error'), time); }
     const n = Number(qty.value);
     if (!Number.isInteger(n) || n < min) { showError(document.getElementById('qty-error'), isOrder ? 'Order at least 1 set.' : `Minimum ${min} guests.`, qty); flag(qty); }
-    else hideError(document.getElementById('qty-error'), qty);
+    else { hideError(document.getElementById('qty-error'), qty); }
     for (const g of groups) {
       const need = Number(g.dataset.choose);
-      if (!need) continue;
+      if (!need) { continue; }
       const picked = g.querySelectorAll('input:checked').length;
       const err = g.querySelector('[data-group-error]');
       if (picked !== need) { showError(err, `Choose ${need} from ${g.dataset.label}.`); flag(g.querySelector('input')!); }
-      else hideError(err);
+      else { hideError(err); }
     }
     return first;
   }
@@ -241,9 +241,9 @@ const unitLabel = pkg.paxPerSet ? `set of ${pkg.paxPerSet} pax` : 'pax';
   // Restore an in-progress selection when coming back from add-ons.
   const draft = readDraft();
   if (draft && draft.slug === pkg.slug) {
-    if (draft.date) date.value = draft.date;
-    if (draft.time) time.value = draft.time;
-    if (draft.qty) qty.value = String(draft.qty);
+    if (draft.date) { date.value = draft.date; }
+    if (draft.time) { time.value = draft.time; }
+    if (draft.qty) { qty.value = String(draft.qty); }
     for (const g of groups) {
       const saved = draft.choices?.[g.dataset.label!] ?? [];
       g.querySelectorAll<HTMLInputElement>('input').forEach((i) => (i.checked = saved.includes(i.value)));

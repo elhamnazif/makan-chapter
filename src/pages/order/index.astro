@@ -219,10 +219,10 @@ const sections = catalogue.categories.map((c) => ({
   );
   dialog.addEventListener('close', () => {
     document.documentElement.style.overflow = '';
-    if (dialog.returnValue === 'add' && current) add(current, qty, note.value.trim());
+    if (dialog.returnValue === 'add' && current) { add(current, qty, note.value.trim()); }
     dialog.returnValue = '';
   });
-  dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close('cancel'); });
+  dialog.addEventListener('click', (e) => { if (e.target === dialog) { dialog.close('cancel'); } });
 
   // Search
   const search = document.querySelector<HTMLInputElement>('[data-search]')!;
@@ -237,7 +237,7 @@ const sections = catalogue.categories.map((c) => ({
       s.querySelectorAll<HTMLElement>('[data-item]').forEach((it) => {
         const ok = !q || it.dataset.search!.includes(q);
         it.hidden = !ok;
-        if (ok) n++;
+        if (ok) { n++; }
       });
       s.hidden = n === 0;
       tabs.find((t) => t.dataset.tab === s.id)!.parentElement!.hidden = n === 0;
@@ -259,17 +259,17 @@ const sections = catalogue.categories.map((c) => ({
       t.classList.toggle('border-transparent', !on);
       t.classList.toggle('text-muted', !on);
       if (on) { t.setAttribute('aria-current', 'true'); t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
-      else t.removeAttribute('aria-current');
+      else { t.removeAttribute('aria-current'); }
     }
   };
   const visible = new Map<string, number>();
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
-      if (e.isIntersecting) visible.set(e.target.id, e.boundingClientRect.top);
-      else visible.delete(e.target.id);
+      if (e.isIntersecting) { visible.set(e.target.id, e.boundingClientRect.top); }
+      else { visible.delete(e.target.id); }
     }
     const first = sections.find((s) => visible.has(s.id));
-    if (first) setActive(first.id);
+    if (first) { setActive(first.id); }
   }, { rootMargin: '-180px 0px -55% 0px' });
   sections.forEach((s) => io.observe(s));
   tabs.forEach((t) => t.addEventListener('click', () => setActive(t.dataset.tab!)));

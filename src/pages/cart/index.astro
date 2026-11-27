@@ -37,8 +37,8 @@ import { url } from '../../data/site';
 
   function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text?: string) {
     const n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text != null) n.textContent = text;
+    if (cls) { n.className = cls; }
+    if (text != null) { n.textContent = text; }
     return n;
   }
 
@@ -58,7 +58,7 @@ import { url } from '../../data/site';
       const section = el('section', 'card overflow-hidden');
       const head = el('div', 'flex items-center justify-between border-b border-line bg-surface-2 px-4 py-3');
       head.append(el('h2', 'font-bold', KIND_LABEL[g.kind]));
-      if (g.delivery) head.append(el('span', 'text-sm text-muted', `${DELIVERY_LABEL[g.kind]} ${money(g.delivery)}`));
+      if (g.delivery) { head.append(el('span', 'text-sm text-muted', `${DELIVERY_LABEL[g.kind]} ${money(g.delivery)}`)); }
       section.append(head);
       const ul = el('ul', 'divide-y divide-line');
       for (const item of g.list) {

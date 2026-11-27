@@ -149,7 +149,7 @@ const services = [
     let timer = 0;
     const restart = () => {
       window.clearInterval(timer);
-      if (!reduce) timer = window.setInterval(() => show((index + 1) % slides.length), 6000);
+      if (!reduce) { timer = window.setInterval(() => show((index + 1) % slides.length), 6000); }
     };
     restart();
   }

@@ -86,7 +86,7 @@ const events = ['Corporate event', 'Wedding', 'Birthday party', 'Festive gatheri
     const input = $(id); const err = document.getElementById(`${id}-error`)!;
     const bad = !(input as HTMLInputElement).value.trim();
     err.textContent = bad ? msg : ''; err.hidden = !bad;
-    if (bad) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+    if (bad) { input.setAttribute('aria-invalid', 'true'); } else { input.removeAttribute('aria-invalid'); }
     return bad ? input : null;
   };
   form.addEventListener('submit', (e) => {

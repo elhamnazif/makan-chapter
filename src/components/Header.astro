@@ -6,7 +6,7 @@ import { nav, url, business } from '../data/site';
 const path = Astro.url.pathname;
 const home = url('');
 const isActive = (item: { href: string; match?: string[] }) => {
-  if (item.href === '') return path === home;
+  if (item.href === '') { return path === home; }
   const prefixes = item.match ?? [item.href];
   return prefixes.some((p) => path.startsWith(url(p)));
 };
@@ -106,7 +106,7 @@ const isActive = (item: { href: string; match?: string[] }) => {
   const cartLink = document.querySelector<HTMLElement>('[data-cart-link]');
   const syncCount = () => {
     const n = cartCount();
-    if (!badge || !cartLink) return;
+    if (!badge || !cartLink) { return; }
     badge.textContent = String(n);
     badge.hidden = n === 0;
     cartLink.setAttribute('aria-label', n ? `Cart, ${n} item${n > 1 ? 's' : ''}` : 'Cart');
@@ -119,13 +119,13 @@ const isActive = (item: { href: string; match?: string[] }) => {
   const toggle = document.querySelector<HTMLButtonElement>('[data-dropdown-toggle]');
   const menu = document.querySelector<HTMLElement>('[data-dropdown]');
   const setOpen = (open: boolean) => {
-    if (!toggle || !menu) return;
+    if (!toggle || !menu) { return; }
     toggle.setAttribute('aria-expanded', String(open));
     menu.hidden = !open;
   };
   toggle?.addEventListener('click', () => setOpen(Boolean(menu?.hidden)));
   document.addEventListener('click', (e) => {
-    if (toggle && menu && !toggle.contains(e.target as Node) && !menu.contains(e.target as Node)) setOpen(false);
+    if (toggle && menu && !toggle.contains(e.target as Node) && !menu.contains(e.target as Node)) { setOpen(false); }
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && menu && !menu.hidden) { setOpen(false); toggle?.focus(); }
@@ -135,14 +135,14 @@ const isActive = (item: { href: string; match?: string[] }) => {
   const drawer = document.querySelector<HTMLElement>('[data-drawer]');
   const opener = document.querySelector<HTMLButtonElement>('[data-drawer-open]');
   const openDrawer = (open: boolean) => {
-    if (!drawer || !opener) return;
+    if (!drawer || !opener) { return; }
     drawer.hidden = !open;
     opener.setAttribute('aria-expanded', String(open));
     document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (open) drawer.querySelector<HTMLElement>('[data-drawer-close].grid')?.focus();
-    else opener.focus();
+    if (open) { drawer.querySelector<HTMLElement>('[data-drawer-close].grid')?.focus(); }
+    else { opener.focus(); }
   };
   opener?.addEventListener('click', () => openDrawer(true));
   drawer?.querySelectorAll('[data-drawer-close]').forEach((el) => el.addEventListener('click', () => openDrawer(false)));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer && !drawer.hidden) openDrawer(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer && !drawer.hidden) { openDrawer(false); } });
 </script>

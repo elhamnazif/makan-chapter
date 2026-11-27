@@ -152,7 +152,7 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
         (!budgets.length || (perPax != null && budgets.some(([lo, hi]) => perPax >= lo && perPax < hi))) &&
         (!paxCaps.length || paxCaps.some((cap) => minPax <= cap));
       c.hidden = !ok;
-      if (ok) shown++;
+      if (ok) { shown++; }
     }
     grid.hidden = shown === 0;
     empty.hidden = shown !== 0;
@@ -175,9 +175,9 @@ const filterGroups = slug === 'buffet' ? allFilterGroups.filter((g) => g.key ===
     panel.classList.toggle('hidden', !open);
     opener.setAttribute('aria-expanded', String(open));
     document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (!open) opener.focus();
+    if (!open) { opener.focus(); }
   };
   opener.addEventListener('click', () => setOpen(true));
-  panel.querySelectorAll('[data-filter-close]').forEach((b) => b.addEventListener('click', () => { if (isMobile()) setOpen(false); }));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMobile() && !panel.classList.contains('hidden')) setOpen(false); });
+  panel.querySelectorAll('[data-filter-close]').forEach((b) => b.addEventListener('click', () => { if (isMobile()) { setOpen(false); } }));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isMobile() && !panel.classList.contains('hidden')) { setOpen(false); } });
 </script>

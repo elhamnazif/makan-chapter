@@ -34,8 +34,8 @@ export function addItem(item: Omit<CartItem, 'key'> & { key?: string }): void {
   const items = readCart();
   const key = item.key ?? `${item.id}:${item.details.join('|')}`;
   const existing = items.find((i) => i.key === key);
-  if (existing) existing.qty += item.qty;
-  else items.push({ ...item, key });
+  if (existing) { existing.qty += item.qty; }
+  else { items.push({ ...item, key }); }
   writeCart(items);
 }
 
@@ -102,7 +102,7 @@ export function prettyDate(iso: string): string {
 
 export function toast(message: string): void {
   const region = document.getElementById('toast');
-  if (!region) return;
+  if (!region) { return; }
   region.textContent = message;
   region.dataset.show = 'true';
   window.clearTimeout(Number(region.dataset.timer));

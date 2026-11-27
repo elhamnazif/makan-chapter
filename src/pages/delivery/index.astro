@@ -115,13 +115,13 @@ const fields = [
     const msg = rules[id](input.value.trim());
     const err = document.getElementById(`${id}-error`)!;
     err.textContent = msg; err.hidden = !msg;
-    if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+    if (msg) { input.setAttribute('aria-invalid', 'true'); } else { input.removeAttribute('aria-invalid'); }
     return msg ? input : null;
   };
   // Re-check a flagged field while typing so its error clears before the customer reaches the button.
   Object.keys(rules).forEach((id) => {
     const input = form.querySelector<HTMLInputElement>(`#${id}`)!;
-    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid')) check(id); });
+    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid')) { check(id); } });
   });
 
   form.addEventListener('submit', (e) => {
@@ -135,14 +135,14 @@ const fields = [
       for (const i of g.list) {
         out.push(`${i.qty} x ${i.name} (${money(i.unitCents * i.qty)})`);
         i.details.forEach((d) => out.push(`  ${d}`));
-        if (i.note) out.push(`  Note: ${i.note}`);
+        if (i.note) { out.push(`  Note: ${i.note}`); }
       }
-      if (g.delivery) out.push(`${DELIVERY_LABEL[g.kind]}: ${money(g.delivery)}`);
+      if (g.delivery) { out.push(`${DELIVERY_LABEL[g.kind]}: ${money(g.delivery)}`); }
       out.push('');
     }
     out.push(`Total: ${money(t.total)}`, '', `Name: ${v('name')}`, `Email: ${v('email')}`, `Phone: ${v('phone')}`, `Address: ${v('address')}`);
-    if (v('notes')) out.push(`Instructions: ${v('notes')}`);
-    if (form.querySelector<HTMLInputElement>('[name=marketing]')!.checked) out.push('Happy to receive news and promotions.');
+    if (v('notes')) { out.push(`Instructions: ${v('notes')}`); }
+    if (form.querySelector<HTMLInputElement>('[name=marketing]')!.checked) { out.push('Happy to receive news and promotions.'); }
     const link = waUrl(out.join('\n'));
     window.open(link, '_blank', 'noopener');
     document.querySelector<HTMLAnchorElement>('[data-reopen]')!.href = link;
