@@ -89,10 +89,11 @@ export function base(path: string): string {
   return import.meta.env.BASE_URL.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
 }
 
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
 /** Earliest selectable date as YYYY-MM-DD in local time. */
 export function isoDate(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
 export function prettyDate(iso: string): string {

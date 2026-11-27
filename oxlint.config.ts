@@ -11,7 +11,6 @@ export default defineConfig({
     'quality/no-known-value-widening': 'off',
     'typescript/no-non-null-assertion': 'off',
     'typescript/no-unsafe-return': 'off',
-    'unicorn/consistent-function-scoping': 'off',
     'unicorn/prefer-single-call': 'off',
   },
   overrides: [

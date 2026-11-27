@@ -81,6 +81,7 @@ const events = ['Corporate event', 'Wedding', 'Birthday party', 'Festive gatheri
   import { waUrl, isoDate, prettyDate } from '../../scripts/cart';
   const form = document.querySelector<HTMLFormElement>('[data-contact]')!;
   const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => form.querySelector<T>(`#${id}`)!;
+  const v = (id: string) => ($(id) as HTMLInputElement).value.trim();
   $('c-date').setAttribute('min', isoDate(new Date()));
   const req = (id: string, msg: string) => {
     const input = $(id); const err = document.getElementById(`${id}-error`)!;
@@ -93,7 +94,6 @@ const events = ['Corporate event', 'Wedding', 'Birthday party', 'Festive gatheri
     e.preventDefault();
     const bad = [req('c-name', 'Enter your name.'), req('c-phone', 'Enter a contact number.')].filter(Boolean)[0];
     if (bad) { bad.focus(); return; }
-    const v = (id: string) => ($(id) as HTMLInputElement).value.trim();
     const services = [...form.querySelectorAll<HTMLInputElement>('[data-service]:checked')].map((s) => s.value);
     const lines = [
       'Hi Makan Chapter, I would like to enquire about catering.',
