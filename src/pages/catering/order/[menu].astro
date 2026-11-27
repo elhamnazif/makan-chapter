@@ -78,14 +78,19 @@ const pkgs = Object.values(eventPackages);
                   <span class="block text-lg font-bold text-price">{c.label}</span>
                   <span id={`c${ci}-status`} class="block text-muted" data-status>Choose 1 of {c.options.length}</span>
                 </legend>
-                <div class="clear-both grid gap-2 pt-3 sm:grid-cols-2">
-                  {c.options.map((o) => (
-                    <label class="flex min-h-12 cursor-pointer items-center gap-3 rounded-control border border-line px-3 hover:bg-surface-2 has-[:checked]:border-accent has-[:checked]:bg-surface-2">
-                      <input type="radio" name={`c${ci}`} value={o} class="size-5 shrink-0 accent-[var(--mc-accent)]" />
-                      <span>{o}</span>
-                    </label>
-                  ))}
-                </div>
+                {(c.sections ?? [{ label: '', options: c.options }]).map((s) => (
+                  <div class="clear-both pt-3">
+                    {s.label && <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">{s.label}</p>}
+                    <div class="grid gap-2 sm:grid-cols-2">
+                      {s.options.map((o) => (
+                        <label class="flex min-h-12 cursor-pointer items-center gap-3 rounded-control border border-line px-3 hover:bg-surface-2 has-[:checked]:border-accent has-[:checked]:bg-surface-2">
+                          <input type="radio" name={`c${ci}`} value={o} class="size-5 shrink-0 accent-[var(--mc-accent)]" />
+                          <span>{o}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
                 <p class="field-error" hidden data-cat-error></p>
               </fieldset>
             ))}

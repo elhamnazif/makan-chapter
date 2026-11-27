@@ -55,6 +55,8 @@ export const fees = {
 export interface MenuCategory {
   label: string;
   options: string[];
+  /** Optional sub-headings inside one category, e.g. fish and prawn options under Seafood. Still one pick. */
+  sections?: { label: string; options: string[] }[];
   /** Shown only for this package, e.g. drinks come with Classic only. */
   only?: PackageKey;
 }
@@ -67,6 +69,10 @@ export interface EventMenu {
   blurb: string;
   priceCents: Record<PackageKey, number>;
   categories: MenuCategory[];
+}
+
+function seafood(sections: { label: string; options: string[] }[]): MenuCategory {
+  return { label: 'Seafood', options: sections.flatMap((s) => s.options), sections };
 }
 
 const classicDrinks: MenuCategory = { label: 'Drinks', options: ['Teh Tarik Panas', 'Teh O Pandan', 'Honeydew Selasih', 'Bandung'], only: 'classic' };
@@ -117,18 +123,23 @@ export const eventMenus: EventMenu[] = [
       classicDrinks,
     ],
   },
+  // Final menu from the client: "Western Delight Buffet", S$25.00 per pax (Nov 2026). One price was given for both packages.
   {
     slug: 'western-delights',
     name: 'Western Delights',
     image: null,
-    blurb: 'Crowd-pleasing western mains and sides.',
-    priceCents: { mini: 1590, classic: 2490 },
+    blurb: 'One buffet menu with choices for adults and kids.',
+    priceCents: { mini: 2500, classic: 2500 },
     categories: [
-      { label: 'Carbs', options: ['Aglio Olio', 'Baked Macaroni', 'Herb Rice', 'Mashed Potato'] },
-      { label: 'Main', options: ['Chicken Chop with Black Pepper Sauce', 'Grilled Chicken with Mushroom Sauce', 'Fish Fillet with Tartar Sauce', 'Beef Lasagna'] },
-      { label: 'Side', options: ['Coleslaw', 'Garden Salad', 'Roasted Vegetables'] },
-      { label: 'Dessert', options: ['Caramel Cheese Brownies', 'Fruit Tarts', 'Cream Puffs'] },
-      { label: 'Drinks', options: ['Iced Lemon Tea', 'Fruit Punch', 'Sparkling Lemonade'], only: 'classic' },
+      { label: 'Rice', options: ['Nasi Goreng Kampung', 'Butter Rice', 'Lemon Rice'] },
+      { label: 'Pasta', options: ['Seafood Aglio Olio', 'Creamy Pasta', 'Tom Yum Pasta'] },
+      { label: 'Chicken', options: ['Fried Chicken with Honey Sauce', 'Lemon Chicken', 'Cereal Chicken'] },
+      seafood([
+        { label: 'Fish options', options: ['Sweet & Sour Fish', 'Black Pepper Fish', 'Creamy Lemon Fish'] },
+        { label: 'Prawn options', options: ['Black Pepper Prawns', 'Cereal Prawns', 'Sambal Prawns'] },
+      ]),
+      { label: 'Dessert', options: ['Chocolate Brownies', 'Tiramisu', 'Blue Pea Pomelo Jelly'] },
+      { label: 'Drinks', options: ['Teh Tarik', 'Cordial Drink'], only: 'classic' },
     ],
   },
   {
